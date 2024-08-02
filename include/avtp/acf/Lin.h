@@ -28,9 +28,8 @@
  */
 
 /**
- * @file
- * This file contains the fields descriptions of the IEEE 1722 ACF Sensor PDUs and
- * functions to invoke corresponding parser and deparser.
+ * @file This files contains functions for de-/serialization of IEEE1722's ACF
+ * Lin PDU formats. For details see IEEE Std. 1722-2016, chapter 9.4.5.
  */
 
 #pragma once
@@ -40,55 +39,54 @@
 #include "avtp/Defines.h"
 #include "avtp/acf/Common.h"
 
-#define AVTP_SENSOR_HEADER_LEN         (3 * AVTP_QUADLET_SIZE)
+/** Length of ACF Lin header. */
+#define AVTP_LIN_HEADER_LEN (3 * AVTP_QUADLET_SIZE)
 
+/** ACF Lin PDU. */
 typedef struct {
-    uint8_t header[AVTP_SENSOR_HEADER_LEN];
+    uint8_t header[AVTP_LIN_HEADER_LEN];
     uint8_t payload[0];
-} Avtp_Sensor_t;
+} Avtp_Lin_t;
 
-typedef enum {
 
+/** Fields of ACF Lin PDU. */
+typedef enum  {
     /* ACF common header fields */
-    AVTP_SENSOR_FIELD_ACF_MSG_TYPE = 0,
-    AVTP_SENSOR_FIELD_ACF_MSG_LENGTH,
-
-    /* ACF Sensor header fields */    
-    AVTP_SENSOR_FIELD_MTV,
-    AVTP_SENSOR_FIELD_NUM_SENSOR,
-    AVTP_SENSOR_FIELD_SZ,
-    AVTP_SENSOR_FIELD_SENSOR_GROUP,
-    AVTP_SENSOR_FIELD_MESSAGE_TIMESTAMP,        
-
+    AVTP_LIN_FIELD_ACF_MSG_TYPE = 0,
+    AVTP_LIN_FIELD_ACF_MSG_LENGTH,
+    /* ACF Lin header fields */
+    AVTP_LIN_FIELD_PAD,
+    AVTP_LIN_FIELD_MTV,
+    AVTP_LIN_FIELD_LIN_BUS_ID,
+    AVTP_LIN_FIELD_LIN_IDENTIFIER,
+    AVTP_LIN_FIELD_MESSAGE_TIMESTAMP,
     /* Count number of fields for bound checks */
-    AVTP_SENSOR_FIELD_MAX
-} Avtp_SensorFields_t;
+    AVTP_LIN_FIELD_MAX
+} Avtp_LinFields_t;
 
 /**
- * Initializes an ACF Sensor PDU header as specified in the IEEE 1722 Specification.
+ * Initializes an ACF Lin PDU.
  *
- * @param pdu Pointer to the first bit of a 1722 ACF Sensor PDU.
+ * @param pdu Pointer to the first bit of a 1722 ACF Lin PDU.
  */
-int Avtp_Sensor_Init(Avtp_Sensor_t* sensor_pdu);
+int Avtp_Lin_Init(Avtp_Lin_t* pdu);
 
 /**
- * Returns the value of an ACF Sensor PDU field as specified in the IEEE 1722 Specification.
+ * Returns the value of an ACF Lin PDU field.
  *
- * @param pdu Pointer to the first bit of an 1722 ACF Sensor PDU.
+ * @param pdu Pointer to the first bit of an 1722 ACF Lin PDU.
+ * @param field Data field to be read
+ * @param value Pointer to location to store the value.
+ * @returns Returns 0 if the data field was successfully read.
+ */
+int Avtp_Lin_GetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t* value);
+
+/**
+ * Sets the value of an ACF Lin PDU field.
+ *
+ * @param pdu Pointer to the first bit of an 1722 ACF Lin PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 ACF Sensor PDU.
+ * @returns Returns 0 if the data field was successfully set.
  */
-int Avtp_Sensor_GetField(Avtp_Sensor_t* sensor_pdu, Avtp_SensorFields_t field, uint64_t* value);
-
-/**
- * Sets the value of an ACF Sensor PDU field as specified in the IEEE 1722 Specification.
- *
- * @param pdu Pointer to the first bit of an 1722 ACF Sensor PDU.
- * @param field Specifies the position of the data field to be read
- * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 ACF Sensor PDU.
- */
-int Avtp_Sensor_SetField(Avtp_Sensor_t* sensor_pdu, Avtp_SensorFields_t field, uint64_t value);
+int Avtp_Lin_SetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t value);

@@ -30,46 +30,43 @@
 #include <errno.h>
 #include <string.h>
 
-#include "avtp/acf/Common.h"
-#include "avtp/acf/Sensor.h"
+#include "avtp/acf/Lin.h"
 #include "avtp/Utils.h" 
-#include "avtp/Defines.h"
 
 /**
- * This table maps all IEEE 1722 ACF Sensor header fields to a descriptor.
+ * This table describes all the offsets of the ACF Lin header fields.
  */
-static const Avtp_FieldDescriptor_t Avtp_SensorFieldDesc[AVTP_SENSOR_FIELD_MAX] =
+static const Avtp_FieldDescriptor_t Avtp_LinFieldDesc[AVTP_LIN_FIELD_MAX] =
 {
     /* ACF common header fields */
-    [AVTP_SENSOR_FIELD_ACF_MSG_TYPE]        = { .quadlet = 0, .offset =  0, .bits = 7 },
-    [AVTP_SENSOR_FIELD_ACF_MSG_LENGTH]      = { .quadlet = 0, .offset =  7, .bits = 9 },  
-    /* ACF Sensor header fields */   
-    [AVTP_SENSOR_FIELD_MTV]                 = { .quadlet = 0, .offset = 16, .bits = 1 },
-    [AVTP_SENSOR_FIELD_NUM_SENSOR]          = { .quadlet = 0, .offset = 17, .bits = 7 },
-    [AVTP_SENSOR_FIELD_SZ]                  = { .quadlet = 0, .offset = 24, .bits = 2 },
-    [AVTP_SENSOR_FIELD_SENSOR_GROUP]        = { .quadlet = 0, .offset = 26, .bits = 6 },
-    [AVTP_SENSOR_FIELD_MESSAGE_TIMESTAMP]   = { .quadlet = 1, .offset =  0, .bits = 64 },    
+    [AVTP_LIN_FIELD_ACF_MSG_TYPE]       = { .quadlet = 0, .offset = 0, .bits = 7 },
+    [AVTP_LIN_FIELD_ACF_MSG_LENGTH]     = { .quadlet = 0, .offset = 7, .bits = 9 },  
+    /* ACF CAN header fields */
+    [AVTP_LIN_FIELD_PAD]                = { .quadlet = 0, .offset = 16, .bits = 2 },
+    [AVTP_LIN_FIELD_MTV]                = { .quadlet = 0, .offset = 18, .bits = 1 },
+    [AVTP_LIN_FIELD_LIN_BUS_ID]         = { .quadlet = 0, .offset = 19, .bits = 5 },
+    [AVTP_LIN_FIELD_LIN_IDENTIFIER]     = { .quadlet = 0, .offset = 24, .bits = 8 },
+    [AVTP_LIN_FIELD_MESSAGE_TIMESTAMP]  = { .quadlet = 1, .offset = 0, .bits = 64 },
 };
 
-
-int Avtp_Sensor_Init(Avtp_Sensor_t* sensor_pdu)
+int Avtp_Lin_Init(Avtp_Lin_t* pdu)
 {
-    if(!sensor_pdu) {
+    if(!pdu) {
         return -EINVAL;
     }
 
-    memset(sensor_pdu, 0, sizeof(Avtp_Sensor_t));  
-    Avtp_Sensor_SetField(sensor_pdu, AVTP_SENSOR_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_SENSOR);
+    memset(pdu, 0, sizeof(Avtp_Lin_t));  
+    Avtp_Lin_SetField(pdu, AVTP_LIN_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_LIN);
     
     return 0;
 }
 
-int Avtp_Sensor_GetField(Avtp_Sensor_t* sensor_pdu, Avtp_SensorFields_t field, uint64_t* value)
+int Avtp_Lin_GetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t* value)
 {
-    return Avtp_GetField(Avtp_SensorFieldDesc, AVTP_SENSOR_FIELD_MAX, (uint8_t *)sensor_pdu, (uint8_t)field, value);
+    return Avtp_GetField(Avtp_LinFieldDesc, AVTP_LIN_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field, value);
 }
 
-int Avtp_Sensor_SetField(Avtp_Sensor_t* sensor_pdu, Avtp_SensorFields_t field, uint64_t value)
+int Avtp_Lin_SetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t value)
 {
-    return Avtp_SetField(Avtp_SensorFieldDesc, AVTP_SENSOR_FIELD_MAX, (uint8_t *)sensor_pdu, (uint8_t)field, value);
+    return Avtp_SetField(Avtp_LinFieldDesc, AVTP_LIN_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field, value);
 }
