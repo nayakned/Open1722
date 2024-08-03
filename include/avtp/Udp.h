@@ -44,7 +44,7 @@
 typedef struct {
     uint8_t header[AVTP_UDP_HEADER_LEN];
     uint8_t payload[0];
-} Avtp_UDP_t;
+} Avtp_Udp_t;
 
 typedef enum {
     
@@ -53,14 +53,14 @@ typedef enum {
 
     /* Count number of fields for bound checks */
     AVTP_UDP_FIELD_MAX
-} Avtp_UDPFields_t;
+} Avtp_UdpFields_t;
 
 /**
  * Initializes a UDP PDU as specified in the IEEE 1722-2016 Specification.
  *
  * @param pdu Pointer to the first bit of an IEEE 1722 UDP PDU. 
  */
-int Avtp_UDP_Init(Avtp_UDP_t* pdu);
+int Avtp_Udp_Init(Avtp_Udp_t* pdu);
 
 /**
  * Returns the value of an an AVTP UDP field as specified in the IEEE 1722 Specification.
@@ -71,7 +71,7 @@ int Avtp_UDP_Init(Avtp_UDP_t* pdu);
  * @returns This function returns 0 if the data field was successfully read from
  * the 1722 AVTP PDU.
  */
-int Avtp_UDP_GetField(Avtp_UDP_t* pdu, Avtp_UDPFields_t field, uint64_t* value);
+int Avtp_Udp_GetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field, uint64_t* value);
 
 /**
  * Sets the value of an an AVTP UDP field as specified in the IEEE 1722 Specification.
@@ -82,5 +82,5 @@ int Avtp_UDP_GetField(Avtp_UDP_t* pdu, Avtp_UDPFields_t field, uint64_t* value);
  * @returns This function returns 0 if the data field was successfully set in
  * the 1722 AVTP PDU.
  */
-int Avtp_UDP_SetField(Avtp_UDP_t* pdu, Avtp_UDPFields_t field, uint64_t value);
+int Avtp_Udp_SetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field, uint64_t value);
 

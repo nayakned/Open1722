@@ -178,7 +178,7 @@ static int new_packet(int sk_fd, int can_socket) {
     uint8_t pdu[MAX_PDU_SIZE];
     uint8_t* cf_pdu;
     uint8_t* acf_pdu;
-    Avtp_UDP_t *udp_pdu;
+    Avtp_Udp_t *udp_pdu;
     char stdout_string[1000] = "\0";
     struct can_frame frame;
     uint64_t eff;
@@ -191,8 +191,8 @@ static int new_packet(int sk_fd, int can_socket) {
     }
 
     if (use_udp) {
-        udp_pdu = (Avtp_UDP_t *) pdu;
-        Avtp_UDP_GetField(udp_pdu, AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO, &udp_seq_num);
+        udp_pdu = (Avtp_Udp_t *) pdu;
+        Avtp_Udp_GetField(udp_pdu, AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO, &udp_seq_num);
         cf_pdu = pdu + AVTP_UDP_HEADER_LEN;
         proc_bytes += AVTP_UDP_HEADER_LEN;
     } else {
