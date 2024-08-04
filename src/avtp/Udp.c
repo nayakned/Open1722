@@ -36,32 +36,32 @@
 /**
  * This table maps all IEEE 1722 UDP-specific header fields to a descriptor.
  */
-static const Avtp_FieldDescriptor_t Avtp_UDPFieldDesc[AVTP_UDP_FIELD_MAX] = {
+static const Avtp_FieldDescriptor_t Avtp_UdpFieldDesc[AVTP_UDP_FIELD_MAX] = {
 
     [AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO]       = { .quadlet = 0, .offset = 0, .bits = 32 },
 };
 
-int Avtp_UDP_Init(Avtp_UDP_t* pdu) {
+int Avtp_Udp_Init(Avtp_Udp_t* pdu) {
 
     int res = 0;
 
     if (!pdu)
         return -EINVAL;
 
-    memset(pdu, 0, sizeof(Avtp_UDP_t));
+    memset(pdu, 0, sizeof(Avtp_Udp_t));
 
-    res = Avtp_SetField(Avtp_UDPFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu, 
+    res = Avtp_SetField(Avtp_UdpFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu,
                          AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO, 0);
 
     return res;
 }
 
-int Avtp_UDP_GetField(Avtp_UDP_t* pdu, 
-                            Avtp_UDPFields_t field, uint64_t* value) {
-    return Avtp_GetField(Avtp_UDPFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu, (uint8_t) field, value);
+int Avtp_Udp_GetField(Avtp_Udp_t* pdu,
+                            Avtp_UdpFields_t field, uint64_t* value) {
+    return Avtp_GetField(Avtp_UdpFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu, (uint8_t) field, value);
 }
 
-int Avtp_UDP_SetField(Avtp_UDP_t* pdu, 
-                            Avtp_UDPFields_t field, uint64_t value) {
-    return Avtp_SetField(Avtp_UDPFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu, (uint8_t) field, value); 
+int Avtp_Udp_SetField(Avtp_Udp_t* pdu,
+                            Avtp_UdpFields_t field, uint64_t value) {
+    return Avtp_SetField(Avtp_UdpFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu, (uint8_t) field, value);
 }

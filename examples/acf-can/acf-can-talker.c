@@ -321,10 +321,10 @@ int main(int argc, char *argv[])
         pdu_length = 0;
 
         if (use_udp) {
-            Avtp_UDP_t *udp_pdu = (Avtp_UDP_t *) pdu;
-            Avtp_UDP_SetField(udp_pdu, AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO,
+            Avtp_Udp_t *udp_pdu = (Avtp_Udp_t *) pdu;
+            Avtp_Udp_SetField(udp_pdu, AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO,
                               seq_num);
-            cf_pdu = &pdu[sizeof(Avtp_UDP_t)];
+            cf_pdu = &pdu[sizeof(Avtp_Udp_t)];
         } else {
             cf_pdu = pdu;
         }
