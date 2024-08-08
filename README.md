@@ -58,9 +58,12 @@ The following is the list of the formats currently supported by Open1722:
  - CRF
  - CVF (H.264, MJPEG, JPEG2000)
  - RVF
- - AVTP Control Formats (ACF) (see Table 22 from IEEE 1722-2016 spec)
+ - AVTP Control Formats (ACF) with Non-Time-Synchronous as well as Time-Synchronous formats (see Table 22 from IEEE 1722-2016 spec)
     - CAN
     - CAN Brief
+    - Flexray
+    - LIN
+    - MOST
     - GPC
     - Sensor
     - Sensor Brief
