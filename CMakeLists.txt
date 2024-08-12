@@ -82,6 +82,16 @@ add_executable(cvf-listener "examples/cvf/cvf-listener.c")
 target_include_directories(cvf-listener PRIVATE "examples" "include")
 target_link_libraries(cvf-listener open1722 open1722examples)
 
+# Hello-world talker app
+add_executable(hello-world-talker "examples/hello-world/hello-world-talker.c")
+target_include_directories(hello-world-talker PRIVATE "examples" "include")
+target_link_libraries(hello-world-talker open1722 open1722examples)
+
+# Hello-world listener app
+add_executable(hello-world-listener "examples/hello-world/hello-world-listener.c")
+target_include_directories(hello-world-listener PRIVATE "examples" "include")
+target_link_libraries(hello-world-listener open1722 open1722examples)
+
 #### Tests ####################################################################
 
 enable_testing()
