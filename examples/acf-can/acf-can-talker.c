@@ -198,11 +198,12 @@ static int update_cf_length(uint8_t* cf_pdu, uint64_t length)
 }
 
 static int prepare_acf_packet(uint8_t* acf_pdu,
-                              struct canfd_frame frame) {
+                              frame_t frame) {
 
     int processedBytes;
     struct timespec now;
     Avtp_Can_t* pdu = (Avtp_Can_t*) acf_pdu;
+    canid_t can_id;
 
     // Clear bits
     memset(pdu, 0, AVTP_CAN_HEADER_LEN);
@@ -210,23 +211,28 @@ static int prepare_acf_packet(uint8_t* acf_pdu,
     // Prepare ACF PDU for CAN
     Avtp_Can_Init(pdu);
     clock_gettime(CLOCK_REALTIME, &now);
-    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_MESSAGE_TIMESTAMP, 
+    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_MESSAGE_TIMESTAMP,
                       (uint64_t)now.tv_nsec + (uint64_t)(now.tv_sec * 1e9));
     Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_MTV, 1U);
 
     // Set required CAN Flags
-    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_RTR, frame.can_id & CAN_RTR_FLAG);
-    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_EFF, frame.can_id & CAN_EFF_FLAG);
+    can_id = (can_variant == AVTP_CAN_FD) ? frame.fd.can_id : frame.cc.can_id;
+    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_RTR, can_id & CAN_RTR_FLAG);
+    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_EFF, can_id & CAN_EFF_FLAG);
 
     if (can_variant == AVTP_CAN_FD) {
-        Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_BRS, frame.flags & CANFD_BRS);
-        Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_FDF, frame.flags & CANFD_FDF);
-        Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_ESI, frame.flags & CANFD_ESI);
+        Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_BRS, frame.fd.flags & CANFD_BRS);
+        Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_FDF, frame.fd.flags & CANFD_FDF);
+        Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_ESI, frame.fd.flags & CANFD_ESI);
     }
 
     // Copy payload to ACF CAN PDU
-    processedBytes = Avtp_Can_SetPayload(pdu, frame.can_id & CAN_EFF_MASK, frame.data, 
-                                         frame.len, can_variant);
+    if(can_variant == AVTP_CAN_FD)
+        processedBytes = Avtp_Can_SetPayload(pdu, frame.fd.can_id & CAN_EFF_MASK, frame.fd.data,
+                                         frame.fd.len, can_variant);
+    else
+        processedBytes = Avtp_Can_SetPayload(pdu, frame.cc.can_id & CAN_EFF_MASK, frame.cc.data,
+                                         frame.cc.len, can_variant);
 
     return processedBytes;
 }
@@ -239,7 +245,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in sk_udp_addr;
     uint8_t pdu[MAX_PDU_SIZE];
     uint16_t pdu_length, cf_length;
-    struct canfd_frame can_frame;
+    frame_t can_frame;
 
     argp_parse(&argp, argc, argv, 0, NULL, NULL);
 
@@ -254,7 +260,7 @@ int main(int argc, char *argv[])
     } else {
         fd = create_talker_socket(priority);
         if (fd < 0) return fd;
-        res = setup_socket_address(fd, ifname, macaddr, 
+        res = setup_socket_address(fd, ifname, macaddr,
                                    ETH_P_TSN, &sk_ll_addr);
     }
     if (res < 0) goto err;
@@ -271,7 +277,7 @@ int main(int argc, char *argv[])
         pdu_length = 0;
         cf_length = 0;
 
-        // Usage of UDP means the PDU needs a 
+        // Usage of UDP means the PDU needs a
         if (use_udp) {
             Avtp_Udp_t *udp_pdu = (Avtp_Udp_t *) pdu;
             Avtp_Udp_SetField(udp_pdu, AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO,
@@ -290,7 +296,11 @@ int main(int argc, char *argv[])
         while (i < num_acf_msgs) {
             // Get payload -- will 'spin' here until we get the requested number
             //                of CAN frames.
-            res = read(can_socket, &can_frame, sizeof(struct canfd_frame));
+            if(can_variant == AVTP_CAN_FD){
+                res = read(can_socket, &can_frame.fd, sizeof(struct canfd_frame));
+            } else {
+                res = read(can_socket, &can_frame.cc, sizeof(struct can_frame));
+            }
             if (!res) continue;
 
             uint8_t* acf_pdu = pdu + pdu_length;

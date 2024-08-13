@@ -29,4 +29,10 @@
 
 #include "avtp/acf/Can.h"
 
+/* CAN CC/FD frame union */
+typedef union {
+	struct can_frame cc;
+	struct canfd_frame fd;
+} frame_t;
+
 int setup_can_socket(const char* can_ifname, Avtp_CanVariant_t can_variant);
