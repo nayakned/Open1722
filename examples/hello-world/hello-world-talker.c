@@ -184,8 +184,9 @@ static int prepare_acf_packet(uint8_t* acf_pdu, uint64_t gpc_code,
     Avtp_Gpc_SetField(pdu, AVTP_GPC_FIELD_GPC_MSG_ID, gpc_code);
     Avtp_Gpc_SetField(pdu, AVTP_GPC_FIELD_ACF_MSG_LENGTH, acf_length);
     memcpy(acf_pdu+AVTP_GPC_HEADER_LEN, payload, length);
+    memset(acf_pdu+AVTP_GPC_HEADER_LEN+length, 0, acf_length*4 - length);
 
-    return AVTP_GPC_HEADER_LEN + length;
+    return acf_length*4;
 }
 
 static int update_cf_length(uint8_t* cf_pdu, uint64_t length)
