@@ -181,7 +181,8 @@ static int new_packet(int sk_fd, int can_socket) {
     uint16_t payload_length, pdu_length;
     uint8_t pdu[MAX_PDU_SIZE], i;
     uint8_t *cf_pdu, *acf_pdu, *udp_pdu, *can_payload;
-    struct canfd_frame frame;
+    frame_t frame;
+    canid_t can_id;
 
     memset(&frame, 0, sizeof(struct canfd_frame));
     res = recv(sk_fd, pdu, MAX_PDU_SIZE, 0);
@@ -232,41 +233,52 @@ static int new_packet(int sk_fd, int can_socket) {
 
         Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_CAN_IDENTIFIER,
                                 &(can_frame_id));
-        frame.can_id = can_frame_id;
+        can_id = can_frame_id;
 
         can_payload = Avtp_Can_GetPayload((Avtp_Can_t*)acf_pdu, &payload_length, &pdu_length);
         msg_proc_bytes += pdu_length*4;
 
         // Handle EFF Flag
         Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_EFF, &flag);
-        if (frame.can_id > 0x7FF && !flag) {
+        if (can_id > 0x7FF && !flag) {
           fprintf(stderr, "Error: CAN ID is > 0x7FF but the EFF bit is not set.\n");
           return -1;
         }
-        if (flag) frame.can_id |= CAN_EFF_FLAG;
+        if (flag) can_id |= CAN_EFF_FLAG;
 
         // Handle RTR Flag
         Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_RTR, &flag);
-        if (flag) frame.can_id |= CAN_RTR_FLAG;
+        if (flag) can_id |= CAN_RTR_FLAG;
 
         if (can_variant == AVTP_CAN_FD) {
+
             Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_BRS, &flag);
-            if (flag) frame.flags |= CANFD_BRS;
+            if (flag) frame.fd.flags |= CANFD_BRS;
 
             Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_FDF, &flag);
-            if (flag) frame.flags |= CANFD_FDF;
+            if (flag) frame.fd.flags |= CANFD_FDF;
 
             Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_ESI, &flag);
-            if (flag) frame.flags |= CANFD_ESI;
+            if (flag) frame.fd.flags |= CANFD_ESI;
+
+            frame.fd.can_id = can_id;
+            frame.fd.len = payload_length;
+            memcpy(frame.fd.data, can_payload, payload_length);
+            res = write(can_socket, &frame.fd, sizeof(struct canfd_frame));
+
+        } else {
+
+            frame.cc.can_id = can_id;
+            frame.cc.len = payload_length;
+            memcpy(frame.cc.data, can_payload, payload_length);
+            res = write(can_socket, &frame.cc, sizeof(struct can_frame));
         }
 
-        frame.len = payload_length;
-        memcpy(frame.data, can_payload, payload_length);
-        res = write(can_socket, &frame, sizeof(struct canfd_frame)) != sizeof(struct canfd_frame);
-        if (res < 0) {
-            return res;
+        if(res < 0)
+        {
+            perror("Failed to write to CAN bus");
+            return 0;
         }
-
     }
     return 1;
 }
