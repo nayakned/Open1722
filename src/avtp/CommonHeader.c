@@ -33,6 +33,11 @@
 #include "avtp/Utils.h" 
 #include "avtp/Defines.h"
 
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_CommonHeaderFieldDesc, AVTP_COMMON_HEADER_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_CommonHeaderFieldDesc, AVTP_COMMON_HEADER_FIELD_MAX, (uint8_t*)pdu, field, value))
+
 /**
  * This table maps all IEEE 1722 common header fields to a descriptor.
  */
@@ -43,76 +48,46 @@ static const Avtp_FieldDescriptor_t Avtp_CommonHeaderFieldDesc[AVTP_COMMON_HEADE
     [AVTP_COMMON_HEADER_FIELD_VERSION]            = { .quadlet = 0, .offset = 9, .bits = 3 },
 };
 
-uint64_t Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* avtp_pdu,
+uint64_t Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* pdu,
         Avtp_CommonHeaderField_t field)
 {
-    return Avtp_GetField(
-            Avtp_CommonHeaderFieldDesc,
-            AVTP_COMMON_HEADER_FIELD_MAX,
-            (uint8_t*)avtp_pdu,
-            (uint8_t)field);
+    return GET_FIELD(field);
 }
 
-uint8_t Avtp_CommonHeader_GetSubtype(Avtp_CommonHeader_t* avtp_pdu)
+uint8_t Avtp_CommonHeader_GetSubtype(Avtp_CommonHeader_t* pdu)
 {
-    return Avtp_GetField(
-            Avtp_CommonHeaderFieldDesc,
-            AVTP_COMMON_HEADER_FIELD_MAX,
-            (uint8_t*)avtp_pdu,
-            AVTP_COMMON_HEADER_FIELD_SUBTYPE);
+    return GET_FIELD(AVTP_COMMON_HEADER_FIELD_SUBTYPE);
 }
 
-uint8_t Avtp_CommonHeader_GetH(Avtp_CommonHeader_t* avtp_pdu)
+uint8_t Avtp_CommonHeader_GetH(Avtp_CommonHeader_t* pdu)
 {
-    return Avtp_GetField(
-            Avtp_CommonHeaderFieldDesc,
-            AVTP_COMMON_HEADER_FIELD_MAX,
-            (uint8_t*)avtp_pdu,
-            AVTP_COMMON_HEADER_FIELD_H);
+    return GET_FIELD(AVTP_COMMON_HEADER_FIELD_H);
 }
 
-uint8_t Avtp_CommonHeader_GetVersion(Avtp_CommonHeader_t* avtp_pdu)
+uint8_t Avtp_CommonHeader_GetVersion(Avtp_CommonHeader_t* pdu)
 {
-    return Avtp_GetField(
-            Avtp_CommonHeaderFieldDesc,
-            AVTP_COMMON_HEADER_FIELD_MAX,
-            (uint8_t*)avtp_pdu,
-            AVTP_COMMON_HEADER_FIELD_VERSION);
+    return GET_FIELD(AVTP_COMMON_HEADER_FIELD_VERSION);
 }
 
-void Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* avtp_pdu,
+void Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* pdu,
         Avtp_CommonHeaderField_t field, uint64_t value)
 {
-    Avtp_SetField(
-            Avtp_CommonHeaderFieldDesc,
-            AVTP_COMMON_HEADER_FIELD_MAX,
-            (uint8_t*)avtp_pdu,
-            (uint8_t)field,
-            value);        
+    SET_FIELD(field, value);
 }
 
-void Avtp_CommonHeader_SetSubtype(Avtp_CommonHeader_t* avtp_pdu, uint8_t value)
+void Avtp_CommonHeader_SetSubtype(Avtp_CommonHeader_t* pdu, uint8_t value)
 {
-    Avtp_CommonHeader_SetField(
-            avtp_pdu,
-            AVTP_COMMON_HEADER_FIELD_SUBTYPE,
-            value);
+    SET_FIELD(AVTP_COMMON_HEADER_FIELD_SUBTYPE, value);
 }
 
-void Avtp_CommonHeader_SetH(Avtp_CommonHeader_t* avtp_pdu, uint8_t value)
+void Avtp_CommonHeader_SetH(Avtp_CommonHeader_t* pdu, uint8_t value)
 {
-    Avtp_CommonHeader_SetField(
-            avtp_pdu,
-            AVTP_COMMON_HEADER_FIELD_H,
-            value);
+    SET_FIELD(AVTP_COMMON_HEADER_FIELD_H, value);
 }
 
-void Avtp_CommonHeader_SetVersion(Avtp_CommonHeader_t* avtp_pdu, uint8_t value)
+void Avtp_CommonHeader_SetVersion(Avtp_CommonHeader_t* pdu, uint8_t value)
 {
-    Avtp_CommonHeader_SetField(
-            avtp_pdu,
-            AVTP_COMMON_HEADER_FIELD_VERSION,
-            value);
+    SET_FIELD(AVTP_COMMON_HEADER_FIELD_VERSION, value);
 }
 
 /******************************************************************************
@@ -121,7 +96,7 @@ void Avtp_CommonHeader_SetVersion(Avtp_CommonHeader_t* avtp_pdu, uint8_t value)
 int avtp_pdu_get(const struct avtp_common_pdu *pdu, Avtp_CommonHeaderField_t field,
                                 uint32_t *val)
 {
-    if (val == NULL) {
+    if (pdu == NULL || val == NULL) {
         return -EINVAL;
     } else {
         uint64_t temp = Avtp_CommonHeader_GetField((Avtp_CommonHeader_t*) pdu, field);

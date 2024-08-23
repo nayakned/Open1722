@@ -49,7 +49,7 @@ typedef struct {
 
 /**
  * Enumeration over all IEEE 1722 header fields. The naming convention used is
- * AVTP_<MSG_TYPE>_FIELD_<FIEL_NAME>.
+ * AVTP_<MSG_TYPE>_FIELD_<FIELD_NAME>.
  */
 typedef enum Avtp_CommonHeaderField{
     /* Common AVTP header fields */
@@ -91,22 +91,22 @@ typedef enum {
  * @param field Specifies the position of the data field to be read
  * @returns This function the value of the specified PDU field
  */
-uint64_t Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field);
+uint64_t Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* pdu, Avtp_CommonHeaderField_t field);
 
 /**
  * Returns the subtype field of the AVTP common header.
  */
-uint8_t Avtp_CommonHeader_GetSubtype(Avtp_CommonHeader_t* avtp_pdu);
+uint8_t Avtp_CommonHeader_GetSubtype(Avtp_CommonHeader_t* pdu);
 
 /**
  * Returns the header specific field of the AVTP common header.
  */
-uint8_t Avtp_CommonHeader_GetH(Avtp_CommonHeader_t* avtp_pdu);
+uint8_t Avtp_CommonHeader_GetH(Avtp_CommonHeader_t* pdu);
 
 /**
  * Returns the version field of the AVTP common header.
  */
-uint8_t Avtp_CommonHeader_GetVersion(Avtp_CommonHeader_t* avtp_pdu);
+uint8_t Avtp_CommonHeader_GetVersion(Avtp_CommonHeader_t* pdu);
 
 /**
  * Sets the value of an an AVTP common header field as specified in the IEEE 1722 Specification.
@@ -114,25 +114,23 @@ uint8_t Avtp_CommonHeader_GetVersion(Avtp_CommonHeader_t* avtp_pdu);
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 AVTP PDU.
  */
-void Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field, uint64_t value);
+void Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* pdu, Avtp_CommonHeaderField_t field, uint64_t value);
 
 /**
  * Set the subtype field of the AVTP common header.
  */
-void Avtp_CommonHeader_SetSubtype(Avtp_CommonHeader_t* avtp_pdu, uint8_t value);
+void Avtp_CommonHeader_SetSubtype(Avtp_CommonHeader_t* pdu, uint8_t value);
 
 /**
  * Set the header specific field of the AVTP common header.
  */
-void Avtp_CommonHeader_SetH(Avtp_CommonHeader_t* avtp_pdu, uint8_t value);
+void Avtp_CommonHeader_SetH(Avtp_CommonHeader_t* pdu, uint8_t value);
 
 /**
  * Set the version field of the AVTP common header.
  */
-void Avtp_CommonHeader_SetVersion(Avtp_CommonHeader_t* avtp_pdu, uint8_t value);
+void Avtp_CommonHeader_SetVersion(Avtp_CommonHeader_t* pdu, uint8_t value);
 
 /******************************************************************************
  * Legacy API (deprecated)

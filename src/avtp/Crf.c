@@ -35,6 +35,11 @@
 #include "avtp/Utils.h"
 #include "avtp/CommonHeader.h"
 
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_CrfFieldDescriptors, AVTP_CRF_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_CrfFieldDescriptors, AVTP_CRF_FIELD_MAX, (uint8_t*)pdu, field, value))
+
 /**
  * This table maps all IEEE 1722 Clock Reference Format (CRF) specific header fields
  * to a descriptor.
@@ -71,12 +76,144 @@ int Avtp_Crf_Init(Avtp_Crf_t* pdu) {
 
 }
 
-int Avtp_Crf_GetField(Avtp_Crf_t* pdu, Avtp_CrfField_t field, uint64_t* value) { 
-    return Avtp_GetField(Avtp_CrfFieldDescriptors, AVTP_CRF_FIELD_MAX, (uint8_t*)pdu, field, value);
+uint64_t Avtp_Crf_GetField(Avtp_Crf_t* pdu, Avtp_CrfField_t field)
+{ 
+    return GET_FIELD(field);
 }
 
-int Avtp_Crf_SetField(Avtp_Crf_t* pdu, Avtp_CrfField_t field, uint64_t value) {
-    return Avtp_SetField(Avtp_CrfFieldDescriptors, AVTP_CRF_FIELD_MAX, (uint8_t*)pdu, field, value);
+uint8_t Avtp_Crf_GetSubtype(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_SUBTYPE);
+}
+
+uint8_t Avtp_Crf_GetSv(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_SV);
+}
+
+uint8_t Avtp_Crf_GetVersion(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_VERSION);
+}
+
+uint8_t Avtp_Crf_GetMr(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_MR);
+}
+
+uint8_t Avtp_Crf_GetFs(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_FS);
+}
+
+uint8_t Avtp_Crf_GetTu(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_TU);
+}
+
+uint8_t Avtp_Crf_GetSequenceNum(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_SEQUENCE_NUM);
+}
+
+uint8_t Avtp_Crf_GetType(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_TYPE);
+}
+
+uint64_t Avtp_Crf_GetStreamId(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_STREAM_ID);
+}
+
+uint8_t Avtp_Crf_GetPull(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_PULL);
+}
+
+uint32_t Avtp_Crf_GetBaseFrequency(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_BASE_FREQUENCY);
+}
+
+uint16_t Avtp_Crf_GetCrfDataLength(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_CRF_DATA_LENGTH);
+}
+
+uint16_t Avtp_Crf_GetTimestampInterval(Avtp_Crf_t* pdu)
+{
+    return GET_FIELD(AVTP_CRF_FIELD_TIMESTAMP_INTERVAL);
+}
+
+void Avtp_Crf_SetField(Avtp_Crf_t* pdu, Avtp_CrfField_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_Crf_SetSubtype(Avtp_Crf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_SUBTYPE, value);
+}
+
+void Avtp_Crf_SetSv(Avtp_Crf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_SV, value);
+}
+
+void Avtp_Crf_SetVersion(Avtp_Crf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_VERSION, value);
+}
+
+void Avtp_Crf_SetMr(Avtp_Crf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_MR, value);
+}
+
+void Avtp_Crf_SetFs(Avtp_Crf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_FS, value);
+}
+
+void Avtp_Crf_SetTu(Avtp_Crf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_TU, value);
+}
+
+void Avtp_Crf_SetSequenceNum(Avtp_Crf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_SEQUENCE_NUM, value);
+}
+
+void Avtp_Crf_SetType(Avtp_Crf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_TYPE, value);
+}
+
+void Avtp_Crf_SetStreamId(Avtp_Crf_t* pdu, uint64_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_STREAM_ID, value);
+}
+
+void Avtp_Crf_SetPull(Avtp_Crf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_PULL, value);
+}
+
+void Avtp_Crf_SetBaseFrequency(Avtp_Crf_t* pdu, uint32_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_BASE_FREQUENCY, value);
+}
+
+void Avtp_Crf_SetCrfDataLength(Avtp_Crf_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_CRF_DATA_LENGTH, value);
+}
+
+void Avtp_Crf_SetTimestampInterval(Avtp_Crf_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_CRF_FIELD_TIMESTAMP_INTERVAL, value);
 }
 
 /******************************************************************************
@@ -85,12 +222,23 @@ int Avtp_Crf_SetField(Avtp_Crf_t* pdu, Avtp_CrfField_t field, uint64_t value) {
 
 int avtp_crf_pdu_get(const void *pdu, Avtp_CrfField_t field, uint64_t *val)
 {
-    return Avtp_Crf_GetField((Avtp_Crf_t*)pdu, field, val);
+    if (pdu == NULL || val == NULL) {
+        return -EINVAL;
+    } else {
+        uint64_t temp = Avtp_Crf_GetField((Avtp_Crf_t*)pdu, field);
+        *val = (uint32_t)temp;
+        return 0;
+    }
 }
 
 int avtp_crf_pdu_set(void *pdu, Avtp_CrfField_t field, uint64_t val)
 {
-    return Avtp_Crf_SetField((Avtp_Crf_t*)pdu, field, val);
+    if (pdu == NULL) {
+        return -EINVAL;
+    } else {
+        Avtp_Crf_SetField((Avtp_Crf_t*)pdu, field, val);
+        return 0;
+    }
 }
 
 int avtp_crf_pdu_init(void *pdu)
