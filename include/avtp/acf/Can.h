@@ -108,8 +108,9 @@ void Avtp_Can_SetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field, uint64_t val
  * @param payload Pointer to the payload byte array
  * @param payload_length Length of the payload.
  * @param can_variant Classic CAN or CAN-FD
+ * @returns Returns number of processed bytes (header + payload + padding)
  */
-void Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint32_t frame_id , uint8_t* payload, 
+int Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint32_t frame_id , uint8_t* payload, 
                         uint16_t payload_length, Avtp_CanVariant_t can_variant);
 
 /**
@@ -129,5 +130,6 @@ uint8_t* Avtp_Can_GetPayload(Avtp_Can_t* can_pdu, uint16_t* payload_length, uint
  * @param can_pdu Pointer to the first bit of an 1722 ACF CAN PDU.
  * @param payload Pointer to the payload byte array
  * @param payload_length Length of the payload.
+ * @returns Returns number of processed bytes (header + payload + padding)
  */
-void Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length);
+int Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length);

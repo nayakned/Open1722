@@ -74,7 +74,7 @@ void Avtp_Can_SetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field, uint64_t val
     Avtp_SetField(Avtp_CanFieldDesc, AVTP_CAN_FIELD_MAX, (uint8_t *) can_pdu, (uint8_t) field, value);
 }
 
-void Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint32_t frame_id , uint8_t* payload, 
+int Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint32_t frame_id , uint8_t* payload, 
                         uint16_t payload_length, Avtp_CanVariant_t can_variant)
 {
     // Copy the payload into the CAN PDU
@@ -87,10 +87,10 @@ void Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint32_t frame_id , uint8_t* paylo
     Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_FDF, (uint8_t) can_variant);
 
     // Finalize the AVTP CAN Frame
-    Avtp_Can_Finalize(can_pdu, payload_length);
+    return Avtp_Can_Finalize(can_pdu, payload_length);
 }
 
-void Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length)
+int Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length)
 {
     uint8_t padSize;
     uint32_t avtpCanLength = AVTP_CAN_HEADER_LEN + payload_length;
@@ -105,6 +105,8 @@ void Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length)
     // Set the length and padding fields
     Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_ACF_MSG_LENGTH, (uint64_t) avtpCanLength/AVTP_QUADLET_SIZE);
     Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_PAD, padSize);
+
+    return avtpCanLength;
 }
 
 uint8_t* Avtp_Can_GetPayload(Avtp_Can_t* can_pdu, uint16_t* payload_length, uint16_t *pdu_length)
