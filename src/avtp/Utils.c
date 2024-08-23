@@ -47,6 +47,7 @@ uint64_t Avtp_GetField(const Avtp_FieldDescriptor_t* fieldDescriptors,
 {
     if (pdu == NULL || field >= numFields
             || !IsFieldDescriptorValid(&fieldDescriptors[field])) {
+        assert(0);
         return 0;
     }
 
