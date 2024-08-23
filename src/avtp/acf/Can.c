@@ -56,58 +56,42 @@ static const Avtp_FieldDescriptor_t Avtp_CanFieldDesc[AVTP_CAN_FIELD_MAX] =
     [AVTP_CAN_FIELD_CAN_IDENTIFIER]     = { .quadlet = 3, .offset =  3, .bits = 29 },    
 };
 
-int Avtp_Can_Init(Avtp_Can_t* can_pdu)
+void Avtp_Can_Init(Avtp_Can_t* can_pdu)
 {
-    if(!can_pdu) {
-        return -EINVAL;
+    if(can_pdu != NULL) {
+        memset(can_pdu, 0, sizeof(Avtp_Can_t));  
+        Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_CAN);
     }
-
-    memset(can_pdu, 0, sizeof(Avtp_Can_t));  
-    Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_CAN);
-
-    return 0;
 }
 
-int Avtp_Can_GetField(Avtp_Can_t* can_pdu, 
-                            Avtp_CanFields_t field, uint64_t* value)
+uint64_t Avtp_Can_GetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field)
 {    
-    return Avtp_GetField(Avtp_CanFieldDesc, AVTP_CAN_FIELD_MAX, (uint8_t *) can_pdu, (uint8_t) field, value);
+    return Avtp_GetField(Avtp_CanFieldDesc, AVTP_CAN_FIELD_MAX, (uint8_t *) can_pdu, (uint8_t) field);
 }
 
-int Avtp_Can_SetField(Avtp_Can_t* can_pdu, 
-                            Avtp_CanFields_t field, uint64_t value)
+void Avtp_Can_SetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field, uint64_t value)
 {    
-    return Avtp_SetField(Avtp_CanFieldDesc, AVTP_CAN_FIELD_MAX, (uint8_t *) can_pdu, (uint8_t) field, value);
+    Avtp_SetField(Avtp_CanFieldDesc, AVTP_CAN_FIELD_MAX, (uint8_t *) can_pdu, (uint8_t) field, value);
 }
 
-int Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint32_t frame_id , uint8_t* payload, 
-                        uint16_t payload_length, Avtp_CanVariant_t can_variant) {
-
-    int ret = 0;
-    int eff;
-
+void Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint32_t frame_id , uint8_t* payload, 
+                        uint16_t payload_length, Avtp_CanVariant_t can_variant)
+{
     // Copy the payload into the CAN PDU
     memcpy(can_pdu->payload, payload, payload_length);
 
     // Set the Frame ID and CAN variant
-    eff = frame_id > 0x7ff? 1 : 0;
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_EFF, eff);
-    if (ret) return ret;
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_CAN_IDENTIFIER, frame_id);
-    if (ret) return ret;
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_FDF, (uint8_t) can_variant);
-    if (ret) return ret;
+    int eff = frame_id > 0x7ff? 1 : 0;
+    Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_EFF, eff);
+    Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_CAN_IDENTIFIER, frame_id);
+    Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_FDF, (uint8_t) can_variant);
 
     // Finalize the AVTP CAN Frame
-    ret = Avtp_Can_Finalize(can_pdu, payload_length);
-
-    return ret;
-
+    Avtp_Can_Finalize(can_pdu, payload_length);
 }
 
-int Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length) {
-
-    int ret = 0;
+void Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length)
+{
     uint8_t padSize;
     uint32_t avtpCanLength = AVTP_CAN_HEADER_LEN + payload_length;
 
@@ -119,30 +103,15 @@ int Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length) {
     }
 
     // Set the length and padding fields
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_ACF_MSG_LENGTH, 
-                        (uint64_t) avtpCanLength/AVTP_QUADLET_SIZE);
-    if (ret) return ret;
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_PAD, padSize);
-    if (ret) return ret;
-
-    return avtpCanLength;
+    Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_ACF_MSG_LENGTH, (uint64_t) avtpCanLength/AVTP_QUADLET_SIZE);
+    Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_PAD, padSize);
 }
 
 uint8_t* Avtp_Can_GetPayload(Avtp_Can_t* can_pdu, uint16_t* payload_length, uint16_t *pdu_length)
 {
-    uint64_t pad_len, pdu_len;
-    int res = Avtp_Can_GetField((Avtp_Can_t*)can_pdu, AVTP_CAN_FIELD_ACF_MSG_LENGTH,
-                                    &pdu_len);
-    if (res < 0) {    
-        return 0;
-    }
+    uint64_t pdu_len = Avtp_Can_GetField((Avtp_Can_t*)can_pdu, AVTP_CAN_FIELD_ACF_MSG_LENGTH);
+    uint64_t pad_len = Avtp_Can_GetField((Avtp_Can_t*)can_pdu, AVTP_CAN_FIELD_PAD);
 
-    res = Avtp_Can_GetField((Avtp_Can_t*)can_pdu, AVTP_CAN_FIELD_PAD, 
-                                &pad_len);
-    if (res < 0) {        
-        return 0;
-    }
-    
     if(payload_length != NULL){
         *payload_length = pdu_len*4-AVTP_CAN_HEADER_LEN-pad_len;
     }
