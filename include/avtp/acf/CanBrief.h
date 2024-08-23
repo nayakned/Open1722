@@ -74,18 +74,16 @@ typedef enum {
  *
  * @param pdu Pointer to the first bit of a 1722 ACF Abbreviated CAN PDU.
  */
-int Avtp_CanBrief_Init(Avtp_CanBrief_t* can_pdu);
+void Avtp_CanBrief_Init(Avtp_CanBrief_t* can_pdu);
 
 /**
  * Returns the value of an an ACF Abbreviated CAN PDU field as specified in the IEEE 1722 Specification.
  *
  * @param pdu Pointer to the first bit of an 1722 ACF Abbreviated CAN PDU.
  * @param field Specifies the position of the data field to be read
- * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 ACF Abbreviated CAN PDU.
+ * @returns Field of CAN Brief PDU.
  */
-int Avtp_CanBrief_GetField(Avtp_CanBrief_t* can_pdu, Avtp_CanBriefFields_t field, uint64_t* value);
+uint64_t Avtp_CanBrief_GetField(Avtp_CanBrief_t* can_pdu, Avtp_CanBriefFields_t field);
 
 /**
  * Sets the value of an an ACF Abbreviated CAN PDU field as specified in the IEEE 1722 Specification.
@@ -93,10 +91,8 @@ int Avtp_CanBrief_GetField(Avtp_CanBrief_t* can_pdu, Avtp_CanBriefFields_t field
  * @param pdu Pointer to the first bit of an 1722 ACF Abbreviated CAN PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 ACF Abbreviated CAN PDU.
  */
-int Avtp_CanBrief_SetField(Avtp_CanBrief_t* can_pdu, Avtp_CanBriefFields_t field, uint64_t value);
+void Avtp_CanBrief_SetField(Avtp_CanBrief_t* can_pdu, Avtp_CanBriefFields_t field, uint64_t value);
 
 /**
  * Copies the payload data into the ACF CAN Brief frame. This function will also set the
