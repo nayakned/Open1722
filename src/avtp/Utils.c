@@ -80,11 +80,12 @@ uint64_t Avtp_GetField(const Avtp_FieldDescriptor_t* fieldDescriptors,
     return result;
 }
 
-int Avtp_SetField(const Avtp_FieldDescriptor_t* fieldDescriptors, uint8_t numFields, 
-                            uint8_t* pdu, uint8_t field, uint64_t value)
+void Avtp_SetField(const Avtp_FieldDescriptor_t* fieldDescriptors,
+        uint8_t numFields, uint8_t* pdu, uint8_t field, uint64_t value)
 {
-    if (pdu == NULL || field >= numFields || !IsFieldDescriptorValid(&fieldDescriptors[field])) {
-        return -EINVAL;
+    if (pdu == NULL || field >= numFields ||
+            !IsFieldDescriptorValid(&fieldDescriptors[field])) {
+        assert(0);
     }
 
     const Avtp_FieldDescriptor_t* fieldDescriptor = &fieldDescriptors[field];
@@ -112,7 +113,4 @@ int Avtp_SetField(const Avtp_FieldDescriptor_t* fieldDescriptors, uint8_t numFie
         quadletOffset += 1;
         processedBits += quadletBits;
     }
-
-    return 0;
 }
-

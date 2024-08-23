@@ -117,7 +117,22 @@ uint8_t Avtp_CommonHeader_GetVersion(Avtp_CommonHeader_t* avtp_pdu);
  * @returns This function returns 0 if the data field was successfully set in
  * the 1722 AVTP PDU.
  */
-int Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field, uint64_t value);
+void Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field, uint64_t value);
+
+/**
+ * Set the subtype field of the AVTP common header.
+ */
+void Avtp_CommonHeader_SetSubtype(Avtp_CommonHeader_t* avtp_pdu, uint8_t value);
+
+/**
+ * Set the header specific field of the AVTP common header.
+ */
+void Avtp_CommonHeader_SetH(Avtp_CommonHeader_t* avtp_pdu, uint8_t value);
+
+/**
+ * Set the version field of the AVTP common header.
+ */
+void Avtp_CommonHeader_SetVersion(Avtp_CommonHeader_t* avtp_pdu, uint8_t value);
 
 /******************************************************************************
  * Legacy API (deprecated)

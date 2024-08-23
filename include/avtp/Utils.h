@@ -61,9 +61,6 @@ uint64_t Avtp_GetField(const Avtp_FieldDescriptor_t* fieldDescriptors,
  * or an ACF header.
  * @param field Specifies the position of the data field to be written
  * @param value The value to set.
- * @returns This function returns 0 if the data field was successfully read from
- *      the 1722 PDU.
  */
-int Avtp_SetField(const Avtp_FieldDescriptor_t* fieldDescriptors,
+void Avtp_SetField(const Avtp_FieldDescriptor_t* fieldDescriptors,
         uint8_t numFields, uint8_t* pdu, uint8_t field, uint64_t value);
-
