@@ -43,14 +43,52 @@ static const Avtp_FieldDescriptor_t Avtp_CommonHeaderFieldDesc[AVTP_COMMON_HEADE
     [AVTP_COMMON_HEADER_FIELD_VERSION]            = { .quadlet = 0, .offset = 9, .bits = 3 },
 };
 
-uint64_t Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field)
+uint64_t Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* avtp_pdu,
+        Avtp_CommonHeaderField_t field)
 {
-    return Avtp_GetField(Avtp_CommonHeaderFieldDesc, AVTP_COMMON_HEADER_FIELD_MAX, (uint8_t*)avtp_pdu, (uint8_t)field);        
+    return Avtp_GetField(
+            Avtp_CommonHeaderFieldDesc,
+            AVTP_COMMON_HEADER_FIELD_MAX,
+            (uint8_t*)avtp_pdu,
+            (uint8_t)field);
 }
 
-int Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field, uint64_t value)
+uint8_t Avtp_CommonHeader_GetSubtype(Avtp_CommonHeader_t* avtp_pdu)
 {
-    return Avtp_SetField(Avtp_CommonHeaderFieldDesc, AVTP_COMMON_HEADER_FIELD_MAX, (uint8_t*)avtp_pdu, (uint8_t)field, value);        
+    return Avtp_GetField(
+            Avtp_CommonHeaderFieldDesc,
+            AVTP_COMMON_HEADER_FIELD_MAX,
+            (uint8_t*)avtp_pdu,
+            AVTP_COMMON_HEADER_FIELD_SUBTYPE);
+}
+
+uint8_t Avtp_CommonHeader_GetH(Avtp_CommonHeader_t* avtp_pdu)
+{
+    return Avtp_GetField(
+            Avtp_CommonHeaderFieldDesc,
+            AVTP_COMMON_HEADER_FIELD_MAX,
+            (uint8_t*)avtp_pdu,
+            AVTP_COMMON_HEADER_FIELD_H);
+}
+
+uint8_t Avtp_CommonHeader_GetVersion(Avtp_CommonHeader_t* avtp_pdu)
+{
+    return Avtp_GetField(
+            Avtp_CommonHeaderFieldDesc,
+            AVTP_COMMON_HEADER_FIELD_MAX,
+            (uint8_t*)avtp_pdu,
+            AVTP_COMMON_HEADER_FIELD_VERSION);
+}
+
+int Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* avtp_pdu,
+        Avtp_CommonHeaderField_t field, uint64_t value)
+{
+    return Avtp_SetField(
+            Avtp_CommonHeaderFieldDesc,
+            AVTP_COMMON_HEADER_FIELD_MAX,
+            (uint8_t*)avtp_pdu,
+            (uint8_t)field,
+            value);        
 }
 
 /******************************************************************************

@@ -94,6 +94,21 @@ typedef enum {
 uint64_t Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field);
 
 /**
+ * Returns the subtype field of the AVTP common header.
+ */
+uint8_t Avtp_CommonHeader_GetSubtype(Avtp_CommonHeader_t* avtp_pdu);
+
+/**
+ * Returns the header specific field of the AVTP common header.
+ */
+uint8_t Avtp_CommonHeader_GetH(Avtp_CommonHeader_t* avtp_pdu);
+
+/**
+ * Returns the version field of the AVTP common header.
+ */
+uint8_t Avtp_CommonHeader_GetVersion(Avtp_CommonHeader_t* avtp_pdu);
+
+/**
  * Sets the value of an an AVTP common header field as specified in the IEEE 1722 Specification.
  *
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
