@@ -89,11 +89,9 @@ typedef enum {
  *
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
- * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 AVTP PDU.
+ * @returns This function the value of the specified PDU field
  */
-int Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field, uint64_t* value);
+uint64_t Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field);
 
 /**
  * Sets the value of an an AVTP common header field as specified in the IEEE 1722 Specification.

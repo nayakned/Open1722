@@ -48,13 +48,10 @@
  * @param pdu Pointer to the first bit of an 1722 PDU. This is typically an 1722
  * AVTP- or an ACF header.
  * @param field Specifies the position of the data field to be read
- * @param value Pointer to store the read value at.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 PDU.
+ * @returns This function returns the field value from the PDU.
  */
-int Avtp_GetField(const Avtp_FieldDescriptor_t* fieldDescriptors, uint8_t numFields, uint8_t* pdu, 
-                            uint8_t field, uint64_t* value);
-
+uint64_t Avtp_GetField(const Avtp_FieldDescriptor_t* fieldDescriptors,
+        uint8_t numFields, uint8_t* pdu, uint8_t field);
 
 /**
  * Sets a data field in a 1722 frame to a specified value and handles necessary
@@ -67,6 +64,6 @@ int Avtp_GetField(const Avtp_FieldDescriptor_t* fieldDescriptors, uint8_t numFie
  * @returns This function returns 0 if the data field was successfully read from
  *      the 1722 PDU.
  */
-int Avtp_SetField(const Avtp_FieldDescriptor_t* fieldDescriptors, uint8_t numFields, uint8_t* pdu, 
-                            uint8_t field, uint64_t value);
+int Avtp_SetField(const Avtp_FieldDescriptor_t* fieldDescriptors,
+        uint8_t numFields, uint8_t* pdu, uint8_t field, uint64_t value);
 

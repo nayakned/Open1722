@@ -43,9 +43,9 @@ static const Avtp_FieldDescriptor_t Avtp_CommonHeaderFieldDesc[AVTP_COMMON_HEADE
     [AVTP_COMMON_HEADER_FIELD_VERSION]            = { .quadlet = 0, .offset = 9, .bits = 3 },
 };
 
-int Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field, uint64_t* value)
+uint64_t Avtp_CommonHeader_GetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field)
 {
-    return Avtp_GetField(Avtp_CommonHeaderFieldDesc, AVTP_COMMON_HEADER_FIELD_MAX, (uint8_t*)avtp_pdu, (uint8_t)field, value);        
+    return Avtp_GetField(Avtp_CommonHeaderFieldDesc, AVTP_COMMON_HEADER_FIELD_MAX, (uint8_t*)avtp_pdu, (uint8_t)field);        
 }
 
 int Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderField_t field, uint64_t value)
@@ -59,13 +59,13 @@ int Avtp_CommonHeader_SetField(Avtp_CommonHeader_t* avtp_pdu, Avtp_CommonHeaderF
 int avtp_pdu_get(const struct avtp_common_pdu *pdu, Avtp_CommonHeaderField_t field,
                                 uint32_t *val)
 {
-    uint64_t temp;
-    int ret;
-    ret = Avtp_CommonHeader_GetField((Avtp_CommonHeader_t*) pdu, field, &temp);
-    if (val == NULL) return -EINVAL;
-    
-    *val = (uint32_t)temp;
-    return ret;
+    if (val == NULL) {
+        return -EINVAL;
+    } else {
+        uint64_t temp = Avtp_CommonHeader_GetField((Avtp_CommonHeader_t*) pdu, field);
+        *val = (uint32_t)temp;
+        return 0;
+    }
 }
 
 int avtp_pdu_set(struct avtp_common_pdu *pdu, Avtp_CommonHeaderField_t field,
