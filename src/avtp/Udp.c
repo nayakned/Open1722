@@ -50,18 +50,18 @@ int Avtp_Udp_Init(Avtp_Udp_t* pdu) {
 
     memset(pdu, 0, sizeof(Avtp_Udp_t));
 
-    res = Avtp_SetField(Avtp_UdpFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu,
+    Avtp_SetField(Avtp_UdpFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu,
                          AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO, 0);
 
     return res;
 }
 
-int Avtp_Udp_GetField(Avtp_Udp_t* pdu,
-                            Avtp_UdpFields_t field, uint64_t* value) {
-    return Avtp_GetField(Avtp_UdpFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu, (uint8_t) field, value);
+uint64_t Avtp_Udp_GetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field)
+{
+    return Avtp_GetField(Avtp_UdpFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu, (uint8_t) field);
 }
 
-int Avtp_Udp_SetField(Avtp_Udp_t* pdu,
-                            Avtp_UdpFields_t field, uint64_t value) {
-    return Avtp_SetField(Avtp_UdpFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu, (uint8_t) field, value);
+void Avtp_Udp_SetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field, uint64_t value)
+{
+    Avtp_SetField(Avtp_UdpFieldDesc, AVTP_UDP_FIELD_MAX, (uint8_t*) pdu, (uint8_t) field, value);
 }

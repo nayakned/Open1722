@@ -72,10 +72,9 @@ typedef enum {
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 AVTP PDU.
+ * @returns The PDU fieldvalue
  */
-int Avtp_AafCommonStream_GetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field, uint64_t* value);
+uint64_t Avtp_AafCommonStream_GetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field);
 
 /**
  * Sets the value of an an AVTP AAF common stream field as specified in the IEEE 1722 Specification.
@@ -83,7 +82,5 @@ int Avtp_AafCommonStream_GetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStr
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 AVTP PDU.
  */
-int Avtp_AafCommonStream_SetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field, uint64_t value);
+void Avtp_AafCommonStream_SetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field, uint64_t value);

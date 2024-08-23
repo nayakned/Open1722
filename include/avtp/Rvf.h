@@ -140,11 +140,11 @@ typedef enum Avtp_RvfColorspace {
     AVTP_RVF_COLORSPACE_USER            = 0x0F
 } Avtp_RvfColorspace_t;
 
-int Avtp_Rvf_Init(Avtp_Rvf_t* pdu);
+void Avtp_Rvf_Init(Avtp_Rvf_t* pdu);
 
-int Avtp_Rvf_GetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t* value);
+uint64_t Avtp_Rvf_GetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field);
 
-int Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value);
+void Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value);
 
 /******************************************************************************
  * Legacy API (deprecated)

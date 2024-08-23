@@ -30,7 +30,7 @@
 #include <errno.h>
 
 #include "avtp/CommonHeader.h"
-#include "avtp/aaf/CommonStream.h"
+#include "avtp/aaf/AafCommonStream.h"
 #include "avtp/Utils.h"
 
 static const Avtp_FieldDescriptor_t Avtp_AafCommonStreamFieldDesc[AVTP_AAF_COMMON_STREAM_FIELD_MAX] =
@@ -53,12 +53,12 @@ static const Avtp_FieldDescriptor_t Avtp_AafCommonStreamFieldDesc[AVTP_AAF_COMMO
     [AVTP_AAF_COMMON_STREAM_FIELD_AAF_FORMAT_SPECIFIC_DATA_2]   = { .quadlet = 5, .offset = 24, .bits =  8 },    
 };
 
-int Avtp_AafCommonStream_GetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field, uint64_t* value)
+uint64_t Avtp_AafCommonStream_GetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field)
 {
-    return Avtp_GetField(Avtp_AafCommonStreamFieldDesc, AVTP_AAF_COMMON_STREAM_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field, value);
+    return Avtp_GetField(Avtp_AafCommonStreamFieldDesc, AVTP_AAF_COMMON_STREAM_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field);
 }
 
-int Avtp_AafCommonStream_SetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field, uint64_t value)
+void Avtp_AafCommonStream_SetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field, uint64_t value)
 {
-    return Avtp_SetField(Avtp_AafCommonStreamFieldDesc, AVTP_AAF_COMMON_STREAM_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field, value); 
+    Avtp_SetField(Avtp_AafCommonStreamFieldDesc, AVTP_AAF_COMMON_STREAM_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field, value); 
 }

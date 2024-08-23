@@ -68,10 +68,9 @@ int Avtp_Udp_Init(Avtp_Udp_t* pdu);
  * @param pdu Pointer to the first bit of an 1722 AVTP UDP PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 AVTP PDU.
+ * @returns This function returns the value of the field.
  */
-int Avtp_Udp_GetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field, uint64_t* value);
+uint64_t Avtp_Udp_GetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field);
 
 /**
  * Sets the value of an an AVTP UDP field as specified in the IEEE 1722 Specification.
@@ -79,8 +78,5 @@ int Avtp_Udp_GetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field, uint64_t* value);
  * @param pdu Pointer to the first bit of an 1722 AVTP UDP PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 AVTP PDU.
  */
-int Avtp_Udp_SetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field, uint64_t value);
-
+void Avtp_Udp_SetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field, uint64_t value);

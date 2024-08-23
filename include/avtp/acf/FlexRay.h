@@ -76,7 +76,7 @@ typedef enum  {
  *
  * @param pdu Pointer to the first bit of a 1722 ACF FlexRay PDU.
  */
-int Avtp_FlexRay_Init(Avtp_FlexRay_t* pdu);
+void Avtp_FlexRay_Init(Avtp_FlexRay_t* pdu);
 
 /**
  * Returns the value of an ACF FlexRay PDU field.
@@ -84,9 +84,9 @@ int Avtp_FlexRay_Init(Avtp_FlexRay_t* pdu);
  * @param pdu Pointer to the first bit of an 1722 ACF FlexRay PDU.
  * @param field Data field to be read
  * @param value Pointer to location to store the value.
- * @returns Returns 0 if the data field was successfully read.
+ * @returns Value of the specified PDU field
  */
-int Avtp_FlexRay_GetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint64_t* value);
+uint64_t Avtp_FlexRay_GetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field);
 
 /**
  * Sets the value of an ACF FlexRay PDU field.
@@ -96,4 +96,4 @@ int Avtp_FlexRay_GetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint6
  * @param value Pointer to location to store the value.
  * @returns Returns 0 if the data field was successfully set.
  */
-int Avtp_FlexRay_SetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint64_t value);
+void Avtp_FlexRay_SetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint64_t value);

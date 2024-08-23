@@ -96,7 +96,7 @@ typedef enum {
  *
  * @param pdu Pointer to the first bit of a 1722 PDU.
  */
-int Avtp_AafPcmStream_Init(Avtp_AafPcmStream_t* pdu);
+void Avtp_AafPcmStream_Init(Avtp_AafPcmStream_t* pdu);
 
 /**
  * Returns the value of an an AVTP AAF PCM stream field as specified in the IEEE 1722 Specification.
@@ -107,7 +107,7 @@ int Avtp_AafPcmStream_Init(Avtp_AafPcmStream_t* pdu);
  * @returns This function returns 0 if the data field was successfully read from
  * the 1722 AVTP PDU.
  */
-int Avtp_AafPcmStream_GetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field, uint64_t* value);
+uint64_t Avtp_AafPcmStream_GetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field);
 
 /**
  * Sets the value of an an AVTP AAF PCM stream field as specified in the IEEE 1722 Specification.
@@ -118,7 +118,7 @@ int Avtp_AafPcmStream_GetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields
  * @returns This function returns 0 if the data field was successfully set in
  * the 1722 AVTP PDU.
  */
-int Avtp_AafPcmStream_SetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field, uint64_t value);
+void Avtp_AafPcmStream_SetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field, uint64_t value);
 
 /******************************************************************************
  * Legacy API (deprecated)

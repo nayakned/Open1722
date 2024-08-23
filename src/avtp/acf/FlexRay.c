@@ -57,24 +57,20 @@ static const Avtp_FieldDescriptor_t Avtp_FlexRayFieldDesc[AVTP_FLEXRAY_FIELD_MAX
     [AVTP_FLEXRAY_FIELD_CYCLE]              = { .quadlet = 3, .offset = 26, .bits = 6 },
 };
 
-int Avtp_FlexRay_Init(Avtp_FlexRay_t* pdu)
+void Avtp_FlexRay_Init(Avtp_FlexRay_t* pdu)
 {
-    if(!pdu) {
-        return -EINVAL;
+    if(pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_FlexRay_t));  
+        Avtp_FlexRay_SetField(pdu, AVTP_FLEXRAY_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_FLEXRAY);
     }
-
-    memset(pdu, 0, sizeof(Avtp_FlexRay_t));  
-    Avtp_FlexRay_SetField(pdu, AVTP_FLEXRAY_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_FLEXRAY);
-    
-    return 0;
 }
 
-int Avtp_FlexRay_GetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint64_t* value)
+uint64_t Avtp_FlexRay_GetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field)
 {
-    return Avtp_GetField(Avtp_FlexRayFieldDesc, AVTP_FLEXRAY_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field, value);
+    return Avtp_GetField(Avtp_FlexRayFieldDesc, AVTP_FLEXRAY_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field);
 }
 
-int Avtp_FlexRay_SetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint64_t value)
+void Avtp_FlexRay_SetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint64_t value)
 {
-    return Avtp_SetField(Avtp_FlexRayFieldDesc, AVTP_FLEXRAY_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field, value);
+    Avtp_SetField(Avtp_FlexRayFieldDesc, AVTP_FLEXRAY_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field, value);
 }

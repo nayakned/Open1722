@@ -55,32 +55,23 @@ static const Avtp_FieldDescriptor_t Avtp_AafPcmStreamFieldDesc[AVTP_AAF_PCM_STRE
     [AVTP_AAF_PCM_STREAM_FIELD_EVT] 					= { .quadlet = 5, .offset = 20, .bits =  4 }, 
 };
 
-int Avtp_AafPcmStream_Init(Avtp_AafPcmStream_t* pdu)
+void Avtp_AafPcmStream_Init(Avtp_AafPcmStream_t* pdu)
 {
-    int res;
-
-    if (!pdu) {
-        return -EINVAL;
+    if (pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_AafPcmStream_t));
+        Avtp_AafPcmStream_SetField(pdu, AVTP_AAF_PCM_STREAM_FIELD_SUBTYPE, AVTP_SUBTYPE_AAF);
+        Avtp_AafPcmStream_SetField(pdu, AVTP_AAF_PCM_STREAM_FIELD_SV, 1);
     }
-
-    memset(pdu, 0, sizeof(Avtp_AafPcmStream_t));
-    res = Avtp_AafPcmStream_SetField(pdu, AVTP_AAF_PCM_STREAM_FIELD_SUBTYPE, AVTP_SUBTYPE_AAF);
-    if (res < 0) return res;
-
-    res = Avtp_AafPcmStream_SetField(pdu, AVTP_AAF_PCM_STREAM_FIELD_SV, 1);
-    if (res < 0) return res;
-
-    return 0;
 }
 
-int Avtp_AafPcmStream_GetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field, uint64_t* value)
+uint64_t Avtp_AafPcmStream_GetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field)
 {
-    return Avtp_GetField(Avtp_AafPcmStreamFieldDesc, AVTP_AAF_PCM_STREAM_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field, value);
+    return Avtp_GetField(Avtp_AafPcmStreamFieldDesc, AVTP_AAF_PCM_STREAM_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field);
 }
 
-int Avtp_AafPcmStream_SetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field, uint64_t value)
+void Avtp_AafPcmStream_SetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field, uint64_t value)
 {
-    return Avtp_SetField(Avtp_AafPcmStreamFieldDesc, AVTP_AAF_PCM_STREAM_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field, value); 
+    Avtp_SetField(Avtp_AafPcmStreamFieldDesc, AVTP_AAF_PCM_STREAM_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field, value); 
 }
 
 /******************************************************************************
@@ -90,13 +81,23 @@ int Avtp_AafPcmStream_SetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields
 int avtp_aaf_pdu_get(void *pdu,
                 Avtp_AafPcmStreamFields_t field, uint64_t *val)
 {
-    return Avtp_AafPcmStream_GetField((Avtp_AafPcmStream_t*)pdu, field, val);
+    if (pdu == NULL || val == NULL) {
+        return -EINVAL;
+    } else {
+        *val = Avtp_AafPcmStream_GetField((Avtp_AafPcmStream_t*)pdu, field);
+        return 0;
+    }
 }
 
 int avtp_aaf_pdu_set(void *pdu, Avtp_AafPcmStreamFields_t field,
                                 uint64_t val)
 {
-    return Avtp_AafPcmStream_SetField((Avtp_AafPcmStream_t*)pdu, field, val);
+    if (pdu == NULL) {
+        return -EINVAL;
+    } else {
+        Avtp_AafPcmStream_SetField((Avtp_AafPcmStream_t*)pdu, field, val);
+        return 0;
+    }
 }
 
 int avtp_aaf_pdu_init(void *pdu)
@@ -108,11 +109,11 @@ int avtp_aaf_pdu_init(void *pdu)
 
     memset(pdu, 0, sizeof(Avtp_AafPcmStream_t));
 
-    res = Avtp_AafPcmStream_SetField(pdu, AVTP_AAF_PCM_STREAM_FIELD_SUBTYPE, AVTP_SUBTYPE_AAF);
+    res = avtp_aaf_pdu_set(pdu, AVTP_AAF_PCM_STREAM_FIELD_SUBTYPE, AVTP_SUBTYPE_AAF);
     if (res < 0)
         return res;
 
-    res = Avtp_AafPcmStream_SetField(pdu, AVTP_AAF_PCM_STREAM_FIELD_SV, 1);
+    res = avtp_aaf_pdu_set(pdu, AVTP_AAF_PCM_STREAM_FIELD_SV, 1);
     if (res < 0)
         return res;
 

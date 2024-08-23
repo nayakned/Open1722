@@ -75,27 +75,23 @@ static const Avtp_FieldDescriptor_t Avtp_RvfFieldDescriptors[AVTP_RVF_FIELD_MAX]
     [AVTP_RVF_FIELD_LINE_NUMBER]           = { .quadlet = 7, .offset = 16, .bits = 16 },
 };
 
-int Avtp_Rvf_Init(Avtp_Rvf_t* pdu)
+void Avtp_Rvf_Init(Avtp_Rvf_t* pdu)
 {
-    if (pdu == NULL) {
-        return -EINVAL;
+    if (pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Rvf_t));
+        Avtp_Rvf_SetField(pdu, AVTP_RVF_FIELD_SUBTYPE, AVTP_SUBTYPE_RVF);
+        Avtp_Rvf_SetField(pdu, AVTP_RVF_FIELD_SV, 1);
     }
-
-    memset(pdu, 0, sizeof(Avtp_Rvf_t));
-    Avtp_Rvf_SetField(pdu, AVTP_RVF_FIELD_SUBTYPE, AVTP_SUBTYPE_RVF);
-    Avtp_Rvf_SetField(pdu, AVTP_RVF_FIELD_SV, 1);
-
-    return 0;
 }
 
-int Avtp_Rvf_GetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t* value)
+uint64_t Avtp_Rvf_GetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field)
 {
-    return Avtp_GetField(Avtp_RvfFieldDescriptors, AVTP_RVF_FIELD_MAX, (uint8_t*)pdu, field, value);
+    return Avtp_GetField(Avtp_RvfFieldDescriptors, AVTP_RVF_FIELD_MAX, (uint8_t*)pdu, field);
 }
 
-int Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value)
+void Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value)
 {
-    return Avtp_SetField(Avtp_RvfFieldDescriptors, AVTP_RVF_FIELD_MAX, (uint8_t*)pdu, field, value);
+    Avtp_SetField(Avtp_RvfFieldDescriptors, AVTP_RVF_FIELD_MAX, (uint8_t*)pdu, field, value);
 }
 
 /******************************************************************************
@@ -104,15 +100,27 @@ int Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value)
 
 int avtp_rvf_pdu_get(const void* pdu, Avtp_RvfField_t field, uint64_t* val)
 {
-    return Avtp_Rvf_GetField((Avtp_Rvf_t*)pdu, field, val);
+    if (pdu == NULL || val == NULL) {
+        return -EINVAL;
+    } else {
+        return Avtp_Rvf_GetField((Avtp_Rvf_t*)pdu, field);
+    }
 }
 
 int avtp_rvf_pdu_set(void* pdu, Avtp_RvfField_t field, uint64_t val)
 {
-    return Avtp_Rvf_SetField((Avtp_Rvf_t*)pdu, field, val);
+    if (pdu == NULL) {
+        return -EINVAL;
+    } else {
+        Avtp_Rvf_SetField((Avtp_Rvf_t*)pdu, field, val);
+    }
 }
 
 int avtp_rvf_pdu_init(void* pdu)
 {
-    return Avtp_Rvf_Init((Avtp_Rvf_t*)pdu);
+    if (pdu == NULL) {
+        return -EINVAL;
+    } else {
+        Avtp_Rvf_Init((Avtp_Rvf_t*)pdu);
+    }
 }

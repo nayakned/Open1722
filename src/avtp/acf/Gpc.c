@@ -47,26 +47,21 @@ static const Avtp_FieldDescriptor_t Avtp_GpcFieldDesc[AVTP_GPC_FIELD_MAX] =
     [AVTP_GPC_FIELD_GPC_MSG_ID]         = { .quadlet = 0, .offset =  16, .bits = 48 },
 };
 
-int Avtp_Gpc_Init(Avtp_Gpc_t* gpc_pdu)
+void Avtp_Gpc_Init(Avtp_Gpc_t* gpc_pdu)
 {
-    if(!gpc_pdu) {
-        return -EINVAL;
+    if(gpc_pdu != NULL) {
+        memset(gpc_pdu, 0, sizeof(Avtp_Gpc_t));  
+        Avtp_Gpc_SetField(gpc_pdu, AVTP_GPC_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_GPC);
     }
-
-    memset(gpc_pdu, 0, sizeof(Avtp_Gpc_t));  
-    Avtp_Gpc_SetField(gpc_pdu, AVTP_GPC_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_GPC);
-
-    return 0;
 }
 
-int Avtp_Gpc_GetField(Avtp_Gpc_t* gpc_pdu, 
-                            Avtp_GpcFields_t field, uint64_t* value)
+uint64_t Avtp_Gpc_GetField(Avtp_Gpc_t* gpc_pdu, Avtp_GpcFields_t field)
 {    
-    return Avtp_GetField(Avtp_GpcFieldDesc, AVTP_GPC_FIELD_MAX, (uint8_t *) gpc_pdu, (uint8_t) field, value);
+    return Avtp_GetField(Avtp_GpcFieldDesc, AVTP_GPC_FIELD_MAX, (uint8_t *) gpc_pdu, (uint8_t) field);
 }
 
-int Avtp_Gpc_SetField(Avtp_Gpc_t* gpc_pdu, 
-                            Avtp_GpcFields_t field, uint64_t value)
+void Avtp_Gpc_SetField(Avtp_Gpc_t* gpc_pdu, Avtp_GpcFields_t field,
+        uint64_t value)
 {    
-    return Avtp_SetField(Avtp_GpcFieldDesc, AVTP_GPC_FIELD_MAX, (uint8_t *) gpc_pdu, (uint8_t) field, value);
+    Avtp_SetField(Avtp_GpcFieldDesc, AVTP_GPC_FIELD_MAX, (uint8_t *) gpc_pdu, (uint8_t) field, value);
 }
