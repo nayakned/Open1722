@@ -35,6 +35,11 @@
 #include "avtp/Defines.h"
 #include "avtp/CommonHeader.h"
 
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_NtscfFieldDesc, AVTP_NTSCF_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_NtscfFieldDesc, AVTP_NTSCF_FIELD_MAX, (uint8_t*)pdu, field, value))
+
 /**
  * This table maps all IEEE 1722 NTSCF-specific header fields to a descriptor.
  */
@@ -50,25 +55,81 @@ static const Avtp_FieldDescriptor_t Avtp_NtscfFieldDesc[AVTP_NTSCF_FIELD_MAX] =
     [AVTP_NTSCF_FIELD_STREAM_ID]            = { .quadlet = 1, .offset = 0, .bits = 64 },
 };
 
-int Avtp_Ntscf_Init(Avtp_Ntscf_t* pdu)
+void Avtp_Ntscf_Init(Avtp_Ntscf_t* pdu)
 {
-    if (!pdu) {
-        return -EINVAL;
+    if (pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Ntscf_t));
+        Avtp_Ntscf_SetField(pdu, AVTP_NTSCF_FIELD_SUBTYPE, AVTP_SUBTYPE_NTSCF);
+        Avtp_Ntscf_SetField(pdu, AVTP_NTSCF_FIELD_SV, 1);
     }
-
-    memset(pdu, 0, sizeof(Avtp_Ntscf_t));
-    Avtp_Ntscf_SetField(pdu, AVTP_NTSCF_FIELD_SUBTYPE, AVTP_SUBTYPE_NTSCF);
-    Avtp_Ntscf_SetField(pdu, AVTP_NTSCF_FIELD_SV, 1);
-
-    return 0;
 }
 
-int Avtp_Ntscf_GetField(Avtp_Ntscf_t* pdu, Avtp_NtscfFields_t field, uint64_t* value)
+uint64_t Avtp_Ntscf_GetField(Avtp_Ntscf_t* pdu, Avtp_NtscfFields_t field)
 {
-    return Avtp_GetField(Avtp_NtscfFieldDesc, AVTP_NTSCF_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field, value);
+    return GET_FIELD(field);
 }
 
-int Avtp_Ntscf_SetField(Avtp_Ntscf_t* pdu, Avtp_NtscfFields_t field, uint64_t value)
+uint8_t Avtp_Ntscf_GetSubtype(Avtp_Ntscf_t* pdu)
 {
-    return Avtp_SetField(Avtp_NtscfFieldDesc, AVTP_NTSCF_FIELD_MAX, (uint8_t*)pdu, (uint8_t) field, value); 
+    return GET_FIELD(AVTP_NTSCF_FIELD_SUBTYPE);
+}
+
+uint8_t Avtp_Ntscf_GetSv(Avtp_Ntscf_t* pdu)
+{
+    return GET_FIELD(AVTP_NTSCF_FIELD_SV);
+}
+
+uint8_t Avtp_Ntscf_GetVersion(Avtp_Ntscf_t* pdu)
+{
+    return GET_FIELD(AVTP_NTSCF_FIELD_VERSION);
+}
+
+uint16_t Avtp_Ntscf_GetNtscfDataLength(Avtp_Ntscf_t* pdu)
+{
+    return GET_FIELD(AVTP_NTSCF_FIELD_NTSCF_DATA_LENGTH);
+}
+
+uint8_t Avtp_Ntscf_GetSequenceNum(Avtp_Ntscf_t* pdu)
+{
+    return GET_FIELD(AVTP_NTSCF_FIELD_SEQUENCE_NUM);
+}
+
+uint64_t Avtp_Ntscf_GetStreamId(Avtp_Ntscf_t* pdu)
+{
+    return GET_FIELD(AVTP_NTSCF_FIELD_STREAM_ID);
+}
+
+void Avtp_Ntscf_SetField(Avtp_Ntscf_t* pdu, Avtp_NtscfFields_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_Ntscf_SetSubtype(Avtp_Ntscf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_NTSCF_FIELD_SUBTYPE, value);
+}
+
+void Avtp_Ntscf_SetSv(Avtp_Ntscf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_NTSCF_FIELD_SV, value);
+}
+
+void Avtp_Ntscf_SetVersion(Avtp_Ntscf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_NTSCF_FIELD_VERSION, value);
+}
+
+void Avtp_Ntscf_SetNtscfDataLength(Avtp_Ntscf_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_NTSCF_FIELD_NTSCF_DATA_LENGTH, value);
+}
+
+void Avtp_Ntscf_SetSequenceNum(Avtp_Ntscf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_NTSCF_FIELD_SEQUENCE_NUM, value);
+}
+
+void Avtp_Ntscf_SetStreamId(Avtp_Ntscf_t* pdu, uint64_t value)
+{
+    SET_FIELD(AVTP_NTSCF_FIELD_STREAM_ID, value);
 }

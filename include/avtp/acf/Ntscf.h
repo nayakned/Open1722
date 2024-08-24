@@ -64,18 +64,23 @@ typedef enum {
  * @param pdu Pointer to the first bit of a 1722 PDU. This is typically an AVTP-
  * or an ACF header.
  */
-int Avtp_Ntscf_Init(Avtp_Ntscf_t* pdu);
+void Avtp_Ntscf_Init(Avtp_Ntscf_t* pdu);
 
 /**
  * Returns the value of an an AVTP NTSCF field as specified in the IEEE 1722 Specification.
  *
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
- * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 AVTP PDU.
+ * @returns The value of the PDU field.
  */
-int Avtp_Ntscf_GetField(Avtp_Ntscf_t* pdu, Avtp_NtscfFields_t field, uint64_t* value);
+uint64_t Avtp_Ntscf_GetField(Avtp_Ntscf_t* pdu, Avtp_NtscfFields_t field);
+
+uint8_t Avtp_Ntscf_GetSubtype(Avtp_Ntscf_t* pdu);
+uint8_t Avtp_Ntscf_GetSv(Avtp_Ntscf_t* pdu);
+uint8_t Avtp_Ntscf_GetVersion(Avtp_Ntscf_t* pdu);
+uint16_t Avtp_Ntscf_GetNtscfDataLength(Avtp_Ntscf_t* pdu);
+uint8_t Avtp_Ntscf_GetSequenceNum(Avtp_Ntscf_t* pdu);
+uint64_t Avtp_Ntscf_GetStreamId(Avtp_Ntscf_t* pdu);
 
 /**
  * Sets the value of an an AVTP NTSCF field as specified in the IEEE 1722 Specification.
@@ -83,7 +88,12 @@ int Avtp_Ntscf_GetField(Avtp_Ntscf_t* pdu, Avtp_NtscfFields_t field, uint64_t* v
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 AVTP PDU.
  */
-int Avtp_Ntscf_SetField(Avtp_Ntscf_t* pdu, Avtp_NtscfFields_t field, uint64_t value);
+void Avtp_Ntscf_SetField(Avtp_Ntscf_t* pdu, Avtp_NtscfFields_t field, uint64_t value);
+
+void Avtp_Ntscf_SetSubtype(Avtp_Ntscf_t* pdu, uint8_t value);
+void Avtp_Ntscf_SetSv(Avtp_Ntscf_t* pdu, uint8_t value);
+void Avtp_Ntscf_SetVersion(Avtp_Ntscf_t* pdu, uint8_t value);
+void Avtp_Ntscf_SetNtscfDataLength(Avtp_Ntscf_t* pdu, uint16_t value);
+void Avtp_Ntscf_SetSequenceNum(Avtp_Ntscf_t* pdu, uint8_t value);
+void Avtp_Ntscf_SetStreamId(Avtp_Ntscf_t* pdu, uint64_t value);
