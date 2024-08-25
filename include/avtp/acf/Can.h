@@ -90,6 +90,19 @@ void Avtp_Can_Init(Avtp_Can_t* can_pdu);
  */
 uint64_t Avtp_Can_GetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field);
 
+uint8_t Avtp_Can_GetAcfMsgType(Avtp_Can_t* pdu);
+uint16_t Avtp_Can_GetAcfMsgLength(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetPad(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetMtv(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetRtr(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetEff(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetBrs(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetFdf(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetEsi(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetCanBusId(Avtp_Can_t* pdu);
+uint64_t Avtp_Can_GetMessageTimestamp(Avtp_Can_t* pdu);
+uint32_t Avtp_Can_GetCanIdentifier(Avtp_Can_t* pdu);
+
 /**
  * Sets the value of an an ACF CAN PDU field as specified in the IEEE 1722 Specification.
  *
@@ -98,6 +111,19 @@ uint64_t Avtp_Can_GetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field);
  * @param value Pointer to location to store the value.
  */
 void Avtp_Can_SetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field, uint64_t value);
+
+void Avtp_Can_SetAcfMsgType(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetAcfMsgLength(Avtp_Can_t* pdu, uint16_t value);
+void Avtp_Can_SetPad(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetMtv(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetRtr(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetEff(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetBrs(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetFdf(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetEsi(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetCanBusId(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetMessageTimestamp(Avtp_Can_t* pdu, uint64_t value);
+void Avtp_Can_SetCanIdentifier(Avtp_Can_t* pdu, uint32_t value);
 
 /**
  * Copies the payload data into the ACF CAN frame. This function will also set the
