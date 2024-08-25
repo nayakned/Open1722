@@ -78,12 +78,13 @@ typedef enum {
  * Returns the value of an an ACF common header field as specified in the IEEE 1722 Specification.
  *
  * @param pdu Pointer to the first bit of an 1722 ACF PDU.
- * @param field Specifies the position of the data field to be read
- * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 ACF PDU.
+ * @param field Specifies the position of the data field to be read.
+ * @returns Returns the field of the PDU.
  */
-int Avtp_AcfCommon_GetField(Avtp_AcfCommon_t* acf_pdu, Avtp_AcfCommonFields_t field, uint64_t* value);
+uint64_t Avtp_AcfCommon_GetField(Avtp_AcfCommon_t* pdu, Avtp_AcfCommonFields_t field);
+
+uint8_t Avtp_AcfCommon_GetAcfMsgType(Avtp_AcfCommon_t* pdu);
+uint16_t Avtp_AcfCommon_GetAcfMsgLength(Avtp_AcfCommon_t* pdu);
 
 /**
  * Sets the value of an an ACF common header field as specified in the IEEE 1722 Specification.
@@ -91,7 +92,8 @@ int Avtp_AcfCommon_GetField(Avtp_AcfCommon_t* acf_pdu, Avtp_AcfCommonFields_t fi
  * @param pdu Pointer to the first bit of an 1722 ACF PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 ACF PDU.
  */
-int Avtp_AcfCommon_SetField(Avtp_AcfCommon_t* acf_pdu, Avtp_AcfCommonFields_t field, uint64_t value);
+void Avtp_AcfCommon_SetField(Avtp_AcfCommon_t* pdu, Avtp_AcfCommonFields_t field, uint64_t value);
+
+void Avtp_AcfCommon_SetAcfMsgType(Avtp_AcfCommon_t* pdu, uint8_t value);
+void Avtp_AcfCommon_SetAcfMsgLength(Avtp_AcfCommon_t* pdu, uint16_t value);
