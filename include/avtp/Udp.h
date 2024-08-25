@@ -60,7 +60,7 @@ typedef enum {
  *
  * @param pdu Pointer to the first bit of an IEEE 1722 UDP PDU. 
  */
-int Avtp_Udp_Init(Avtp_Udp_t* pdu);
+void Avtp_Udp_Init(Avtp_Udp_t* pdu);
 
 /**
  * Returns the value of an an AVTP UDP field as specified in the IEEE 1722 Specification.
@@ -72,6 +72,8 @@ int Avtp_Udp_Init(Avtp_Udp_t* pdu);
  */
 uint64_t Avtp_Udp_GetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field);
 
+uint32_t Avtp_Udp_GetEncapsulationSeqNo(Avtp_Udp_t* pdu);
+
 /**
  * Sets the value of an an AVTP UDP field as specified in the IEEE 1722 Specification.
  *
@@ -80,3 +82,5 @@ uint64_t Avtp_Udp_GetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field);
  * @param value Pointer to location to store the value.
  */
 void Avtp_Udp_SetField(Avtp_Udp_t* pdu, Avtp_UdpFields_t field, uint64_t value);
+
+void Avtp_Udp_SetEncapsulationSeqNo(Avtp_Udp_t* pdu, uint32_t value);
