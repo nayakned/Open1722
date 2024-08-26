@@ -38,7 +38,7 @@
 #include <stdint.h>
 
 #include "avtp/Defines.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 
 #define AVTP_SENSOR_HEADER_LEN         (3 * AVTP_QUADLET_SIZE)
 
@@ -69,18 +69,24 @@ typedef enum {
  *
  * @param pdu Pointer to the first bit of a 1722 ACF Sensor PDU.
  */
-int Avtp_Sensor_Init(Avtp_Sensor_t* sensor_pdu);
+void Avtp_Sensor_Init(Avtp_Sensor_t* pdu);
 
 /**
  * Returns the value of an ACF Sensor PDU field as specified in the IEEE 1722 Specification.
  *
  * @param pdu Pointer to the first bit of an 1722 ACF Sensor PDU.
  * @param field Specifies the position of the data field to be read
- * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 ACF Sensor PDU.
+ * @returns Value of the PDU field.
  */
-int Avtp_Sensor_GetField(Avtp_Sensor_t* sensor_pdu, Avtp_SensorFields_t field, uint64_t* value);
+uint64_t Avtp_Sensor_GetField(Avtp_Sensor_t* pdu, Avtp_SensorFields_t field);
+
+uint8_t Avtp_Sensor_GetAcfMsgType(Avtp_Sensor_t* pdu);
+uint16_t Avtp_Sensor_GetAcfMsgLength(Avtp_Sensor_t* pdu);
+uint8_t Avtp_Sensor_GetMtv(Avtp_Sensor_t* pdu);
+uint8_t Avtp_Sensor_GetNumSensor(Avtp_Sensor_t* pdu);
+uint8_t Avtp_Sensor_GetSz(Avtp_Sensor_t* pdu);
+uint8_t Avtp_Sensor_GetSensorGroup(Avtp_Sensor_t* pdu);
+uint64_t Avtp_Sensor_GetMessageTimestamp(Avtp_Sensor_t* pdu);
 
 /**
  * Sets the value of an ACF Sensor PDU field as specified in the IEEE 1722 Specification.
@@ -88,7 +94,13 @@ int Avtp_Sensor_GetField(Avtp_Sensor_t* sensor_pdu, Avtp_SensorFields_t field, u
  * @param pdu Pointer to the first bit of an 1722 ACF Sensor PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 ACF Sensor PDU.
  */
-int Avtp_Sensor_SetField(Avtp_Sensor_t* sensor_pdu, Avtp_SensorFields_t field, uint64_t value);
+void Avtp_Sensor_SetField(Avtp_Sensor_t* pdu, Avtp_SensorFields_t field, uint64_t value);
+
+void Avtp_Sensor_SetAcfMsgType(Avtp_Sensor_t* pdu, uint8_t value);
+void Avtp_Sensor_SetAcfMsgLength(Avtp_Sensor_t* pdu, uint16_t value);
+void Avtp_Sensor_SetMtv(Avtp_Sensor_t* pdu, uint8_t value);
+void Avtp_Sensor_SetNumSensor(Avtp_Sensor_t* pdu, uint8_t value);
+void Avtp_Sensor_SetSz(Avtp_Sensor_t* pdu, uint8_t value);
+void Avtp_Sensor_SetSensorGroup(Avtp_Sensor_t* pdu, uint8_t value);
+void Avtp_Sensor_SetMessageTimestamp(Avtp_Sensor_t* pdu, uint64_t value);

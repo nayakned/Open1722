@@ -30,10 +30,14 @@
 #include <errno.h>
 #include <string.h>
 
-#include "avtp/acf/Common.h"
 #include "avtp/acf/Sensor.h"
 #include "avtp/Utils.h" 
 #include "avtp/Defines.h"
+
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_SensorFieldDesc, AVTP_SENSOR_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_SensorFieldDesc, AVTP_SENSOR_FIELD_MAX, (uint8_t*)pdu, field, value))
 
 /**
  * This table maps all IEEE 1722 ACF Sensor header fields to a descriptor.
@@ -52,24 +56,90 @@ static const Avtp_FieldDescriptor_t Avtp_SensorFieldDesc[AVTP_SENSOR_FIELD_MAX] 
 };
 
 
-int Avtp_Sensor_Init(Avtp_Sensor_t* sensor_pdu)
+void Avtp_Sensor_Init(Avtp_Sensor_t* pdu)
 {
-    if(!sensor_pdu) {
-        return -EINVAL;
+    if(pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Sensor_t));  
+        Avtp_Sensor_SetField(pdu, AVTP_SENSOR_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_SENSOR);
     }
-
-    memset(sensor_pdu, 0, sizeof(Avtp_Sensor_t));  
-    Avtp_Sensor_SetField(sensor_pdu, AVTP_SENSOR_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_SENSOR);
-    
-    return 0;
 }
 
-int Avtp_Sensor_GetField(Avtp_Sensor_t* sensor_pdu, Avtp_SensorFields_t field, uint64_t* value)
+uint64_t Avtp_Sensor_GetField(Avtp_Sensor_t* pdu, Avtp_SensorFields_t field)
 {
-    return Avtp_GetField(Avtp_SensorFieldDesc, AVTP_SENSOR_FIELD_MAX, (uint8_t *)sensor_pdu, (uint8_t)field, value);
+    return GET_FIELD(field);
 }
 
-int Avtp_Sensor_SetField(Avtp_Sensor_t* sensor_pdu, Avtp_SensorFields_t field, uint64_t value)
+uint8_t Avtp_Sensor_GetAcfMsgType(Avtp_Sensor_t* pdu)
 {
-    return Avtp_SetField(Avtp_SensorFieldDesc, AVTP_SENSOR_FIELD_MAX, (uint8_t *)sensor_pdu, (uint8_t)field, value);
+    return GET_FIELD(AVTP_SENSOR_FIELD_ACF_MSG_TYPE);
+}
+
+uint16_t Avtp_Sensor_GetAcfMsgLength(Avtp_Sensor_t* pdu)
+{
+    return GET_FIELD(AVTP_SENSOR_FIELD_ACF_MSG_LENGTH);
+}
+
+uint8_t Avtp_Sensor_GetMtv(Avtp_Sensor_t* pdu)
+{
+    return GET_FIELD(AVTP_SENSOR_FIELD_MTV);
+}
+
+uint8_t Avtp_Sensor_GetNumSensor(Avtp_Sensor_t* pdu)
+{
+    return GET_FIELD(AVTP_SENSOR_FIELD_NUM_SENSOR);
+}
+
+uint8_t Avtp_Sensor_GetSz(Avtp_Sensor_t* pdu)
+{
+    return GET_FIELD(AVTP_SENSOR_FIELD_SZ);
+}
+
+uint8_t Avtp_Sensor_GetSensorGroup(Avtp_Sensor_t* pdu)
+{
+    return GET_FIELD(AVTP_SENSOR_FIELD_SENSOR_GROUP);
+}
+
+uint64_t Avtp_Sensor_GetMessageTimestamp(Avtp_Sensor_t* pdu)
+{
+    return GET_FIELD(AVTP_SENSOR_FIELD_MESSAGE_TIMESTAMP);
+}
+
+void Avtp_Sensor_SetField(Avtp_Sensor_t* pdu, Avtp_SensorFields_t field, uint64_t value)
+{
+    Avtp_SetField(Avtp_SensorFieldDesc, AVTP_SENSOR_FIELD_MAX, (uint8_t *)pdu, (uint8_t)field, value);
+}
+
+void Avtp_Sensor_SetAcfMsgType(Avtp_Sensor_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_SENSOR_FIELD_ACF_MSG_TYPE, value);
+}
+
+void Avtp_Sensor_SetAcfMsgLength(Avtp_Sensor_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_SENSOR_FIELD_ACF_MSG_LENGTH, value);
+}
+
+void Avtp_Sensor_SetMtv(Avtp_Sensor_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_SENSOR_FIELD_MTV, value);
+}
+
+void Avtp_Sensor_SetNumSensor(Avtp_Sensor_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_SENSOR_FIELD_NUM_SENSOR, value);
+}
+
+void Avtp_Sensor_SetSz(Avtp_Sensor_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_SENSOR_FIELD_SZ, value);
+}
+
+void Avtp_Sensor_SetSensorGroup(Avtp_Sensor_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_SENSOR_FIELD_SENSOR_GROUP, value);
+}
+
+void Avtp_Sensor_SetMessageTimestamp(Avtp_Sensor_t* pdu, uint64_t value)
+{
+    SET_FIELD(AVTP_SENSOR_FIELD_MESSAGE_TIMESTAMP, value);
 }
