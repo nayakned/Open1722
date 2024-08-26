@@ -63,25 +63,33 @@ typedef enum  {
 /**
  * Initializes an ACF GPC PDU header as specified in the IEEE 1722 Specification.
  *
- * @param gpc_pdu Pointer to the first bit of a 1722 ACF GPC PDU.
+ * @param pdu Pointer to the first bit of a 1722 ACF GPC PDU.
  */
-void Avtp_Gpc_Init(Avtp_Gpc_t* gpc_pdu);
+void Avtp_Gpc_Init(Avtp_Gpc_t* pdu);
 
 /**
  * Returns the value of an an ACF GPC PDU field as specified in the IEEE 1722 Specification.
  *
- * @param gpc_pdu Pointer to the first bit of an 1722 ACF GPC PDU.
+ * @param pdu Pointer to the first bit of an 1722 ACF GPC PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
  * @returns The value of the GPC field.
  */
-uint64_t Avtp_Gpc_GetField(Avtp_Gpc_t* gpc_pdu, Avtp_GpcFields_t field);
+uint64_t Avtp_Gpc_GetField(Avtp_Gpc_t* pdu, Avtp_GpcFields_t field);
+
+uint8_t Avtp_Gpc_GetAcfMsgType(Avtp_Gpc_t* pdu);
+uint16_t Avtp_Gpc_GetAcfMsgLength(Avtp_Gpc_t* pdu);
+uint64_t Avtp_Gpc_GetGpcMsgId(Avtp_Gpc_t* pdu);
 
 /**
  * Sets the value of an an ACF GPC PDU field as specified in the IEEE 1722 Specification.
  *
- * @param gpc_pdu Pointer to the first bit of an 1722 ACF GPC PDU.
+ * @param pdu Pointer to the first bit of an 1722 ACF GPC PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
  */
-void Avtp_Gpc_SetField(Avtp_Gpc_t* gpc_pdu, Avtp_GpcFields_t field, uint64_t value);
+void Avtp_Gpc_SetField(Avtp_Gpc_t* pdu, Avtp_GpcFields_t field, uint64_t value);
+
+void Avtp_Gpc_SetAcfMsgType(Avtp_Gpc_t* pdu, uint8_t value);
+void Avtp_Gpc_SetAcfMsgLength(Avtp_Gpc_t* pdu, uint16_t value);
+void Avtp_Gpc_SetGpcMsgId(Avtp_Gpc_t* pdu, uint64_t value);

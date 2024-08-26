@@ -34,6 +34,11 @@
 #include "avtp/Utils.h" 
 #include "avtp/Defines.h"
 
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_GpcFieldDesc, AVTP_GPC_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_GpcFieldDesc, AVTP_GPC_FIELD_MAX, (uint8_t*)pdu, field, value))
+
 /**
  * This table maps all IEEE 1722 ACF GPC header fields to a descriptor.
  */
@@ -46,21 +51,50 @@ static const Avtp_FieldDescriptor_t Avtp_GpcFieldDesc[AVTP_GPC_FIELD_MAX] =
     [AVTP_GPC_FIELD_GPC_MSG_ID]         = { .quadlet = 0, .offset =  16, .bits = 48 },
 };
 
-void Avtp_Gpc_Init(Avtp_Gpc_t* gpc_pdu)
+void Avtp_Gpc_Init(Avtp_Gpc_t* pdu)
 {
-    if(gpc_pdu != NULL) {
-        memset(gpc_pdu, 0, sizeof(Avtp_Gpc_t));  
-        Avtp_Gpc_SetField(gpc_pdu, AVTP_GPC_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_GPC);
+    if(pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Gpc_t));  
+        Avtp_Gpc_SetField(pdu, AVTP_GPC_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_GPC);
     }
 }
 
-uint64_t Avtp_Gpc_GetField(Avtp_Gpc_t* gpc_pdu, Avtp_GpcFields_t field)
+uint64_t Avtp_Gpc_GetField(Avtp_Gpc_t* pdu, Avtp_GpcFields_t field)
 {    
-    return Avtp_GetField(Avtp_GpcFieldDesc, AVTP_GPC_FIELD_MAX, (uint8_t *) gpc_pdu, (uint8_t) field);
+    return GET_FIELD(field);
 }
 
-void Avtp_Gpc_SetField(Avtp_Gpc_t* gpc_pdu, Avtp_GpcFields_t field,
-        uint64_t value)
+uint8_t Avtp_Gpc_GetAcfMsgType(Avtp_Gpc_t* pdu)
+{
+    return GET_FIELD(AVTP_GPC_FIELD_ACF_MSG_TYPE);
+}
+
+uint16_t Avtp_Gpc_GetAcfMsgLength(Avtp_Gpc_t* pdu)
+{
+    return GET_FIELD(AVTP_GPC_FIELD_ACF_MSG_LENGTH);
+}
+
+uint64_t Avtp_Gpc_GetGpcMsgId(Avtp_Gpc_t* pdu)
+{
+    return GET_FIELD(AVTP_GPC_FIELD_GPC_MSG_ID);
+}
+
+void Avtp_Gpc_SetField(Avtp_Gpc_t* pdu, Avtp_GpcFields_t field, uint64_t value)
 {    
-    Avtp_SetField(Avtp_GpcFieldDesc, AVTP_GPC_FIELD_MAX, (uint8_t *) gpc_pdu, (uint8_t) field, value);
+    SET_FIELD(field, value);
+}
+
+void Avtp_Gpc_SetAcfMsgType(Avtp_Gpc_t* pdu, uint8_t value)
+{    
+    SET_FIELD(AVTP_GPC_FIELD_ACF_MSG_TYPE, value);
+}
+
+void Avtp_Gpc_SetAcfMsgLength(Avtp_Gpc_t* pdu, uint16_t value)
+{    
+    SET_FIELD(AVTP_GPC_FIELD_ACF_MSG_LENGTH, value);
+}
+
+void Avtp_Gpc_SetGpcMsgId(Avtp_Gpc_t* pdu, uint64_t value)
+{    
+    SET_FIELD(AVTP_GPC_FIELD_GPC_MSG_ID, value);
 }
