@@ -38,7 +38,7 @@
 #include <stdint.h>
 
 #include "avtp/Defines.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 
 #define AVTP_SENSOR_HEADER_LEN         (1 * AVTP_QUADLET_SIZE)
 
@@ -65,18 +65,23 @@ typedef enum {
  *
  * @param pdu Pointer to the first bit of a 1722 ACF Abbreviated Sensor PDU.
  */
-int Avtp_SensorBrief_Init(Avtp_SensorBrief_t* sensor_pdu);
+void Avtp_SensorBrief_Init(Avtp_SensorBrief_t* pdu);
 
 /**
  * Returns the value of an an ACF Abbreviated Sensor PDU field as specified in the IEEE 1722 Specification.
  *
  * @param pdu Pointer to the first bit of an 1722 ACF Abbreviated Sensor PDU.
  * @param field Specifies the position of the data field to be read
- * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 ACF Abbreviated Sensor PDU.
+ * @returns Field of the PDU.
  */
-int Avtp_SensorBrief_GetField(Avtp_SensorBrief_t* sensor_pdu, Avtp_SensorBriefFields_t field, uint64_t* value);
+uint64_t Avtp_SensorBrief_GetField(Avtp_SensorBrief_t* pdu, Avtp_SensorBriefFields_t field);
+
+uint8_t Avtp_SensorBrief_GetAcfMsgType(Avtp_SensorBrief_t* pdu);
+uint16_t Avtp_SensorBrief_GetAcfMsgLength(Avtp_SensorBrief_t* pdu);
+uint8_t Avtp_SensorBrief_GetMtv(Avtp_SensorBrief_t* pdu);
+uint8_t Avtp_SensorBrief_GetNumSensor(Avtp_SensorBrief_t* pdu);
+uint8_t Avtp_SensorBrief_GetSz(Avtp_SensorBrief_t* pdu);
+uint8_t Avtp_SensorBrief_GetSensorGroup(Avtp_SensorBrief_t* pdu);
 
 /**
  * Sets the value of an an ACF Abbreviated Sensor PDU field as specified in the IEEE 1722 Specification.
@@ -84,7 +89,12 @@ int Avtp_SensorBrief_GetField(Avtp_SensorBrief_t* sensor_pdu, Avtp_SensorBriefFi
  * @param pdu Pointer to the first bit of an 1722 ACF Abbreviated Sensor PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 ACF Abbreviated Sensor PDU.
  */
-int Avtp_SensorBrief_SetField(Avtp_SensorBrief_t* sensor_pdu, Avtp_SensorBriefFields_t field, uint64_t value);
+void Avtp_SensorBrief_SetField(Avtp_SensorBrief_t* pdu, Avtp_SensorBriefFields_t field, uint64_t value);
+
+void Avtp_SensorBrief_SetAcfMsgType(Avtp_SensorBrief_t* pdu, uint8_t value);
+void Avtp_SensorBrief_SetAcfMsgLength(Avtp_SensorBrief_t* pdu, uint16_t value);
+void Avtp_SensorBrief_SetMtv(Avtp_SensorBrief_t* pdu, uint8_t value);
+void Avtp_SensorBrief_SetNumSensor(Avtp_SensorBrief_t* pdu, uint8_t value);
+void Avtp_SensorBrief_SetSz(Avtp_SensorBrief_t* pdu, uint8_t value);
+void Avtp_SensorBrief_SetSensorGroup(Avtp_SensorBrief_t* pdu, uint8_t value);
