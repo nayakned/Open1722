@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 #include "avtp/Defines.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 
 /** Length of ACF Most header. */
 #define AVTP_MOST_HEADER_LEN (4 * AVTP_QUADLET_SIZE)
@@ -74,17 +74,28 @@ typedef enum  {
  *
  * @param pdu Pointer to the first bit of a 1722 ACF Most PDU.
  */
-int Avtp_Most_Init(Avtp_Most_t* pdu);
+void Avtp_Most_Init(Avtp_Most_t* pdu);
 
 /**
  * Returns the value of an ACF Most PDU field.
  *
  * @param pdu Pointer to the first bit of an 1722 ACF Most PDU.
  * @param field Data field to be read
- * @param value Pointer to location to store the value.
- * @returns Returns 0 if the data field was successfully read.
+ * @returns Value of the PDU field.
  */
-int Avtp_Most_GetField(Avtp_Most_t* pdu, Avtp_MostFields_t field, uint64_t* value);
+uint64_t Avtp_Most_GetField(Avtp_Most_t* pdu, Avtp_MostFields_t field);
+
+uint8_t Avtp_Most_GetAcfMsgType(Avtp_Most_t* pdu);
+uint16_t Avtp_Most_GetAcfMsgLength(Avtp_Most_t* pdu);
+uint8_t Avtp_Most_GetPad(Avtp_Most_t* pdu);
+uint8_t Avtp_Most_GetMtv(Avtp_Most_t* pdu);
+uint8_t Avtp_Most_GetMostNetId(Avtp_Most_t* pdu);
+uint64_t Avtp_Most_GetMessageTimestamp(Avtp_Most_t* pdu);
+uint16_t Avtp_Most_GetDeviceId(Avtp_Most_t* pdu);
+uint8_t Avtp_Most_GetFblockId(Avtp_Most_t* pdu);
+uint8_t Avtp_Most_GetInstId(Avtp_Most_t* pdu);
+uint16_t Avtp_Most_GetFuncId(Avtp_Most_t* pdu);
+uint8_t Avtp_Most_GetOpType(Avtp_Most_t* pdu);
 
 /**
  * Sets the value of an ACF Most PDU field.
@@ -92,6 +103,17 @@ int Avtp_Most_GetField(Avtp_Most_t* pdu, Avtp_MostFields_t field, uint64_t* valu
  * @param pdu Pointer to the first bit of an 1722 ACF Most PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns Returns 0 if the data field was successfully set.
  */
-int Avtp_Most_SetField(Avtp_Most_t* pdu, Avtp_MostFields_t field, uint64_t value);
+void Avtp_Most_SetField(Avtp_Most_t* pdu, Avtp_MostFields_t field, uint64_t value);
+
+void Avtp_Most_SetAcfMsgType(Avtp_Most_t* pdu, uint8_t value);
+void Avtp_Most_SetAcfMsgLength(Avtp_Most_t* pdu, uint16_t value);
+void Avtp_Most_SetPad(Avtp_Most_t* pdu, uint8_t value);
+void Avtp_Most_SetMtv(Avtp_Most_t* pdu, uint8_t value);
+void Avtp_Most_SetMostNetId(Avtp_Most_t* pdu, uint8_t value);
+void Avtp_Most_SetMessageTimestamp(Avtp_Most_t* pdu, uint64_t value);
+void Avtp_Most_SetDeviceId(Avtp_Most_t* pdu, uint16_t value);
+void Avtp_Most_SetFblockId(Avtp_Most_t* pdu, uint8_t value);
+void Avtp_Most_SetInstId(Avtp_Most_t* pdu, uint8_t value);
+void Avtp_Most_SetFuncId(Avtp_Most_t* pdu, uint16_t value);
+void Avtp_Most_SetOpType(Avtp_Most_t* pdu, uint8_t value);

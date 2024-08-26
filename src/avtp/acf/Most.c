@@ -31,7 +31,12 @@
 #include <string.h>
 
 #include "avtp/acf/Most.h"
-#include "avtp/Utils.h" 
+#include "avtp/Utils.h"
+
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_MostFieldDesc, AVTP_MOST_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_MostFieldDesc, AVTP_MOST_FIELD_MAX, (uint8_t*)pdu, field, value))
 
 /**
  * This table describes all the offsets of the ACF Most header fields.
@@ -55,24 +60,130 @@ static const Avtp_FieldDescriptor_t Avtp_MostFieldDesc[AVTP_MOST_FIELD_MAX] =
     [AVTP_MOST_FIELD_RESERVED_2]        = { .quadlet = 4, .offset = 16, .bits = 16 },
 };
 
-int Avtp_Most_Init(Avtp_Most_t* pdu)
+void Avtp_Most_Init(Avtp_Most_t* pdu)
 {
-    if(!pdu) {
-        return -EINVAL;
+    if(pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Most_t));  
+        Avtp_Most_SetField(pdu, AVTP_MOST_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_MOST);
     }
-
-    memset(pdu, 0, sizeof(Avtp_Most_t));  
-    Avtp_Most_SetField(pdu, AVTP_MOST_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_MOST);
-    
-    return 0;
 }
 
-int Avtp_Most_GetField(Avtp_Most_t* pdu, Avtp_MostFields_t field, uint64_t* value)
+uint64_t Avtp_Most_GetField(Avtp_Most_t* pdu, Avtp_MostFields_t field)
 {
-    return Avtp_GetField(Avtp_MostFieldDesc, AVTP_MOST_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field, value);
+    return GET_FIELD(field);
 }
 
-int Avtp_Most_SetField(Avtp_Most_t* pdu, Avtp_MostFields_t field, uint64_t value)
+uint8_t Avtp_Most_GetAcfMsgType(Avtp_Most_t* pdu)
 {
-    return Avtp_SetField(Avtp_MostFieldDesc, AVTP_MOST_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field, value);
+    return GET_FIELD(AVTP_MOST_FIELD_ACF_MSG_TYPE);
+}
+
+uint16_t Avtp_Most_GetAcfMsgLength(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_ACF_MSG_LENGTH);
+}
+
+uint8_t Avtp_Most_GetPad(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_PAD);
+}
+
+uint8_t Avtp_Most_GetMtv(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_MTV);
+}
+
+uint8_t Avtp_Most_GetMostNetId(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_MOST_NET_ID);
+}
+
+uint64_t Avtp_Most_GetMessageTimestamp(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_MESSAGE_TIMESTAMP);
+}
+
+uint16_t Avtp_Most_GetDeviceId(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_DEVICE_ID);
+}
+
+uint8_t Avtp_Most_GetFblockId(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_FBLOCK_ID);
+}
+
+uint8_t Avtp_Most_GetInstId(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_INST_ID);
+}
+
+uint16_t Avtp_Most_GetFuncId(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_FUNC_ID);
+}
+
+uint8_t Avtp_Most_GetOpType(Avtp_Most_t* pdu)
+{
+    return GET_FIELD(AVTP_MOST_FIELD_OP_TYPE);
+}
+
+void Avtp_Most_SetField(Avtp_Most_t* pdu, Avtp_MostFields_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_Most_SetAcfMsgType(Avtp_Most_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_ACF_MSG_TYPE, value);
+}
+
+void Avtp_Most_SetAcfMsgLength(Avtp_Most_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_ACF_MSG_LENGTH, value);
+}
+
+void Avtp_Most_SetPad(Avtp_Most_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_PAD, value);
+}
+
+void Avtp_Most_SetMtv(Avtp_Most_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_MTV, value);
+}
+
+void Avtp_Most_SetMostNetId(Avtp_Most_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_MOST_NET_ID, value);
+}
+
+void Avtp_Most_SetMessageTimestamp(Avtp_Most_t* pdu, uint64_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_MESSAGE_TIMESTAMP, value);
+}
+
+void Avtp_Most_SetDeviceId(Avtp_Most_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_DEVICE_ID, value);
+}
+
+void Avtp_Most_SetFblockId(Avtp_Most_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_FBLOCK_ID, value);
+}
+
+void Avtp_Most_SetInstId(Avtp_Most_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_INST_ID, value);
+}
+
+void Avtp_Most_SetFuncId(Avtp_Most_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_FUNC_ID, value);
+}
+
+void Avtp_Most_SetOpType(Avtp_Most_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MOST_FIELD_OP_TYPE, value);
 }
