@@ -38,7 +38,7 @@
 #include <stdint.h>
 
 #include "avtp/Defines.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 
 #define AVTP_CAN_HEADER_LEN         (4 * AVTP_QUADLET_SIZE)
 

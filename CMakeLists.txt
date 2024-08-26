@@ -21,7 +21,7 @@ add_library(open1722 SHARED
     "src/avtp/acf/CanBrief.c"
     "src/avtp/acf/Lin.c"
     "src/avtp/acf/Most.c"
-    "src/avtp/acf/Common.c"
+    "src/avtp/acf/AcfCommon.c"
     "src/avtp/acf/Ntscf.c"
     "src/avtp/acf/Sensor.c"
     "src/avtp/acf/SensorBrief.c"

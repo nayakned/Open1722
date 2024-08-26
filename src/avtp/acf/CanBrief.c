@@ -30,7 +30,6 @@
 #include <errno.h>
 #include <string.h>
 
-#include "avtp/acf/Common.h"
 #include "avtp/acf/CanBrief.h"
 #include "avtp/Utils.h" 
 #include "avtp/Defines.h"

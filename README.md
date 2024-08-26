@@ -76,3 +76,62 @@ To execute the IEEE 1722 CAN Talker application:
 ```
 $ ./bin/acf-can-talker
 ```
+
+### De/Serialization IEEE 1722 PDUs
+
+Here's a small example how the Open1722 library can be used to build and parse IEEE 1722 PDUs. First we define a C struct for a custom IEEE 1722 packet that can be used to transport a CAN, a LIN and a Flexray message. The frame begins with a Time-synchronous Control Format (TSCF) header. After the TSCF header a list of AVTP Control Format (ACF) messages follows. The first ACF message is a ACF CAN message which consists of ACF CAN header as well as a payload section to carry a 2Byte CAN frame. Similar than with the CAN message another ACF messages for LIN is added.
+
+``` C
+// my_1722_pdu.h
+
+#define CAN_PAYLOAD_LEN 2
+#define LIN_PAYLOAD_LEN 3
+
+typedef struct {
+    // IEEE 1722 UDP encapsulation header (optional)
+    Avtp_Udp_t udp;
+    // IEEE 1722 TSCF header
+    Avtp_Tscf_t tscf;
+    // IEEE 1722 ACF message #1
+    Avtp_Can_t can;
+    uint8_t canPayload[CAN_PAYLOAD_LEN];
+    // IEEE 1722 ACF message #2
+    Avtp_Lin_t lin;
+    uint8_t linPayload[LIN_PAYLOAD_LEN];
+} My1722Pdu_t;
+```
+
+In the next step we're going to c
+
+``` C
+// talker.h
+
+#include "my_1722_pdu.h"
+
+int main()
+{
+    My1722Pdu_t pdu;
+
+    // Init UDP encapsulation header
+    Avtp_Udp_Init(&pdu.udp);
+
+    // Init TSCF header
+    Avtp_Tscf_Init(&pdu.tscf);
+    Avtp_Tscf_SetVersion(&pdu.tscf, 0);
+    Avtp_Tscf_SetSequenceNum(&pdu.tscf, 12345);
+    Avtp_Tscf_SetStreamId(&pdu.tscf, 0xAABBCCDDEEFF);
+    Avtp_Tscf_SetTv(&pdu.tscf, 1);
+    Avtp_Tscf_SetAvtpTimestamp(&pdu.tscf, 0x11223344);
+
+    // Init CAN ACF message
+    Avtp_Can_Init(&pdu.can);
+    Avtp_Can_SetCanBusId(&pdu.can, 4);
+    uint8_t canFrame[CAN_PAYLOAD_LEN] = {0x11, 0x22};
+
+    // Init LIN ACF message
+    Avtp_Lin_Init(&pdu.lin);
+    uint8_t linFrame[LIN_PAYLOAD_LEN] = {0x11, 0x22, 0x33};
+
+    // Send packet to network
+}
+```

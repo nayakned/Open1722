@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 #include "avtp/Defines.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 
 /** Length of ACF Lin header. */
 #define AVTP_LIN_HEADER_LEN (3 * AVTP_QUADLET_SIZE)
