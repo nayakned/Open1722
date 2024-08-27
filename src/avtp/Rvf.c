@@ -368,6 +368,7 @@ int avtp_rvf_pdu_set(void* pdu, Avtp_RvfField_t field, uint64_t val)
         return -EINVAL;
     } else {
         Avtp_Rvf_SetField((Avtp_Rvf_t*)pdu, field, val);
+        return 0;
     }
 }
 
