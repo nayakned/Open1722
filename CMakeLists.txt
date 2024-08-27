@@ -13,7 +13,7 @@ add_library(open1722 SHARED
     "src/avtp/Rvf.c"
     "src/avtp/Udp.c"
     "src/avtp/Utils.c"
-    "src/avtp/aaf/AafCommonStream.c"
+    "src/avtp/aaf/Aaf.c"
     "src/avtp/aaf/PcmStream.c"
     "src/avtp/acf/FlexRay.c"
     "src/avtp/acf/Gpc.c"
