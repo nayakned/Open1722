@@ -29,6 +29,7 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "avtp/Utils.h"
 #include "avtp/Defines.h"

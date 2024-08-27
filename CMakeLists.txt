@@ -14,7 +14,7 @@ add_library(open1722 SHARED
     "src/avtp/Udp.c"
     "src/avtp/Utils.c"
     "src/avtp/aaf/Aaf.c"
-    "src/avtp/aaf/PcmStream.c"
+    "src/avtp/aaf/Pcm.c"
     "src/avtp/acf/FlexRay.c"
     "src/avtp/acf/Gpc.c"
     "src/avtp/acf/Can.c"
