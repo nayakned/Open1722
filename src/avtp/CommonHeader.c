@@ -97,7 +97,7 @@ void Avtp_CommonHeader_SetVersion(Avtp_CommonHeader_t* pdu, uint8_t value)
 int avtp_pdu_get(const struct avtp_common_pdu *pdu, Avtp_CommonHeaderField_t field,
                                 uint32_t *val)
 {
-    if (pdu == NULL || val == NULL) {
+    if (pdu == NULL || val == NULL || field >= AVTP_COMMON_HEADER_FIELD_MAX) {
         return -EINVAL;
     } else {
         uint64_t temp = Avtp_CommonHeader_GetField((Avtp_CommonHeader_t*) pdu, field);
@@ -109,7 +109,7 @@ int avtp_pdu_get(const struct avtp_common_pdu *pdu, Avtp_CommonHeaderField_t fie
 int avtp_pdu_set(struct avtp_common_pdu *pdu, Avtp_CommonHeaderField_t field,
                                 uint32_t value)
 {
-    if (pdu == NULL) {
+    if (pdu == NULL || field >= AVTP_COMMON_HEADER_FIELD_MAX) {
         return -EINVAL;
     } else {
         Avtp_CommonHeader_SetField((Avtp_CommonHeader_t*)pdu, field, value);

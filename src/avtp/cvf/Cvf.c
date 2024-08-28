@@ -68,8 +68,8 @@ void Avtp_Cvf_Init(Avtp_Cvf_t* pdu)
     if (pdu != NULL) {
         memset(pdu, 0, sizeof(Avtp_Cvf_t));
         Avtp_Cvf_SetField(pdu, AVTP_CVF_FIELD_SUBTYPE, AVTP_SUBTYPE_CVF);
-        Avtp_Cvf_SetField(pdu, AVTP_CVF_FIELD_SV, 1);
         Avtp_Cvf_SetField(pdu, AVTP_CVF_FIELD_FORMAT, AVTP_CVF_FORMAT_RFC);
+        Avtp_Cvf_SetSv(pdu, 1);
     }
 }
 
@@ -239,7 +239,7 @@ void Avtp_Cvf_SetEvt(Avtp_Cvf_t* pdu, uint8_t value)
 
 int avtp_cvf_pdu_get(void* pdu, Avtp_CvfField_t field, uint64_t *val)
 {
-    if (pdu == NULL || val == NULL) {
+    if (pdu == NULL || val == NULL || field >= AVTP_CVF_FIELD_MAX) {
         return -EINVAL;
     } else {
         *val = Avtp_Cvf_GetField((Avtp_Cvf_t*)pdu, field);
@@ -249,7 +249,7 @@ int avtp_cvf_pdu_get(void* pdu, Avtp_CvfField_t field, uint64_t *val)
 
 int avtp_cvf_pdu_set(void* pdu, Avtp_CvfField_t field, uint64_t val)
 {
-    if (pdu == NULL) {
+    if (pdu == NULL || field >= AVTP_CVF_FIELD_MAX) {
         return -EINVAL;
     } else {
         Avtp_Cvf_SetField((Avtp_Cvf_t*)pdu, field, val);
@@ -261,15 +261,9 @@ int avtp_cvf_pdu_init(void* pdu, uint8_t format_subtype)
 {
     if (pdu == NULL) {
         return -EINVAL;
+    } else {
+        Avtp_Cvf_Init(pdu);
+        Avtp_Cvf_SetFormatSubtype(pdu, format_subtype);
+        return 0;
     }
-
-    int ret;
-    ret = avtp_cvf_pdu_set(pdu, AVTP_CVF_FIELD_FORMAT_SUBTYPE, format_subtype);
-    if (ret != 0) return ret;
-    ret = avtp_cvf_pdu_set(pdu, AVTP_CVF_FIELD_SV, 1);
-    if (ret != 0) return ret;
-    ret = avtp_cvf_pdu_set(pdu, AVTP_CVF_FIELD_FORMAT, AVTP_CVF_FORMAT_RFC);
-    if (ret != 0) return ret;
-
-    return 0;
 }

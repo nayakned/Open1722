@@ -76,7 +76,7 @@ typedef enum Avtp_CrfField {
     AVTP_CRF_FIELD_MAX,
 }Avtp_CrfField_t;
 
-int Avtp_Crf_Init(Avtp_Crf_t* pdu);
+void Avtp_Crf_Init(Avtp_Crf_t* pdu);
 
 uint64_t Avtp_Crf_GetField(Avtp_Crf_t* pdu, Avtp_CrfField_t field);
 

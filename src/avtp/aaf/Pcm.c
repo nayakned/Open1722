@@ -243,10 +243,9 @@ void Avtp_Pcm_SetEvt(Avtp_Pcm_t* pdu, uint8_t value)
  * Legacy API (deprecated)
  *****************************************************************************/
 
-int avtp_aaf_pdu_get(void *pdu,
-                Avtp_PcmFields_t field, uint64_t *val)
+int avtp_aaf_pdu_get(void *pdu, Avtp_PcmFields_t field, uint64_t *val)
 {
-    if (pdu == NULL || val == NULL) {
+    if (pdu == NULL || val == NULL || field >= AVTP_PCM_FIELD_MAX) {
         return -EINVAL;
     } else {
         *val = Avtp_Pcm_GetField((Avtp_Pcm_t*)pdu, field);
@@ -257,7 +256,7 @@ int avtp_aaf_pdu_get(void *pdu,
 int avtp_aaf_pdu_set(void *pdu, Avtp_PcmFields_t field,
                                 uint64_t val)
 {
-    if (pdu == NULL) {
+    if (pdu == NULL || field >= AVTP_PCM_FIELD_MAX) {
         return -EINVAL;
     } else {
         Avtp_Pcm_SetField((Avtp_Pcm_t*)pdu, field, val);

@@ -62,18 +62,13 @@ static const Avtp_FieldDescriptor_t Avtp_CrfFieldDescriptors[AVTP_CRF_FIELD_MAX]
     [AVTP_CRF_FIELD_TIMESTAMP_INTERVAL]     = { .quadlet = 4, .offset = 16, .bits = 16 },
 };
 
-int Avtp_Crf_Init(Avtp_Crf_t* pdu) {
-
-    if (pdu == NULL) {
-        return -EINVAL;
+void Avtp_Crf_Init(Avtp_Crf_t* pdu)
+{
+    if (pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Crf_t));
+        Avtp_Crf_SetField(pdu, AVTP_CRF_FIELD_SUBTYPE, AVTP_SUBTYPE_CRF);
+        Avtp_Crf_SetField(pdu, AVTP_CRF_FIELD_SV, 1);
     }
-
-    memset(pdu, 0, sizeof(Avtp_Crf_t));
-    Avtp_Crf_SetField(pdu, AVTP_CRF_FIELD_SUBTYPE, AVTP_SUBTYPE_CRF);
-    Avtp_Crf_SetField(pdu, AVTP_CRF_FIELD_SV, 1);
-
-    return 0;
-
 }
 
 uint64_t Avtp_Crf_GetField(Avtp_Crf_t* pdu, Avtp_CrfField_t field)
@@ -222,18 +217,17 @@ void Avtp_Crf_SetTimestampInterval(Avtp_Crf_t* pdu, uint16_t value)
 
 int avtp_crf_pdu_get(const void *pdu, Avtp_CrfField_t field, uint64_t *val)
 {
-    if (pdu == NULL || val == NULL) {
+    if (pdu == NULL || val == NULL || field >= AVTP_CRF_FIELD_MAX) {
         return -EINVAL;
     } else {
-        uint64_t temp = Avtp_Crf_GetField((Avtp_Crf_t*)pdu, field);
-        *val = (uint32_t)temp;
+        *val = Avtp_Crf_GetField((Avtp_Crf_t*)pdu, field);
         return 0;
     }
 }
 
 int avtp_crf_pdu_set(void *pdu, Avtp_CrfField_t field, uint64_t val)
 {
-    if (pdu == NULL) {
+    if (pdu == NULL || field >= AVTP_CRF_FIELD_MAX) {
         return -EINVAL;
     } else {
         Avtp_Crf_SetField((Avtp_Crf_t*)pdu, field, val);
@@ -243,5 +237,10 @@ int avtp_crf_pdu_set(void *pdu, Avtp_CrfField_t field, uint64_t val)
 
 int avtp_crf_pdu_init(void *pdu)
 {
-    return Avtp_Crf_Init((Avtp_Crf_t*)pdu);
+    if (pdu == NULL) {
+        return -EINVAL;
+    } else {
+        Avtp_Crf_Init((Avtp_Crf_t*)pdu);
+        return 0;
+    }
 }

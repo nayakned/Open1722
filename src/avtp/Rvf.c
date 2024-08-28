@@ -355,16 +355,17 @@ void Avtp_Rvf_SetLineNumber(Avtp_Rvf_t* pdu, uint16_t value)
 
 int avtp_rvf_pdu_get(const void* pdu, Avtp_RvfField_t field, uint64_t* val)
 {
-    if (pdu == NULL || val == NULL) {
+    if (pdu == NULL || val == NULL || field >= AVTP_RVF_FIELD_MAX) {
         return -EINVAL;
     } else {
-        return Avtp_Rvf_GetField((Avtp_Rvf_t*)pdu, field);
+        *val = Avtp_Rvf_GetField((Avtp_Rvf_t*)pdu, field);
+        return 0;
     }
 }
 
 int avtp_rvf_pdu_set(void* pdu, Avtp_RvfField_t field, uint64_t val)
 {
-    if (pdu == NULL) {
+    if (pdu == NULL || field >= AVTP_RVF_FIELD_MAX) {
         return -EINVAL;
     } else {
         Avtp_Rvf_SetField((Avtp_Rvf_t*)pdu, field, val);
@@ -378,5 +379,6 @@ int avtp_rvf_pdu_init(void* pdu)
         return -EINVAL;
     } else {
         Avtp_Rvf_Init((Avtp_Rvf_t*)pdu);
+        return 0;
     }
 }

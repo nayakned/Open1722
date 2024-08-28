@@ -61,7 +61,7 @@ static const Avtp_FieldDescriptor_t Avtp_CanBriefFieldDesc[AVTP_CAN_BRIEF_FIELD_
 
 void Avtp_CanBrief_Init(Avtp_CanBrief_t* pdu)
 {
-    if(pdu == NULL) {
+    if(pdu != NULL) {
         memset(pdu, 0, sizeof(Avtp_CanBrief_t));  
         Avtp_CanBrief_SetField(pdu, AVTP_CAN_BRIEF_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_CAN_BRIEF);
     }
