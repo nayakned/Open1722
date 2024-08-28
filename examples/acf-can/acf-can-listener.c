@@ -45,7 +45,7 @@
 #include "avtp/Udp.h"
 #include "avtp/acf/Ntscf.h"
 #include "avtp/acf/Tscf.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 #include "avtp/acf/Can.h"
 #include "avtp/CommonHeader.h"
 #include "acf-can-common.h"
@@ -139,14 +139,13 @@ static error_t parser(int key, char *arg, struct argp_state *state)
 
 static struct argp argp = { options, parser, args_doc, doc };
 
-static int is_valid_acf_packet(uint8_t* acf_pdu) {
-
-    uint64_t val64;
-
-    Avtp_AcfCommon_GetField((Avtp_AcfCommon_t*)acf_pdu, AVTP_ACF_FIELD_ACF_MSG_TYPE, &val64);
-    if (val64 != AVTP_ACF_TYPE_CAN) {
-        fprintf(stderr, "ACF type mismatch: expected %u, got %lu\n",
-                AVTP_ACF_TYPE_CAN, val64);
+static int is_valid_acf_packet(uint8_t* acf_pdu)
+{
+    Avtp_AcfCommon_t *pdu = (Avtp_AcfCommon_t*) acf_pdu;
+    uint8_t acf_msg_type = Avtp_AcfCommon_GetAcfMsgType(pdu);
+    if (acf_msg_type != AVTP_ACF_TYPE_CAN) {
+        fprintf(stderr, "ACF type mismatch: expected %"PRIu8", got %"PRIu8"\n",
+                AVTP_ACF_TYPE_CAN, acf_msg_type);
         return 0;
     }
 
@@ -155,30 +154,28 @@ static int is_valid_acf_packet(uint8_t* acf_pdu) {
 
 void print_can_acf(uint8_t* acf_pdu)
 {
-    uint64_t acf_msg_len, can_bus_id, timestamp, can_identifier, pad;
-
     Avtp_Can_t *pdu = (Avtp_Can_t*) acf_pdu;
-
-    Avtp_Can_GetField(pdu, AVTP_CAN_FIELD_ACF_MSG_LENGTH, &acf_msg_len);
-    Avtp_Can_GetField(pdu, AVTP_CAN_FIELD_CAN_BUS_ID, &can_bus_id);
-    Avtp_Can_GetField(pdu, AVTP_CAN_FIELD_MESSAGE_TIMESTAMP, &timestamp);
-    Avtp_Can_GetField(pdu, AVTP_CAN_FIELD_CAN_IDENTIFIER, &can_identifier);
-    Avtp_Can_GetField(pdu, AVTP_CAN_FIELD_PAD, &pad);
+    uint16_t acf_msg_len = Avtp_Can_GetAcfMsgLength(pdu);
+    uint8_t can_bus_id = Avtp_Can_GetCanBusId(pdu);
+    uint64_t timestamp = Avtp_Can_GetMessageTimestamp(pdu);
+    uint32_t can_identifier = Avtp_Can_GetCanIdentifier(pdu);
+    uint8_t pad = Avtp_Can_GetPad(pdu);
 
     fprintf(stderr, "------------------------------------\n");
-    fprintf(stderr, "Msg Length: %"PRIu64"\n", acf_msg_len);
-    fprintf(stderr, "Can Bus ID: %"PRIu64"\n", can_bus_id);
-    fprintf(stderr, "Timestamp: %#lx\n", timestamp);
-    fprintf(stderr, "Can Identifier: %#lx\n", can_identifier);
-    fprintf(stderr, "Pad: %"PRIu64"\n", pad);
+    fprintf(stderr, "Msg Length: %"PRIu16"\n", acf_msg_len);
+    fprintf(stderr, "Can Bus ID: %"PRIu8"\n", can_bus_id);
+    fprintf(stderr, "Timestamp: %"PRIu64"", timestamp);
+    fprintf(stderr, "Can Identifier: %"PRIu32"\n", can_identifier);
+    fprintf(stderr, "Pad: %"PRIu8"\n", pad);
 }
 
 static int new_packet(int sk_fd, int can_socket) {
 
-    int res;
-    uint64_t msg_length, proc_bytes = 0, msg_proc_bytes = 0;
-    uint64_t can_frame_id, udp_seq_num, subtype, flag;
-    uint16_t payload_length, pdu_length;
+    int res = 0;
+    uint64_t proc_bytes = 0, msg_proc_bytes = 0;
+    uint32_t udp_seq_num;
+    uint16_t msg_length, payload_length, pdu_length;
+    uint8_t subtype;
     uint8_t pdu[MAX_PDU_SIZE], i;
     uint8_t *cf_pdu, *acf_pdu, *udp_pdu, *can_payload;
     frame_t frame;
@@ -186,7 +183,6 @@ static int new_packet(int sk_fd, int can_socket) {
 
     memset(&frame, 0, sizeof(struct canfd_frame));
     res = recv(sk_fd, pdu, MAX_PDU_SIZE, 0);
-
     if (res < 0 || res > MAX_PDU_SIZE) {
         perror("Failed to receive data");
         return -1;
@@ -194,32 +190,27 @@ static int new_packet(int sk_fd, int can_socket) {
 
     if (use_udp) {
         udp_pdu = pdu;
-        Avtp_Udp_GetField((Avtp_Udp_t *)udp_pdu, AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO, &udp_seq_num);
+        udp_seq_num = Avtp_Udp_GetEncapsulationSeqNo((Avtp_Udp_t *)udp_pdu);
         cf_pdu = pdu + AVTP_UDP_HEADER_LEN;
         proc_bytes += AVTP_UDP_HEADER_LEN;
     } else {
         cf_pdu = pdu;
     }
 
-    res = Avtp_CommonHeader_GetField((Avtp_CommonHeader_t*)cf_pdu, AVTP_COMMON_HEADER_FIELD_SUBTYPE, &subtype);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get subtype field: %d\n", res);
-        return -1;
-    }
-
+    subtype = Avtp_CommonHeader_GetSubtype((Avtp_CommonHeader_t*)cf_pdu);
     if (!((subtype == AVTP_SUBTYPE_NTSCF) ||
         (subtype == AVTP_SUBTYPE_TSCF))) {
-        fprintf(stderr, "Subtype mismatch: expected %u or %u, got %"PRIu64". Dropping packet\n",
+        fprintf(stderr, "Subtype mismatch: expected %u or %u, got %"PRIu8". Dropping packet\n",
                 AVTP_SUBTYPE_NTSCF, AVTP_SUBTYPE_TSCF, subtype);
         return -1;
     }
 
-    if(subtype == AVTP_SUBTYPE_TSCF){
+    if (subtype == AVTP_SUBTYPE_TSCF){
         proc_bytes += AVTP_TSCF_HEADER_LEN;
-        Avtp_Tscf_GetField((Avtp_Tscf_t*)cf_pdu, AVTP_TSCF_FIELD_STREAM_DATA_LENGTH, (uint64_t *) &msg_length);
-    }else{
+        msg_length = Avtp_Tscf_GetStreamDataLength((Avtp_Tscf_t*)cf_pdu);
+    } else {
         proc_bytes += AVTP_NTSCF_HEADER_LEN;
-        Avtp_Ntscf_GetField((Avtp_Ntscf_t*)cf_pdu, AVTP_NTSCF_FIELD_NTSCF_DATA_LENGTH, (uint64_t *) &msg_length);
+        msg_length = Avtp_Ntscf_GetNtscfDataLength((Avtp_Ntscf_t*)cf_pdu);
     }
 
     while (msg_proc_bytes < msg_length) {
@@ -231,43 +222,39 @@ static int new_packet(int sk_fd, int can_socket) {
             return -1;
         }
 
-        Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_CAN_IDENTIFIER,
-                                &(can_frame_id));
-        can_id = can_frame_id;
+        can_id = Avtp_Can_GetCanIdentifier((Avtp_Can_t*)acf_pdu);
 
         can_payload = Avtp_Can_GetPayload((Avtp_Can_t*)acf_pdu, &payload_length, &pdu_length);
         msg_proc_bytes += pdu_length*4;
 
         // Handle EFF Flag
-        Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_EFF, &flag);
-        if (can_id > 0x7FF && !flag) {
-          fprintf(stderr, "Error: CAN ID is > 0x7FF but the EFF bit is not set.\n");
-          return -1;
+        if (Avtp_Can_GetEff((Avtp_Can_t*)acf_pdu)) {
+            can_id |= CAN_EFF_FLAG;
+        } else if (can_id > 0x7FF) {
+            fprintf(stderr, "Error: CAN ID is > 0x7FF but the EFF bit is not set.\n");
+            return -1;
         }
-        if (flag) can_id |= CAN_EFF_FLAG;
 
         // Handle RTR Flag
-        Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_RTR, &flag);
-        if (flag) can_id |= CAN_RTR_FLAG;
+        if (Avtp_Can_GetRtr((Avtp_Can_t*)acf_pdu)) {
+            can_id |= CAN_RTR_FLAG;
+        }
 
         if (can_variant == AVTP_CAN_FD) {
-
-            Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_BRS, &flag);
-            if (flag) frame.fd.flags |= CANFD_BRS;
-
-            Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_FDF, &flag);
-            if (flag) frame.fd.flags |= CANFD_FDF;
-
-            Avtp_Can_GetField((Avtp_Can_t*)acf_pdu, AVTP_CAN_FIELD_ESI, &flag);
-            if (flag) frame.fd.flags |= CANFD_ESI;
-
+            if (Avtp_Can_GetBrs((Avtp_Can_t*)acf_pdu)) {
+                frame.fd.flags |= CANFD_BRS;
+            }
+            if (Avtp_Can_GetFdf((Avtp_Can_t*)acf_pdu)) {
+                frame.fd.flags |= CANFD_FDF;
+            }
+            if (Avtp_Can_GetEsi((Avtp_Can_t*)acf_pdu)) {
+                frame.fd.flags |= CANFD_ESI;
+            }
             frame.fd.can_id = can_id;
             frame.fd.len = payload_length;
             memcpy(frame.fd.data, can_payload, payload_length);
             res = write(can_socket, &frame.fd, sizeof(struct canfd_frame));
-
         } else {
-
             frame.cc.can_id = can_id;
             frame.cc.len = payload_length;
             memcpy(frame.cc.data, can_payload, payload_length);

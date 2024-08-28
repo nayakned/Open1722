@@ -34,6 +34,11 @@
 #include "avtp/Utils.h"
 #include "avtp/CommonHeader.h"
 
+#define GET_FIELD(field) \
+        (Avtp_GetField(fieldDescriptors, AVTP_JPEG2000_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(fieldDescriptors, AVTP_JPEG2000_FIELD_MAX, (uint8_t*)pdu, field, value))
+
 static const Avtp_FieldDescriptor_t fieldDescriptors[AVTP_JPEG2000_FIELD_MAX] =
 {
     [AVTP_JPEG2000_FIELD_TP]                = { .quadlet = 0, .offset = 0, .bits = 2 },

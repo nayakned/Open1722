@@ -100,7 +100,7 @@
 #include <inttypes.h>
 
 #include "avtp/Crf.h"
-#include "avtp/aaf/PcmStream.h"
+#include "avtp/aaf/Pcm.h"
 #include "common/common.h"
 #include "avtp/CommonHeader.h"
 

@@ -164,109 +164,62 @@ static int schedule_nal(int fd, struct timespec *tspec, uint8_t *nal,
 
 static bool is_valid_packet(Avtp_Cvf_t* cvf)
 {
-    uint64_t val;
-    int res;
-
-    res = Avtp_Cvf_GetField(cvf, AVTP_CVF_FIELD_SUBTYPE, &val);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get subtype field: %d\n", res);
-        return false;
-    }
-    if (val != AVTP_SUBTYPE_CVF) {
-        fprintf(stderr, "Subtype mismatch: expected %u, got %"PRIu64"\n", AVTP_SUBTYPE_CVF, val);
+    uint8_t subtype = Avtp_Cvf_GetSubtype(cvf);
+    if (subtype != AVTP_SUBTYPE_CVF) {
+        fprintf(stderr, "Subtype mismatch: expected %u, got %"PRIu8"\n",
+                AVTP_SUBTYPE_CVF, subtype);
         return false;
     }
 
-    res = Avtp_Cvf_GetField(cvf, AVTP_CVF_FIELD_VERSION, &val);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get version field: %d\n", res);
-        return false;
-    }
-    if (val != 0) {
-        fprintf(stderr, "Version mismatch: expected %u, got %"PRIu64"\n", 0, val);
+    uint8_t version = Avtp_Cvf_GetVersion(cvf);
+    if (version != 0) {
+        fprintf(stderr, "Version mismatch: expected %u, got %"PRIu8"\n", 0,
+                version);
         return false;
     }
 
-    res = Avtp_Cvf_GetField(cvf, AVTP_CVF_FIELD_TV, &val);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get tv field: %d\n", res);
-        return false;
-    }
-    if (val != 1) {
-        fprintf(stderr, "tv mismatch: expected %u, got %lu\n",
-                                1, val);
+    uint8_t tv = Avtp_Cvf_GetTv(cvf);
+    if (tv != 1) {
+        fprintf(stderr, "tv mismatch: expected %u, got %"PRIu8"\n", 1, tv);
         return false;
     }
 
-    res = Avtp_Cvf_GetField(cvf, AVTP_CVF_FIELD_STREAM_ID, &val);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get stream ID field: %d\n", res);
-        return false;
-    }
-    if (val != STREAM_ID) {
+    uint64_t stream_id = Avtp_Cvf_GetStreamId(cvf);
+    if (stream_id != STREAM_ID) {
         fprintf(stderr, "Stream ID mismatch: expected %lu, got %lu\n",
-                            STREAM_ID, val);
+                STREAM_ID, stream_id);
         return false;
     }
 
-    res = Avtp_Cvf_GetField(cvf, AVTP_CVF_FIELD_SEQUENCE_NUM, &val);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get sequence num field: %d\n", res);
-        return false;
+    uint8_t sequence_num = Avtp_Cvf_GetSequenceNum(cvf);
+    if (sequence_num != expected_seq) {
+        fprintf(stderr, "Sequence number mismatch: expected %"PRIu8", "
+                "got %"PRIu8"\n", expected_seq, sequence_num);
+        expected_seq = sequence_num;
     }
-
-    if (val != expected_seq) {
-        /* If we have a sequence number mismatch, we simply log the
-         * issue and continue to process the packet. We don't want to
-         * invalidate it since it is a valid packet after all.
-         */
-        fprintf(stderr,
-            "Sequence number mismatch: expected %u, got %lu\n",
-                            expected_seq, val);
-        expected_seq = val;
-    }
-
     expected_seq++;
 
-    res = Avtp_Cvf_GetField(cvf, AVTP_CVF_FIELD_FORMAT, &val);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get format field: %d\n", res);
-        return false;
-    }
-    if (val != AVTP_CVF_FORMAT_RFC) {
-        fprintf(stderr, "Format mismatch: expected %u, got %lu\n",
-                    AVTP_CVF_FORMAT_RFC, val);
+    uint8_t format = Avtp_Cvf_GetFormat(cvf);
+    if (format != AVTP_CVF_FORMAT_RFC) {
+        fprintf(stderr, "Format mismatch: expected %"PRIu8", got %"PRIu8"\n",
+                    AVTP_CVF_FORMAT_RFC, format);
         return false;
     }
 
-    res = Avtp_Cvf_GetField(cvf, AVTP_CVF_FIELD_FORMAT_SUBTYPE, &val);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get format subtype field: %d\n",
-                                    res);
-        return false;
-    }
-    if (val != AVTP_CVF_FORMAT_SUBTYPE_H264) {
-        fprintf(stderr, "Format mismatch: expected %u, got %lu\n",
-                    AVTP_CVF_FORMAT_SUBTYPE_H264, val);
+    uint8_t format_subtype = Avtp_Cvf_GetFormatSubtype(cvf);
+    if (format_subtype != AVTP_CVF_FORMAT_SUBTYPE_H264) {
+        fprintf(stderr, "Format mismatch: expected %"PRIu8", got %"PRIu8"\n",
+                    AVTP_CVF_FORMAT_SUBTYPE_H264, format_subtype);
         return false;
     }
 
     return true;
 }
 
-static int get_h264_data_len(Avtp_Cvf_t* cvfHeader, uint16_t *stream_data_len)
+static uint16_t get_h264_data_len(Avtp_Cvf_t* cvf)
 {
-    int res;
-    uint64_t val;
-
-    res = Avtp_Cvf_GetField(cvfHeader, AVTP_CVF_FIELD_STREAM_DATA_LENGTH, &val);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get data_len field\n");
-        return -1;
-    }
-    *stream_data_len = val - AVTP_H264_HEADER_LEN;
-
-    return 0;
+    uint16_t stream_data_len = Avtp_Cvf_GetStreamDataLength(cvf);
+    return stream_data_len - AVTP_H264_HEADER_LEN;
 }
 
 static int new_packet(int sk_fd, int timer_fd)
@@ -274,38 +227,32 @@ static int new_packet(int sk_fd, int timer_fd)
     int res;
     ssize_t n;
     uint16_t h264_data_len;
-    uint64_t avtp_time;
+    uint32_t avtp_time;
     struct timespec tspec;
-    Avtp_Cvf_t* cvfHeader = alloca(MAX_PDU_SIZE);
-    Avtp_H264_t* h264Header = (Avtp_H264_t*)(&cvfHeader->payload);
+    Avtp_Cvf_t* cvf = alloca(MAX_PDU_SIZE);
+    Avtp_H264_t* h264Header = (Avtp_H264_t*)(&cvf->payload);
     uint8_t* h264Payload = (uint8_t*)(&h264Header->payload);
 
-    memset(cvfHeader, 1, MAX_PDU_SIZE);
+    memset(cvf, 1, MAX_PDU_SIZE);
 
-    n = recv(sk_fd, cvfHeader, MAX_PDU_SIZE, 0);
+    n = recv(sk_fd, cvf, MAX_PDU_SIZE, 0);
     if (n < 0 || n > MAX_PDU_SIZE) {
         perror("Failed to receive data");
         return -1;
     }
 
-    if (!is_valid_packet(cvfHeader)) {
+    if (!is_valid_packet(cvf)) {
         fprintf(stderr, "Dropping packet\n");
         return 0;
     }
 
-    res = Avtp_Cvf_GetField(cvfHeader, AVTP_CVF_FIELD_AVTP_TIMESTAMP, &avtp_time);
-    if (res < 0) {
-        fprintf(stderr, "Failed to get AVTP time from PDU\n");
-        return -1;
-    }
+    avtp_time = Avtp_Cvf_GetAvtpTimestamp(cvf);
 
     res = get_presentation_time(avtp_time, &tspec);
     if (res < 0)
         return -1;
 
-    res = get_h264_data_len(cvfHeader, &h264_data_len);
-    if (res < 0)
-        return -1;
+    h264_data_len = get_h264_data_len(cvf);
 
     res = schedule_nal(timer_fd, &tspec, h264Payload, h264_data_len);
     if (res < 0)

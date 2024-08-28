@@ -47,17 +47,14 @@ static void can_init(void **state) {
 
     uint8_t pdu[MAX_PDU_SIZE];
     uint8_t init_pdu[AVTP_CAN_HEADER_LEN];
-    int ret;
 
     // Check init function while passing in a null pointer
-    ret = Avtp_Can_Init(NULL);
-    assert_int_equal(ret, -EINVAL);
+    Avtp_Can_Init(NULL);
 
     // Check if the function is initializing properly
-    ret = Avtp_Can_Init((Avtp_Can_t*)pdu);
+    Avtp_Can_Init((Avtp_Can_t*)pdu);
     memset(init_pdu, 0, AVTP_CAN_HEADER_LEN);
     init_pdu[0] = 0x02; // Setting ACF type as ACF_CAN
-    assert_int_equal(ret, 0);
     assert_memory_equal(init_pdu, pdu, AVTP_CAN_HEADER_LEN);
 }
 
@@ -65,17 +62,14 @@ static void can_brief_init(void **state) {
 
     uint8_t pdu[MAX_PDU_SIZE];
     uint8_t init_pdu[AVTP_CAN_BRIEF_HEADER_LEN];
-    int ret;
 
     // Check init function while passing in a null pointer
-    ret = Avtp_CanBrief_Init(NULL);
-    assert_int_equal(ret, -EINVAL);
+    Avtp_CanBrief_Init(NULL);
 
     // Check if the function is initializing properly
-    ret = Avtp_CanBrief_Init((Avtp_CanBrief_t*)pdu);
+    Avtp_CanBrief_Init((Avtp_CanBrief_t*)pdu);
     memset(init_pdu, 0, AVTP_CAN_BRIEF_HEADER_LEN);
     init_pdu[0] = 0x04; // Setting ACF type as ACF_CAN
-    assert_int_equal(ret, 0);
     assert_memory_equal(init_pdu, pdu, AVTP_CAN_BRIEF_HEADER_LEN);
 }
 
