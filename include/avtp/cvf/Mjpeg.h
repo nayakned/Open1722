@@ -52,8 +52,22 @@ typedef enum Avtp_MjpegField {
     AVTP_MJPEG_FIELD_MAX
 } Avtp_MjpegField_t;
 
-int Avtp_Mjpeg_Init(Avtp_Mjpeg_t* pdu);
+void Avtp_Mjpeg_Init(Avtp_Mjpeg_t* pdu);
 
-int Avtp_Mjpeg_GetField(Avtp_Mjpeg_t* pdu, Avtp_MjpegField_t field, uint64_t* value);
+uint64_t Avtp_Mjpeg_GetField(Avtp_Mjpeg_t* pdu, Avtp_MjpegField_t field);
 
-int Avtp_Mjpeg_SetField(Avtp_Mjpeg_t* pdu, Avtp_MjpegField_t field, uint64_t value);
+uint8_t Avtp_Mjpeg_GetTypeSpecific(Avtp_Mjpeg_t* pdu);
+uint32_t Avtp_Mjpeg_GetFragmentOffset(Avtp_Mjpeg_t* pdu);
+uint8_t Avtp_Mjpeg_GetType(Avtp_Mjpeg_t* pdu);
+uint8_t Avtp_Mjpeg_GetQ(Avtp_Mjpeg_t* pdu);
+uint8_t Avtp_Mjpeg_GetWidth(Avtp_Mjpeg_t* pdu);
+uint8_t Avtp_Mjpeg_GetHeight(Avtp_Mjpeg_t* pdu);
+
+void Avtp_Mjpeg_SetField(Avtp_Mjpeg_t* pdu, Avtp_MjpegField_t field, uint64_t value);
+
+void Avtp_Mjpeg_SetTypeSpecific(Avtp_Mjpeg_t* pdu, uint8_t value);
+void Avtp_Mjpeg_SetFragmentOffset(Avtp_Mjpeg_t* pdu, uint32_t value);
+void Avtp_Mjpeg_SetType(Avtp_Mjpeg_t* pdu, uint8_t value);
+void Avtp_Mjpeg_SetQ(Avtp_Mjpeg_t* pdu, uint8_t value);
+void Avtp_Mjpeg_SetWidth(Avtp_Mjpeg_t* pdu, uint8_t value);
+void Avtp_Mjpeg_SetHeight(Avtp_Mjpeg_t* pdu, uint8_t value);

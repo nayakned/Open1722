@@ -34,6 +34,11 @@
 #include "avtp/Utils.h"
 #include "avtp/CommonHeader.h"
 
+#define GET_FIELD(field) \
+        (Avtp_GetField(fieldDescriptors, AVTP_MJPEG_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(fieldDescriptors, AVTP_MJPEG_FIELD_MAX, (uint8_t*)pdu, field, value))
+
 static const Avtp_FieldDescriptor_t fieldDescriptors[AVTP_MJPEG_FIELD_MAX] =
 {
     [AVTP_MJPEG_FIELD_TYPE_SPECIFIC]    = { .quadlet = 0, .offset = 0, .bits = 8 },
@@ -44,19 +49,79 @@ static const Avtp_FieldDescriptor_t fieldDescriptors[AVTP_MJPEG_FIELD_MAX] =
     [AVTP_MJPEG_FIELD_HEIGHT]           = { .quadlet = 1, .offset = 24, .bits = 8 },
 };
 
-int Avtp_Mjpeg_Init(Avtp_Mjpeg_t* pdu)
+void Avtp_Mjpeg_Init(Avtp_Mjpeg_t* pdu)
 {
-    if (pdu == NULL) return -EINVAL;
-    memset(pdu, 0, sizeof(Avtp_Mjpeg_t));
-    return 0;
+    if (pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Mjpeg_t));
+    }
 }
 
-int Avtp_Mjpeg_GetField(Avtp_Mjpeg_t* pdu, Avtp_MjpegField_t field, uint64_t* value)
+uint64_t Avtp_Mjpeg_GetField(Avtp_Mjpeg_t* pdu, Avtp_MjpegField_t field)
 {
-    return Avtp_GetField(fieldDescriptors, AVTP_MJPEG_FIELD_MAX, (uint8_t*)pdu, field, value);
+    return GET_FIELD(field);
 }
 
-int Avtp_Mjpeg_SetField(Avtp_Mjpeg_t* pdu, Avtp_MjpegField_t field, uint64_t value)
+uint8_t Avtp_Mjpeg_GetTypeSpecific(Avtp_Mjpeg_t* pdu)
 {
-    return Avtp_SetField(fieldDescriptors, AVTP_MJPEG_FIELD_MAX, (uint8_t*)pdu, field, value);
+    SET_FIED(AVTP_MJPEG_FIELD_TYPE_SPECIFIC);
+}
+
+uint32_t Avtp_Mjpeg_GetFragmentOffset(Avtp_Mjpeg_t* pdu)
+{
+    SET_FIED(AVTP_MJPEG_FIELD_FRAGMENT_OFFSET);
+}
+
+uint8_t Avtp_Mjpeg_GetType(Avtp_Mjpeg_t* pdu)
+{
+    SET_FIED(AVTP_MJPEG_FIELD_TYPE);
+}
+
+uint8_t Avtp_Mjpeg_GetQ(Avtp_Mjpeg_t* pdu)
+{
+    SET_FIED(AVTP_MJPEG_FIELD_Q);
+}
+
+uint8_t Avtp_Mjpeg_GetWidth(Avtp_Mjpeg_t* pdu)
+{
+    SET_FIED(AVTP_MJPEG_FIELD_WIDTH);
+}
+
+uint8_t Avtp_Mjpeg_GetHeight(Avtp_Mjpeg_t* pdu)
+{
+    SET_FIED(AVTP_MJPEG_FIELD_HEIGHT);
+}
+
+void Avtp_Mjpeg_SetField(Avtp_Mjpeg_t* pdu, Avtp_MjpegField_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_Mjpeg_SetTypeSpecific(Avtp_Mjpeg_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MJPEG_FIELD_TYPE_SPECIFIC, value);
+}
+
+void Avtp_Mjpeg_SetFragmentOffset(Avtp_Mjpeg_t* pdu, uint32_t value)
+{
+    SET_FIELD(AVTP_MJPEG_FIELD_FRAGMENT_OFFSET, value);
+}
+
+void Avtp_Mjpeg_SetType(Avtp_Mjpeg_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MJPEG_FIELD_TYPE, value);
+}
+
+void Avtp_Mjpeg_SetQ(Avtp_Mjpeg_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MJPEG_FIELD_Q, value);
+}
+
+void Avtp_Mjpeg_SetWidth(Avtp_Mjpeg_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MJPEG_FIELD_WIDTH, value);
+}
+
+void Avtp_Mjpeg_SetHeight(Avtp_Mjpeg_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_MJPEG_FIELD_HEIGHT, value);
 }
