@@ -185,7 +185,7 @@ static int new_packet(int sk_fd, int can_socket) {
     res = recv(sk_fd, pdu, MAX_PDU_SIZE, 0);
     if (res < 0 || res > MAX_PDU_SIZE) {
         perror("Failed to receive data");
-        return -1;
+        return 0;
     }
 
     if (use_udp) {
@@ -202,7 +202,7 @@ static int new_packet(int sk_fd, int can_socket) {
         (subtype == AVTP_SUBTYPE_TSCF))) {
         fprintf(stderr, "Subtype mismatch: expected %u or %u, got %"PRIu8". Dropping packet\n",
                 AVTP_SUBTYPE_NTSCF, AVTP_SUBTYPE_TSCF, subtype);
-        return -1;
+        return 0;
     }
 
     if (subtype == AVTP_SUBTYPE_TSCF){
@@ -219,7 +219,7 @@ static int new_packet(int sk_fd, int can_socket) {
 
         if (!is_valid_acf_packet(acf_pdu)) {
             fprintf(stderr, "Error: Invalid ACF packet.\n");
-            return -1;
+            return 0;
         }
 
         can_id = Avtp_Can_GetCanIdentifier((Avtp_Can_t*)acf_pdu);
@@ -234,7 +234,7 @@ static int new_packet(int sk_fd, int can_socket) {
             can_id |= CAN_EFF_FLAG;
         } else if (can_id > 0x7FF) {
             fprintf(stderr, "Error: CAN ID is > 0x7FF but the EFF bit is not set.\n");
-            return -1;
+            return 0;
         }
 
         // Handle RTR Flag
