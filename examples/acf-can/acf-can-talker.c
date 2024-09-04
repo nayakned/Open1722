@@ -228,13 +228,13 @@ static int prepare_acf_packet(uint8_t* acf_pdu,
 
     // Copy payload to ACF CAN PDU
     if(can_variant == AVTP_CAN_FD)
-        processedBytes = Avtp_Can_SetPayload(pdu, frame.fd.can_id & CAN_EFF_MASK, frame.fd.data,
+        Avtp_Can_CreateAcfMessage(pdu, frame.fd.can_id & CAN_EFF_MASK, frame.fd.data,
                                          frame.fd.len, can_variant);
     else
-        processedBytes = Avtp_Can_SetPayload(pdu, frame.cc.can_id & CAN_EFF_MASK, frame.cc.data,
+        Avtp_Can_CreateAcfMessage(pdu, frame.cc.can_id & CAN_EFF_MASK, frame.cc.data,
                                          frame.cc.len, can_variant);
 
-    return processedBytes;
+    return Avtp_Can_GetAcfMsgLength(pdu)*4;
 }
 
 int main(int argc, char *argv[])

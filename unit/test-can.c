@@ -9,7 +9,7 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of COVESA nor the names of its contributors may be 
+ *    * Neither the name of COVESA nor the names of its contributors may be
  *      used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
@@ -83,7 +83,7 @@ static void can_set_payload(void **state) {
     Avtp_Can_Init((Avtp_Can_t*)pdu);
 
     // Set payload and check for EFF
-    Avtp_Can_SetPayload((Avtp_Can_t*)pdu, set_frame_id, set_payload, 
+    Avtp_Can_CreateAcfMessage((Avtp_Can_t*)pdu, set_frame_id, set_payload,
                         CAN_PAYLOAD_SIZE, AVTP_CAN_CLASSIC);
     assert_int_equal(htonl(set_frame_id), (uint32_t) *((int*)pdu+3));
     assert_memory_equal(set_payload, pdu+16, CAN_PAYLOAD_SIZE);
@@ -91,7 +91,7 @@ static void can_set_payload(void **state) {
 
     // Check EFF for extended Frame IDs
     set_frame_id = 0x800;
-    Avtp_Can_SetPayload((Avtp_Can_t*)pdu, set_frame_id, set_payload, 
+    Avtp_Can_CreateAcfMessage((Avtp_Can_t*)pdu, set_frame_id, set_payload,
                         CAN_PAYLOAD_SIZE, AVTP_CAN_CLASSIC);
     assert_int_equal(htonl(set_frame_id), (uint32_t) *((int*)pdu+3));
     assert_int_equal(0x8, *(pdu+2)&0x08);    // Check EFF
@@ -99,12 +99,10 @@ static void can_set_payload(void **state) {
     // Check padding bytes and length field
     uint8_t zero_array[CAN_PAYLOAD_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0};
     for (int i=0; i<CAN_PAYLOAD_SIZE; i++) {
-        int ret;
         memset(pdu, 0, MAX_PDU_SIZE);
         Avtp_Can_Init((Avtp_Can_t*)pdu);
-        ret = Avtp_Can_SetPayload((Avtp_Can_t*)pdu, set_frame_id, set_payload, 
+        Avtp_Can_CreateAcfMessage((Avtp_Can_t*)pdu, set_frame_id, set_payload,
                         i, AVTP_CAN_CLASSIC);
-        assert_int_equal(ret, AVTP_CAN_HEADER_LEN+i+((4 - i%4)&0x3));
         assert_memory_equal(set_payload, pdu+16, i);
         assert_memory_equal(zero_array, pdu+16+i, CAN_PAYLOAD_SIZE-i);
 
@@ -114,7 +112,7 @@ static void can_set_payload(void **state) {
 
         // Length tests
         uint8_t length = *(pdu+1);
-        assert_int_equal(length, (4+ceil(i/4.0))); 
+        assert_int_equal(length, (4+ceil(i/4.0)));
     }
 }
 

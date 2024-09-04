@@ -174,7 +174,7 @@ static int new_packet(int sk_fd, int can_socket) {
     int res = 0;
     uint64_t proc_bytes = 0, msg_proc_bytes = 0;
     uint32_t udp_seq_num;
-    uint16_t msg_length, payload_length, pdu_length;
+    uint16_t msg_length, can_payload_length, acf_msg_length;
     uint8_t subtype;
     uint8_t pdu[MAX_PDU_SIZE], i;
     uint8_t *cf_pdu, *acf_pdu, *udp_pdu, *can_payload;
@@ -224,8 +224,10 @@ static int new_packet(int sk_fd, int can_socket) {
 
         can_id = Avtp_Can_GetCanIdentifier((Avtp_Can_t*)acf_pdu);
 
-        can_payload = Avtp_Can_GetPayload((Avtp_Can_t*)acf_pdu, &payload_length, &pdu_length);
-        msg_proc_bytes += pdu_length*4;
+        can_payload = Avtp_Can_GetPayload((Avtp_Can_t*)acf_pdu);
+        acf_msg_length = Avtp_Can_GetAcfMsgLength((Avtp_Can_t*)acf_pdu)*4;
+        can_payload_length = Avtp_Can_GetCanPayloadLength((Avtp_Can_t*)acf_pdu);
+        msg_proc_bytes += acf_msg_length;
 
         // Handle EFF Flag
         if (Avtp_Can_GetEff((Avtp_Can_t*)acf_pdu)) {
@@ -251,13 +253,13 @@ static int new_packet(int sk_fd, int can_socket) {
                 frame.fd.flags |= CANFD_ESI;
             }
             frame.fd.can_id = can_id;
-            frame.fd.len = payload_length;
-            memcpy(frame.fd.data, can_payload, payload_length);
+            frame.fd.len = can_payload_length;
+            memcpy(frame.fd.data, can_payload, can_payload_length);
             res = write(can_socket, &frame.fd, sizeof(struct canfd_frame));
         } else {
             frame.cc.can_id = can_id;
-            frame.cc.len = payload_length;
-            memcpy(frame.cc.data, can_payload, payload_length);
+            frame.cc.len = can_payload_length;
+            memcpy(frame.cc.data, can_payload, can_payload_length);
             res = write(can_socket, &frame.cc, sizeof(struct can_frame));
         }
 
