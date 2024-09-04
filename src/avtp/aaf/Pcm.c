@@ -11,7 +11,7 @@
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
  *    * Neither the name of COVESA, Intel Corporation nor the names of its
- *      contributors  may be used to endorse or promote products derived from 
+ *      contributors  may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -43,21 +43,21 @@
 static const Avtp_FieldDescriptor_t Avtp_PcmFieldDesc[AVTP_PCM_FIELD_MAX] =
 {
     [AVTP_PCM_FIELD_SUBTYPE]            = { .quadlet = 0, .offset =  0, .bits =  8 },
-    [AVTP_PCM_FIELD_SV]                 = { .quadlet = 0, .offset =  8, .bits =  1 }, 
-    [AVTP_PCM_FIELD_VERSION]            = { .quadlet = 0, .offset =  9, .bits =  3 }, 
-    [AVTP_PCM_FIELD_MR]                 = { .quadlet = 0, .offset = 12, .bits =  1 },	 
-    [AVTP_PCM_FIELD_TV]                 = { .quadlet = 0, .offset = 15, .bits =  1 }, 
+    [AVTP_PCM_FIELD_SV]                 = { .quadlet = 0, .offset =  8, .bits =  1 },
+    [AVTP_PCM_FIELD_VERSION]            = { .quadlet = 0, .offset =  9, .bits =  3 },
+    [AVTP_PCM_FIELD_MR]                 = { .quadlet = 0, .offset = 12, .bits =  1 },
+    [AVTP_PCM_FIELD_TV]                 = { .quadlet = 0, .offset = 15, .bits =  1 },
     [AVTP_PCM_FIELD_SEQUENCE_NUM]       = { .quadlet = 0, .offset = 16, .bits =  8 },
-    [AVTP_PCM_FIELD_TU]                 = { .quadlet = 0, .offset = 31, .bits =  1 }, 
-    [AVTP_PCM_FIELD_STREAM_ID]          = { .quadlet = 1, .offset =  0, .bits = 64 }, 
-    [AVTP_PCM_FIELD_AVTP_TIMESTAMP]     = { .quadlet = 3, .offset =  0, .bits = 32 }, 
-    [AVTP_PCM_FIELD_FORMAT]             = { .quadlet = 4, .offset =  0, .bits =  8 }, 
-    [AVTP_PCM_FIELD_NSR]                = { .quadlet = 4, .offset =  8, .bits =  4 }, 
-    [AVTP_PCM_FIELD_CHANNELS_PER_FRAME] = { .quadlet = 4, .offset = 14, .bits = 10 }, 
-    [AVTP_PCM_FIELD_BIT_DEPTH]          = { .quadlet = 4, .offset = 24, .bits =  8 }, 
-    [AVTP_PCM_FIELD_STREAM_DATA_LENGTH] = { .quadlet = 5, .offset =  0, .bits = 16 }, 
-    [AVTP_PCM_FIELD_SP]                 = { .quadlet = 5, .offset = 19, .bits =  1 }, 
-    [AVTP_PCM_FIELD_EVT]                = { .quadlet = 5, .offset = 20, .bits =  4 }, 
+    [AVTP_PCM_FIELD_TU]                 = { .quadlet = 0, .offset = 31, .bits =  1 },
+    [AVTP_PCM_FIELD_STREAM_ID]          = { .quadlet = 1, .offset =  0, .bits = 64 },
+    [AVTP_PCM_FIELD_AVTP_TIMESTAMP]     = { .quadlet = 3, .offset =  0, .bits = 32 },
+    [AVTP_PCM_FIELD_FORMAT]             = { .quadlet = 4, .offset =  0, .bits =  8 },
+    [AVTP_PCM_FIELD_NSR]                = { .quadlet = 4, .offset =  8, .bits =  4 },
+    [AVTP_PCM_FIELD_CHANNELS_PER_FRAME] = { .quadlet = 4, .offset = 14, .bits = 10 },
+    [AVTP_PCM_FIELD_BIT_DEPTH]          = { .quadlet = 4, .offset = 24, .bits =  8 },
+    [AVTP_PCM_FIELD_STREAM_DATA_LENGTH] = { .quadlet = 5, .offset =  0, .bits = 16 },
+    [AVTP_PCM_FIELD_SP]                 = { .quadlet = 5, .offset = 19, .bits =  1 },
+    [AVTP_PCM_FIELD_EVT]                = { .quadlet = 5, .offset = 20, .bits =  4 },
 };
 
 void Avtp_Pcm_Init(Avtp_Pcm_t* pdu)
@@ -119,12 +119,12 @@ uint32_t Avtp_Pcm_GetAvtpTimestamp(Avtp_Pcm_t* pdu)
     return GET_FIELD(AVTP_PCM_FIELD_AVTP_TIMESTAMP);
 }
 
-uint8_t Avtp_Pcm_GetFormat(Avtp_Pcm_t* pdu)
+Avtp_AafFormat_t Avtp_Pcm_GetFormat(Avtp_Pcm_t* pdu)
 {
     return GET_FIELD(AVTP_PCM_FIELD_FORMAT);
 }
 
-uint8_t Avtp_Pcm_GetNsr(Avtp_Pcm_t* pdu)
+Avtp_AafNsr_t Avtp_Pcm_GetNsr(Avtp_Pcm_t* pdu)
 {
     return GET_FIELD(AVTP_PCM_FIELD_NSR);
 }
@@ -144,7 +144,7 @@ uint16_t Avtp_Pcm_GetStreamDataLength(Avtp_Pcm_t* pdu)
     return GET_FIELD(AVTP_PCM_FIELD_STREAM_DATA_LENGTH);
 }
 
-uint8_t Avtp_Pcm_GetSp(Avtp_Pcm_t* pdu)
+Avtp_AafSp_t Avtp_Pcm_GetSp(Avtp_Pcm_t* pdu)
 {
     return GET_FIELD(AVTP_PCM_FIELD_SP);
 }
@@ -204,12 +204,12 @@ void Avtp_Pcm_SetAvtpTimestamp(Avtp_Pcm_t* pdu, uint32_t value)
     SET_FIELD(AVTP_PCM_FIELD_AVTP_TIMESTAMP, value);
 }
 
-void Avtp_Pcm_SetFormat(Avtp_Pcm_t* pdu, uint8_t value)
+void Avtp_Pcm_SetFormat(Avtp_Pcm_t* pdu, Avtp_AafFormat_t value)
 {
     SET_FIELD(AVTP_PCM_FIELD_FORMAT, value);
 }
 
-void Avtp_Pcm_SetNsr(Avtp_Pcm_t* pdu, uint8_t value)
+void Avtp_Pcm_SetNsr(Avtp_Pcm_t* pdu, Avtp_AafNsr_t value)
 {
     SET_FIELD(AVTP_PCM_FIELD_NSR, value);
 }
@@ -229,7 +229,7 @@ void Avtp_Pcm_SetStreamDataLength(Avtp_Pcm_t* pdu, uint16_t value)
     SET_FIELD(AVTP_PCM_FIELD_STREAM_DATA_LENGTH, value);
 }
 
-void Avtp_Pcm_SetSp(Avtp_Pcm_t* pdu, uint8_t value)
+void Avtp_Pcm_SetSp(Avtp_Pcm_t* pdu, Avtp_AafSp_t value)
 {
     SET_FIELD(AVTP_PCM_FIELD_SP, value);
 }

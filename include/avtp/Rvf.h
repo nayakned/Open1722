@@ -12,7 +12,7 @@
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
  *    * Neither the name of Fastree3D, COVESA nor the names of their
- *      contributors  may be used to endorse or promote products derived from 
+ *      contributors  may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -162,10 +162,10 @@ uint8_t Avtp_Rvf_GetEf(Avtp_Rvf_t* pdu);
 uint8_t Avtp_Rvf_GetEvt(Avtp_Rvf_t* pdu);
 uint8_t Avtp_Rvf_GetPd(Avtp_Rvf_t* pdu);
 uint8_t Avtp_Rvf_GetI(Avtp_Rvf_t* pdu);
-uint8_t Avtp_Rvf_GetPixelDepth(Avtp_Rvf_t* pdu);
-uint8_t Avtp_Rvf_GetPixelFormat(Avtp_Rvf_t* pdu);
-uint8_t Avtp_Rvf_GetFrameRate(Avtp_Rvf_t* pdu);
-uint8_t Avtp_Rvf_GetColorspace(Avtp_Rvf_t* pdu);
+Avtp_RvfPixelDepth_t Avtp_Rvf_GetPixelDepth(Avtp_Rvf_t* pdu);
+Avtp_RvfPixelFormat_t Avtp_Rvf_GetPixelFormat(Avtp_Rvf_t* pdu);
+Avtp_RvfFrameRate_t Avtp_Rvf_GetFrameRate(Avtp_Rvf_t* pdu);
+Avtp_RvfColorspace_t Avtp_Rvf_GetColorspace(Avtp_Rvf_t* pdu);
 uint8_t Avtp_Rvf_GetNumLines(Avtp_Rvf_t* pdu);
 uint8_t Avtp_Rvf_GetISeqNum(Avtp_Rvf_t* pdu);
 uint16_t Avtp_Rvf_GetLineNumber(Avtp_Rvf_t* pdu);
@@ -190,10 +190,10 @@ void Avtp_Rvf_SetEf(Avtp_Rvf_t* pdu, uint8_t value);
 void Avtp_Rvf_SetEvt(Avtp_Rvf_t* pdu, uint8_t value);
 void Avtp_Rvf_SetPd(Avtp_Rvf_t* pdu, uint8_t value);
 void Avtp_Rvf_SetI(Avtp_Rvf_t* pdu, uint8_t value);
-void Avtp_Rvf_SetPixelDepth(Avtp_Rvf_t* pdu, uint8_t value);
-void Avtp_Rvf_SetPixelFormat(Avtp_Rvf_t* pdu, uint8_t value);
-void Avtp_Rvf_SetFrameRate(Avtp_Rvf_t* pdu, uint8_t value);
-void Avtp_Rvf_SetColorspace(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetPixelDepth(Avtp_Rvf_t* pdu, Avtp_RvfPixelDepth_t value);
+void Avtp_Rvf_SetPixelFormat(Avtp_Rvf_t* pdu, Avtp_RvfPixelFormat_t value);
+void Avtp_Rvf_SetFrameRate(Avtp_Rvf_t* pdu, Avtp_RvfFrameRate_t value);
+void Avtp_Rvf_SetColorspace(Avtp_Rvf_t* pdu, Avtp_RvfColorspace_t value);
 void Avtp_Rvf_SetNumLines(Avtp_Rvf_t* pdu, uint8_t value);
 void Avtp_Rvf_SetISeqNum(Avtp_Rvf_t* pdu, uint8_t value);
 void Avtp_Rvf_SetLineNumber(Avtp_Rvf_t* pdu, uint16_t value);

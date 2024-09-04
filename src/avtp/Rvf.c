@@ -12,7 +12,7 @@
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
  *    * Neither the name of Fastree3D, COVESA nor the names of their
- *      contributors  may be used to endorse or promote products derived from 
+ *      contributors  may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -184,22 +184,22 @@ uint8_t Avtp_Rvf_GetI(Avtp_Rvf_t* pdu)
     return GET_FIELD(AVTP_RVF_FIELD_I);
 }
 
-uint8_t Avtp_Rvf_GetPixelDepth(Avtp_Rvf_t* pdu)
+Avtp_RvfPixelDepth_t Avtp_Rvf_GetPixelDepth(Avtp_Rvf_t* pdu)
 {
     return GET_FIELD(AVTP_RVF_FIELD_PIXEL_DEPTH);
 }
 
-uint8_t Avtp_Rvf_GetPixelFormat(Avtp_Rvf_t* pdu)
+Avtp_RvfPixelFormat_t Avtp_Rvf_GetPixelFormat(Avtp_Rvf_t* pdu)
 {
     return GET_FIELD(AVTP_RVF_FIELD_PIXEL_FORMAT);
 }
 
-uint8_t Avtp_Rvf_GetFrameRate(Avtp_Rvf_t* pdu)
+Avtp_RvfFrameRate_t Avtp_Rvf_GetFrameRate(Avtp_Rvf_t* pdu)
 {
     return GET_FIELD(AVTP_RVF_FIELD_FRAME_RATE);
 }
 
-uint8_t Avtp_Rvf_GetColorspace(Avtp_Rvf_t* pdu)
+Avtp_RvfColorspace_t Avtp_Rvf_GetColorspace(Avtp_Rvf_t* pdu)
 {
     return GET_FIELD(AVTP_RVF_FIELD_COLORSPACE);
 }
@@ -314,22 +314,22 @@ void Avtp_Rvf_SetI(Avtp_Rvf_t* pdu, uint8_t value)
     SET_FIELD(AVTP_RVF_FIELD_I, value);
 }
 
-void Avtp_Rvf_SetPixelDepth(Avtp_Rvf_t* pdu, uint8_t value)
+void Avtp_Rvf_SetPixelDepth(Avtp_Rvf_t* pdu, Avtp_RvfPixelDepth_t value)
 {
     SET_FIELD(AVTP_RVF_FIELD_PIXEL_DEPTH, value);
 }
 
-void Avtp_Rvf_SetPixelFormat(Avtp_Rvf_t* pdu, uint8_t value)
+void Avtp_Rvf_SetPixelFormat(Avtp_Rvf_t* pdu, Avtp_RvfPixelFormat_t value)
 {
     SET_FIELD(AVTP_RVF_FIELD_PIXEL_FORMAT, value);
 }
 
-void Avtp_Rvf_SetFrameRate(Avtp_Rvf_t* pdu, uint8_t value)
+void Avtp_Rvf_SetFrameRate(Avtp_Rvf_t* pdu, Avtp_RvfFrameRate_t value)
 {
     SET_FIELD(AVTP_RVF_FIELD_FRAME_RATE, value);
 }
 
-void Avtp_Rvf_SetColorspace(Avtp_Rvf_t* pdu, uint8_t value)
+void Avtp_Rvf_SetColorspace(Avtp_Rvf_t* pdu, Avtp_RvfColorspace_t value)
 {
     SET_FIELD(AVTP_RVF_FIELD_COLORSPACE, value);
 }

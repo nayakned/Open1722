@@ -9,7 +9,7 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of COVESA nor the names of its contributors may be 
+ *    * Neither the name of COVESA nor the names of its contributors may be
  *      used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
@@ -83,7 +83,7 @@ typedef enum {
  */
 uint64_t Avtp_AcfCommon_GetField(Avtp_AcfCommon_t* pdu, Avtp_AcfCommonFields_t field);
 
-uint8_t Avtp_AcfCommon_GetAcfMsgType(Avtp_AcfCommon_t* pdu);
+Avtp_AcfMsgType_t Avtp_AcfCommon_GetAcfMsgType(Avtp_AcfCommon_t* pdu);
 uint16_t Avtp_AcfCommon_GetAcfMsgLength(Avtp_AcfCommon_t* pdu);
 
 /**
@@ -95,5 +95,5 @@ uint16_t Avtp_AcfCommon_GetAcfMsgLength(Avtp_AcfCommon_t* pdu);
  */
 void Avtp_AcfCommon_SetField(Avtp_AcfCommon_t* pdu, Avtp_AcfCommonFields_t field, uint64_t value);
 
-void Avtp_AcfCommon_SetAcfMsgType(Avtp_AcfCommon_t* pdu, uint8_t value);
+void Avtp_AcfCommon_SetAcfMsgType(Avtp_AcfCommon_t* pdu, Avtp_AcfMsgType_t value);
 void Avtp_AcfCommon_SetAcfMsgLength(Avtp_AcfCommon_t* pdu, uint16_t value);

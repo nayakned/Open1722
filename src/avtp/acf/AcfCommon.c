@@ -9,7 +9,7 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of COVESA nor the names of its contributors may be 
+ *    * Neither the name of COVESA nor the names of its contributors may be
  *      used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
@@ -31,7 +31,7 @@
 #include <string.h>
 
 #include "avtp/acf/AcfCommon.h"
-#include "avtp/Utils.h" 
+#include "avtp/Utils.h"
 #include "avtp/Defines.h"
 
 #define GET_FIELD(field) \
@@ -54,7 +54,7 @@ uint64_t Avtp_AcfCommon_GetField(Avtp_AcfCommon_t* pdu, Avtp_AcfCommonFields_t f
     return GET_FIELD(field);
 }
 
-uint8_t Avtp_AcfCommon_GetAcfMsgType(Avtp_AcfCommon_t* pdu)
+Avtp_AcfMsgType_t Avtp_AcfCommon_GetAcfMsgType(Avtp_AcfCommon_t* pdu)
 {
     return GET_FIELD(AVTP_ACF_FIELD_ACF_MSG_TYPE);
 }
@@ -69,7 +69,7 @@ void Avtp_AcfCommon_SetField(Avtp_AcfCommon_t* pdu, Avtp_AcfCommonFields_t field
     SET_FIELD(field, value);
 }
 
-void Avtp_AcfCommon_SetAcfMsgType(Avtp_AcfCommon_t* pdu, uint8_t value)
+void Avtp_AcfCommon_SetAcfMsgType(Avtp_AcfCommon_t* pdu, Avtp_AcfMsgType_t value)
 {
     SET_FIELD(AVTP_ACF_FIELD_ACF_MSG_TYPE, value);
 }

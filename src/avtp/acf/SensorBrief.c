@@ -9,7 +9,7 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of COVESA nor the names of its contributors may be 
+ *    * Neither the name of COVESA nor the names of its contributors may be
  *      used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
@@ -31,7 +31,7 @@
 #include <string.h>
 
 #include "avtp/acf/SensorBrief.h"
-#include "avtp/Utils.h" 
+#include "avtp/Utils.h"
 #include "avtp/Defines.h"
 
 #define GET_FIELD(field) \
@@ -47,25 +47,25 @@ static const Avtp_FieldDescriptor_t Avtp_SensorBriefFieldDesc[AVTP_SENSOR_FIELD_
 
     /* ACF common header fields */
     [AVTP_SENSOR_BRIEF_FIELD_ACF_MSG_TYPE]      = { .quadlet = 0, .offset = 0, .bits = 7 },
-    [AVTP_SENSOR_BRIEF_FIELD_ACF_MSG_LENGTH]    = { .quadlet = 0, .offset = 7, .bits = 9 },  
+    [AVTP_SENSOR_BRIEF_FIELD_ACF_MSG_LENGTH]    = { .quadlet = 0, .offset = 7, .bits = 9 },
 
-    /* ACF Abbreviated Sensor header fields */   
+    /* ACF Abbreviated Sensor header fields */
     [AVTP_SENSOR_BRIEF_FIELD_MTV]               = { .quadlet = 0, .offset = 16, .bits = 1 },
     [AVTP_SENSOR_BRIEF_FIELD_NUM_SENSOR]        = { .quadlet = 0, .offset = 17, .bits = 7 },
     [AVTP_SENSOR_BRIEF_FIELD_SZ]                = { .quadlet = 0, .offset = 24, .bits = 2 },
-    [AVTP_SENSOR_BRIEF_FIELD_SENSOR_GROUP]      = { .quadlet = 0, .offset = 26, .bits = 6 },    
+    [AVTP_SENSOR_BRIEF_FIELD_SENSOR_GROUP]      = { .quadlet = 0, .offset = 26, .bits = 6 },
 };
 
 void Avtp_SensorBrief_Init(Avtp_SensorBrief_t* pdu)
 {
     if(pdu != NULL) {
-        memset(pdu, 0, sizeof(Avtp_SensorBrief_t));  
+        memset(pdu, 0, sizeof(Avtp_SensorBrief_t));
         Avtp_SensorBrief_SetField(pdu, AVTP_SENSOR_BRIEF_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_SENSOR_BRIEF);
     }
 }
 
 uint64_t Avtp_SensorBrief_GetField(Avtp_SensorBrief_t* pdu, Avtp_SensorBriefFields_t field)
-{    
+{
     return GET_FIELD(field);
 }
 
@@ -100,7 +100,7 @@ uint8_t Avtp_SensorBrief_GetSensorGroup(Avtp_SensorBrief_t* pdu)
 }
 
 void Avtp_SensorBrief_SetField(Avtp_SensorBrief_t* pdu, Avtp_SensorBriefFields_t field, uint64_t value)
-{    
+{
     SET_FIELD(field, value);
 }
 

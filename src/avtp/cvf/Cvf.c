@@ -10,7 +10,7 @@
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
  *    * Neither the name of COVESA, Intel Corporation nor the names of its
- *      contributors  may be used to endorse or promote products derived from 
+ *      contributors  may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -123,12 +123,12 @@ uint32_t Avtp_Cvf_GetAvtpTimestamp(Avtp_Cvf_t* pdu)
     return GET_FIELD(AVTP_CVF_FIELD_AVTP_TIMESTAMP);
 }
 
-uint8_t Avtp_Cvf_GetFormat(Avtp_Cvf_t* pdu)
+Avtp_CvfFormat_t Avtp_Cvf_GetFormat(Avtp_Cvf_t* pdu)
 {
     return GET_FIELD(AVTP_CVF_FIELD_FORMAT);
 }
 
-uint8_t Avtp_Cvf_GetFormatSubtype(Avtp_Cvf_t* pdu)
+Avtp_CvfFormatSubtype_t Avtp_Cvf_GetFormatSubtype(Avtp_Cvf_t* pdu)
 {
     return GET_FIELD(AVTP_CVF_FIELD_FORMAT_SUBTYPE);
 }
@@ -203,12 +203,12 @@ void Avtp_Cvf_SetAvtpTimestamp(Avtp_Cvf_t* pdu, uint32_t value)
     SET_FIELD(AVTP_CVF_FIELD_AVTP_TIMESTAMP, value);
 }
 
-void Avtp_Cvf_SetFormat(Avtp_Cvf_t* pdu, uint8_t value)
+void Avtp_Cvf_SetFormat(Avtp_Cvf_t* pdu, Avtp_CvfFormat_t value)
 {
     SET_FIELD(AVTP_CVF_FIELD_FORMAT, value);
 }
 
-void Avtp_Cvf_SetFormatSubtype(Avtp_Cvf_t* pdu, uint8_t value)
+void Avtp_Cvf_SetFormatSubtype(Avtp_Cvf_t* pdu, Avtp_CvfFormatSubtype_t value)
 {
     SET_FIELD(AVTP_CVF_FIELD_FORMAT_SUBTYPE, value);
 }

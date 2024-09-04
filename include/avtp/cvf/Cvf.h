@@ -10,7 +10,7 @@
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
  *    * Neither the name of COVESA, Intel Corporation nor the names of its
- *      contributors  may be used to endorse or promote products derived from 
+ *      contributors  may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -89,8 +89,8 @@ uint8_t Avtp_Cvf_GetSequenceNum(Avtp_Cvf_t* pdu);
 uint8_t Avtp_Cvf_GetTu(Avtp_Cvf_t* pdu);
 uint64_t Avtp_Cvf_GetStreamId(Avtp_Cvf_t* pdu);
 uint32_t Avtp_Cvf_GetAvtpTimestamp(Avtp_Cvf_t* pdu);
-uint8_t Avtp_Cvf_GetFormat(Avtp_Cvf_t* pdu);
-uint8_t Avtp_Cvf_GetFormatSubtype(Avtp_Cvf_t* pdu);
+Avtp_CvfFormat_t Avtp_Cvf_GetFormat(Avtp_Cvf_t* pdu);
+Avtp_CvfFormatSubtype_t Avtp_Cvf_GetFormatSubtype(Avtp_Cvf_t* pdu);
 uint16_t Avtp_Cvf_GetStreamDataLength(Avtp_Cvf_t* pdu);
 uint8_t Avtp_Cvf_GetPtv(Avtp_Cvf_t* pdu);
 uint8_t Avtp_Cvf_GetM(Avtp_Cvf_t* pdu);
@@ -107,8 +107,8 @@ void Avtp_Cvf_SetSequenceNum(Avtp_Cvf_t* pdu, uint8_t value);
 void Avtp_Cvf_SetTu(Avtp_Cvf_t* pdu, uint8_t value);
 void Avtp_Cvf_SetStreamId(Avtp_Cvf_t* pdu, uint64_t value);
 void Avtp_Cvf_SetAvtpTimestamp(Avtp_Cvf_t* pdu, uint32_t value);
-void Avtp_Cvf_SetFormat(Avtp_Cvf_t* pdu, uint8_t value);
-void Avtp_Cvf_SetFormatSubtype(Avtp_Cvf_t* pdu, uint8_t value);
+void Avtp_Cvf_SetFormat(Avtp_Cvf_t* pdu, Avtp_CvfFormat_t value);
+void Avtp_Cvf_SetFormatSubtype(Avtp_Cvf_t* pdu, Avtp_CvfFormatSubtype_t value);
 void Avtp_Cvf_SetStreamDataLength(Avtp_Cvf_t* pdu, uint16_t value);
 void Avtp_Cvf_SetPtv(Avtp_Cvf_t* pdu, uint8_t value);
 void Avtp_Cvf_SetM(Avtp_Cvf_t* pdu, uint8_t value);

@@ -9,7 +9,7 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of COVESA nor the names of its contributors may be 
+ *    * Neither the name of COVESA nor the names of its contributors may be
  *      used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
@@ -30,7 +30,7 @@
 #include <errno.h>
 #include <string.h>
 #include "avtp/Udp.h"
-#include "avtp/Utils.h" 
+#include "avtp/Utils.h"
 #include "avtp/Defines.h"
 
 #define GET_FIELD(field) \

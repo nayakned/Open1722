@@ -9,7 +9,7 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of COVESA nor the names of its contributors may be 
+ *    * Neither the name of COVESA nor the names of its contributors may be
  *      used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
@@ -31,7 +31,7 @@
 #include <string.h>
 
 #include "avtp/acf/Ntscf.h"
-#include "avtp/Utils.h" 
+#include "avtp/Utils.h"
 #include "avtp/Defines.h"
 #include "avtp/CommonHeader.h"
 
@@ -44,12 +44,12 @@
  * This table maps all IEEE 1722 NTSCF-specific header fields to a descriptor.
  */
 static const Avtp_FieldDescriptor_t Avtp_NtscfFieldDesc[AVTP_NTSCF_FIELD_MAX] =
-{    
+{
     /* Common AVTP header */
     [AVTP_NTSCF_FIELD_SUBTYPE]              = { .quadlet = 0, .offset = 0, .bits = 8 },
     [AVTP_NTSCF_FIELD_SV]                   = { .quadlet = 0, .offset = 8, .bits = 1 },
     [AVTP_NTSCF_FIELD_VERSION]              = { .quadlet = 0, .offset = 9, .bits = 3 },
-    /* NTSCF header */    
+    /* NTSCF header */
     [AVTP_NTSCF_FIELD_NTSCF_DATA_LENGTH]    = { .quadlet = 0, .offset = 13, .bits = 11 },
     [AVTP_NTSCF_FIELD_SEQUENCE_NUM]         = { .quadlet = 0, .offset = 24, .bits = 8 },
     [AVTP_NTSCF_FIELD_STREAM_ID]            = { .quadlet = 1, .offset = 0, .bits = 64 },
