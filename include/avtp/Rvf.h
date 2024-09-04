@@ -12,7 +12,7 @@
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
  *    * Neither the name of Fastree3D, COVESA nor the names of their
- *      contributors  may be used to endorse or promote products derived from 
+ *      contributors  may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * SPDX-License-Identifier: BSD-3-Clause
+ * SPDX-License-Identifier: BSD3-Clause
  */
 
 #pragma once
@@ -140,11 +140,63 @@ typedef enum Avtp_RvfColorspace {
     AVTP_RVF_COLORSPACE_USER            = 0x0F
 } Avtp_RvfColorspace_t;
 
-int Avtp_Rvf_Init(Avtp_Rvf_t* pdu);
+void Avtp_Rvf_Init(Avtp_Rvf_t* pdu);
 
-int Avtp_Rvf_GetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t* value);
+uint64_t Avtp_Rvf_GetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field);
 
-int Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value);
+uint8_t Avtp_Rvf_GetSubtype(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetSv(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetVersion(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetMr(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetTv(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetSequenceNum(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetTu(Avtp_Rvf_t* pdu);
+uint64_t Avtp_Rvf_GetStreamId(Avtp_Rvf_t* pdu);
+uint32_t Avtp_Rvf_GetAvtpTimestamp(Avtp_Rvf_t* pdu);
+uint16_t Avtp_Rvf_GetActivePixels(Avtp_Rvf_t* pdu);
+uint16_t Avtp_Rvf_GetTotalLines(Avtp_Rvf_t* pdu);
+uint16_t Avtp_Rvf_GetStreamDataLength(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetAp(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetF(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetEf(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetEvt(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetPd(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetI(Avtp_Rvf_t* pdu);
+Avtp_RvfPixelDepth_t Avtp_Rvf_GetPixelDepth(Avtp_Rvf_t* pdu);
+Avtp_RvfPixelFormat_t Avtp_Rvf_GetPixelFormat(Avtp_Rvf_t* pdu);
+Avtp_RvfFrameRate_t Avtp_Rvf_GetFrameRate(Avtp_Rvf_t* pdu);
+Avtp_RvfColorspace_t Avtp_Rvf_GetColorspace(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetNumLines(Avtp_Rvf_t* pdu);
+uint8_t Avtp_Rvf_GetISeqNum(Avtp_Rvf_t* pdu);
+uint16_t Avtp_Rvf_GetLineNumber(Avtp_Rvf_t* pdu);
+
+void Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value);
+
+void Avtp_Rvf_SetSubtype(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetSv(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetVersion(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetMr(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetTv(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetSequenceNum(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetTu(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetStreamId(Avtp_Rvf_t* pdu, uint64_t value);
+void Avtp_Rvf_SetAvtpTimestamp(Avtp_Rvf_t* pdu, uint32_t value);
+void Avtp_Rvf_SetActivePixels(Avtp_Rvf_t* pdu, uint16_t value);
+void Avtp_Rvf_SetTotalLines(Avtp_Rvf_t* pdu, uint16_t value);
+void Avtp_Rvf_SetStreamDataLength(Avtp_Rvf_t* pdu, uint16_t value);
+void Avtp_Rvf_SetAp(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_setF(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetEf(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetEvt(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetPd(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetI(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetPixelDepth(Avtp_Rvf_t* pdu, Avtp_RvfPixelDepth_t value);
+void Avtp_Rvf_SetPixelFormat(Avtp_Rvf_t* pdu, Avtp_RvfPixelFormat_t value);
+void Avtp_Rvf_SetFrameRate(Avtp_Rvf_t* pdu, Avtp_RvfFrameRate_t value);
+void Avtp_Rvf_SetColorspace(Avtp_Rvf_t* pdu, Avtp_RvfColorspace_t value);
+void Avtp_Rvf_SetNumLines(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetISeqNum(Avtp_Rvf_t* pdu, uint8_t value);
+void Avtp_Rvf_SetLineNumber(Avtp_Rvf_t* pdu, uint16_t value);
 
 /******************************************************************************
  * Legacy API (deprecated)

@@ -34,32 +34,32 @@
 
 #include "avtp/Defines.h"
 
-#define AVTP_AAF_PCM_STREAM_HEADER_LEN              (6 * AVTP_QUADLET_SIZE)
+#define AVTP_PCM_HEADER_LEN              (6 * AVTP_QUADLET_SIZE)
 
 typedef struct {
-    uint8_t header[AVTP_AAF_PCM_STREAM_HEADER_LEN];
+    uint8_t header[AVTP_PCM_HEADER_LEN];
     uint8_t payload[0];
-} Avtp_AafPcmStream_t;
+} Avtp_Pcm_t;
 
 typedef enum {
-    AVTP_AAF_PCM_STREAM_FIELD_SUBTYPE,
-    AVTP_AAF_PCM_STREAM_FIELD_SV,
-    AVTP_AAF_PCM_STREAM_FIELD_VERSION,
-    AVTP_AAF_PCM_STREAM_FIELD_MR,
-    AVTP_AAF_PCM_STREAM_FIELD_TV,
-    AVTP_AAF_PCM_STREAM_FIELD_SEQUENCE_NUM,
-    AVTP_AAF_PCM_STREAM_FIELD_TU,
-    AVTP_AAF_PCM_STREAM_FIELD_STREAM_ID,
-    AVTP_AAF_PCM_STREAM_FIELD_AVTP_TIMESTAMP,
-    AVTP_AAF_PCM_STREAM_FIELD_FORMAT,
-    AVTP_AAF_PCM_STREAM_FIELD_NSR,
-    AVTP_AAF_PCM_STREAM_FIELD_CHANNELS_PER_FRAME,
-    AVTP_AAF_PCM_STREAM_FIELD_BIT_DEPTH,
-    AVTP_AAF_PCM_STREAM_FIELD_STREAM_DATA_LENGTH,
-    AVTP_AAF_PCM_STREAM_FIELD_SP,
-    AVTP_AAF_PCM_STREAM_FIELD_EVT,
-    AVTP_AAF_PCM_STREAM_FIELD_MAX
-} Avtp_AafPcmStreamFields_t;
+    AVTP_PCM_FIELD_SUBTYPE,
+    AVTP_PCM_FIELD_SV,
+    AVTP_PCM_FIELD_VERSION,
+    AVTP_PCM_FIELD_MR,
+    AVTP_PCM_FIELD_TV,
+    AVTP_PCM_FIELD_SEQUENCE_NUM,
+    AVTP_PCM_FIELD_TU,
+    AVTP_PCM_FIELD_STREAM_ID,
+    AVTP_PCM_FIELD_AVTP_TIMESTAMP,
+    AVTP_PCM_FIELD_FORMAT,
+    AVTP_PCM_FIELD_NSR,
+    AVTP_PCM_FIELD_CHANNELS_PER_FRAME,
+    AVTP_PCM_FIELD_BIT_DEPTH,
+    AVTP_PCM_FIELD_STREAM_DATA_LENGTH,
+    AVTP_PCM_FIELD_SP,
+    AVTP_PCM_FIELD_EVT,
+    AVTP_PCM_FIELD_MAX
+} Avtp_PcmFields_t;
 
 // AAF 'format' field values
 typedef enum {
@@ -96,7 +96,7 @@ typedef enum {
  *
  * @param pdu Pointer to the first bit of a 1722 PDU.
  */
-int Avtp_AafPcmStream_Init(Avtp_AafPcmStream_t* pdu);
+void Avtp_Pcm_Init(Avtp_Pcm_t* pdu);
 
 /**
  * Returns the value of an an AVTP AAF PCM stream field as specified in the IEEE 1722 Specification.
@@ -107,7 +107,24 @@ int Avtp_AafPcmStream_Init(Avtp_AafPcmStream_t* pdu);
  * @returns This function returns 0 if the data field was successfully read from
  * the 1722 AVTP PDU.
  */
-int Avtp_AafPcmStream_GetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field, uint64_t* value);
+uint64_t Avtp_Pcm_GetField(Avtp_Pcm_t* pdu, Avtp_PcmFields_t field);
+
+uint8_t Avtp_Pcm_GetSubtype(Avtp_Pcm_t* pdu);
+uint8_t Avtp_Pcm_GetSv(Avtp_Pcm_t* pdu);
+uint8_t Avtp_Pcm_GetVersion(Avtp_Pcm_t* pdu);
+uint8_t Avtp_Pcm_GetMr(Avtp_Pcm_t* pdu);
+uint8_t Avtp_Pcm_GetTv(Avtp_Pcm_t* pdu);
+uint8_t Avtp_Pcm_GetSequenceNum(Avtp_Pcm_t* pdu);
+uint8_t Avtp_Pcm_GetTu(Avtp_Pcm_t* pdu);
+uint64_t Avtp_Pcm_GetStreamId(Avtp_Pcm_t* pdu);
+uint32_t Avtp_Pcm_GetAvtpTimestamp(Avtp_Pcm_t* pdu);
+Avtp_AafFormat_t Avtp_Pcm_GetFormat(Avtp_Pcm_t* pdu);
+Avtp_AafNsr_t Avtp_Pcm_GetNsr(Avtp_Pcm_t* pdu);
+uint16_t Avtp_Pcm_GetChannelsPerFrame(Avtp_Pcm_t* pdu);
+uint8_t Avtp_Pcm_GetBitDepth(Avtp_Pcm_t* pdu);
+uint16_t Avtp_Pcm_GetStreamDataLength(Avtp_Pcm_t* pdu);
+Avtp_AafSp_t Avtp_Pcm_GetSp(Avtp_Pcm_t* pdu);
+uint8_t Avtp_Pcm_GetEvt(Avtp_Pcm_t* pdu);
 
 /**
  * Sets the value of an an AVTP AAF PCM stream field as specified in the IEEE 1722 Specification.
@@ -118,27 +135,44 @@ int Avtp_AafPcmStream_GetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields
  * @returns This function returns 0 if the data field was successfully set in
  * the 1722 AVTP PDU.
  */
-int Avtp_AafPcmStream_SetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields_t field, uint64_t value);
+void Avtp_Pcm_SetField(Avtp_Pcm_t* pdu, Avtp_PcmFields_t field, uint64_t value);
+
+void Avtp_Pcm_SetSubtype(Avtp_Pcm_t* pdu, uint8_t value);
+void Avtp_Pcm_SetSv(Avtp_Pcm_t* pdu, uint8_t value);
+void Avtp_Pcm_SetVersion(Avtp_Pcm_t* pdu, uint8_t value);
+void Avtp_Pcm_SetMr(Avtp_Pcm_t* pdu, uint8_t value);
+void Avtp_Pcm_SetTv(Avtp_Pcm_t* pdu, uint8_t value);
+void Avtp_Pcm_SetSequenceNum(Avtp_Pcm_t* pdu, uint8_t value);
+void Avtp_Pcm_SetTu(Avtp_Pcm_t* pdu, uint8_t value);
+void Avtp_Pcm_SetStreamId(Avtp_Pcm_t* pdu, uint64_t value);
+void Avtp_Pcm_SetAvtpTimestamp(Avtp_Pcm_t* pdu, uint32_t value);
+void Avtp_Pcm_SetFormat(Avtp_Pcm_t* pdu, Avtp_AafFormat_t value);
+void Avtp_Pcm_SetNsr(Avtp_Pcm_t* pdu, Avtp_AafNsr_t value);
+void Avtp_Pcm_SetChannelsPerFrame(Avtp_Pcm_t* pdu, uint16_t value);
+void Avtp_Pcm_SetBitDepth(Avtp_Pcm_t* pdu, uint8_t value);
+void Avtp_Pcm_SetStreamDataLength(Avtp_Pcm_t* pdu, uint16_t value);
+void Avtp_Pcm_SetSp(Avtp_Pcm_t* pdu, Avtp_AafSp_t value);
+void Avtp_Pcm_SetEvt(Avtp_Pcm_t* pdu, uint8_t value);
 
 /******************************************************************************
  * Legacy API (deprecated)
  *****************************************************************************/
 
-#define AVTP_AAF_FIELD_SV               AVTP_AAF_PCM_STREAM_FIELD_SV
-#define AVTP_AAF_FIELD_MR               AVTP_AAF_PCM_STREAM_FIELD_MR
-#define AVTP_AAF_FIELD_TV               AVTP_AAF_PCM_STREAM_FIELD_TV
-#define AVTP_AAF_FIELD_SEQ_NUM          AVTP_AAF_PCM_STREAM_FIELD_SEQUENCE_NUM
-#define AVTP_AAF_FIELD_TU               AVTP_AAF_PCM_STREAM_FIELD_TU
-#define AVTP_AAF_FIELD_STREAM_ID        AVTP_AAF_PCM_STREAM_FIELD_STREAM_ID
-#define AVTP_AAF_FIELD_TIMESTAMP        AVTP_AAF_PCM_STREAM_FIELD_AVTP_TIMESTAMP
-#define AVTP_AAF_FIELD_STREAM_DATA_LEN  AVTP_AAF_PCM_STREAM_FIELD_STREAM_DATA_LENGTH
-#define AVTP_AAF_FIELD_FORMAT           AVTP_AAF_PCM_STREAM_FIELD_FORMAT
-#define AVTP_AAF_FIELD_NSR              AVTP_AAF_PCM_STREAM_FIELD_NSR
-#define AVTP_AAF_FIELD_CHAN_PER_FRAME   AVTP_AAF_PCM_STREAM_FIELD_CHANNELS_PER_FRAME
-#define AVTP_AAF_FIELD_BIT_DEPTH        AVTP_AAF_PCM_STREAM_FIELD_BIT_DEPTH
-#define AVTP_AAF_FIELD_SP               AVTP_AAF_PCM_STREAM_FIELD_SP
-#define AVTP_AAF_FIELD_EVT              AVTP_AAF_PCM_STREAM_FIELD_EVT
-#define AVTP_AAF_FIELD_MAX              AVTP_AAF_PCM_STREAM_FIELD_MAX
+#define AVTP_AAF_FIELD_SV               AVTP_PCM_FIELD_SV
+#define AVTP_AAF_FIELD_MR               AVTP_PCM_FIELD_MR
+#define AVTP_AAF_FIELD_TV               AVTP_PCM_FIELD_TV
+#define AVTP_AAF_FIELD_SEQ_NUM          AVTP_PCM_FIELD_SEQUENCE_NUM
+#define AVTP_AAF_FIELD_TU               AVTP_PCM_FIELD_TU
+#define AVTP_AAF_FIELD_STREAM_ID        AVTP_PCM_FIELD_STREAM_ID
+#define AVTP_AAF_FIELD_TIMESTAMP        AVTP_PCM_FIELD_AVTP_TIMESTAMP
+#define AVTP_AAF_FIELD_STREAM_DATA_LEN  AVTP_PCM_FIELD_STREAM_DATA_LENGTH
+#define AVTP_AAF_FIELD_FORMAT           AVTP_PCM_FIELD_FORMAT
+#define AVTP_AAF_FIELD_NSR              AVTP_PCM_FIELD_NSR
+#define AVTP_AAF_FIELD_CHAN_PER_FRAME   AVTP_PCM_FIELD_CHANNELS_PER_FRAME
+#define AVTP_AAF_FIELD_BIT_DEPTH        AVTP_PCM_FIELD_BIT_DEPTH
+#define AVTP_AAF_FIELD_SP               AVTP_PCM_FIELD_SP
+#define AVTP_AAF_FIELD_EVT              AVTP_PCM_FIELD_EVT
+#define AVTP_AAF_FIELD_MAX              AVTP_PCM_FIELD_MAX
 
 /**
  * @deprecated
@@ -152,7 +186,7 @@ int Avtp_AafPcmStream_SetField(Avtp_AafPcmStream_t* pdu, Avtp_AafPcmStreamFields
  *    -EINVAL: If any argument is invalid.
  */
 int avtp_aaf_pdu_get(void *pdu,
-                Avtp_AafPcmStreamFields_t field, uint64_t *val);
+                Avtp_PcmFields_t field, uint64_t *val);
 
 /**
  * @deprecated
@@ -165,7 +199,7 @@ int avtp_aaf_pdu_get(void *pdu,
  *    0: Success.
  *    -EINVAL: If any argument is invalid.
  */
-int avtp_aaf_pdu_set(void *pdu, Avtp_AafPcmStreamFields_t field,
+int avtp_aaf_pdu_set(void *pdu, Avtp_PcmFields_t field,
                                 uint64_t val);
 
 /**

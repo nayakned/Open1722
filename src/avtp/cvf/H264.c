@@ -34,24 +34,39 @@
 #include "avtp/Utils.h"
 #include "avtp/CommonHeader.h"
 
+#define GET_FIELD(field) \
+        (Avtp_GetField(fieldDescriptors, AVTP_H264_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(fieldDescriptors, AVTP_H264_FIELD_MAX, (uint8_t*)pdu, field, value))
+
 static const Avtp_FieldDescriptor_t fieldDescriptors[AVTP_H264_FIELD_MAX] =
 {
     [AVTP_H264_FIELD_TIMESTAMP] = { .quadlet = 0, .offset = 0, .bits = 32 },
 };
 
-int Avtp_H264_Init(Avtp_H264_t* pdu)
+void Avtp_H264_Init(Avtp_H264_t* pdu)
 {
-    if (pdu == NULL) return -EINVAL;
-    memset(pdu, 0, sizeof(Avtp_H264_t));
-    return 0;
+    if (pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_H264_t));
+    }
 }
 
-int Avtp_H264_GetField(Avtp_H264_t* pdu, Avtp_H264Field_t field, uint64_t* value)
+uint64_t Avtp_H264_GetField(Avtp_H264_t* pdu, Avtp_H264Field_t field)
 {
-    return Avtp_GetField(fieldDescriptors, AVTP_H264_FIELD_MAX, (uint8_t*)pdu, field, value);
+    return GET_FIELD(field);
 }
 
-int Avtp_H264_SetField(Avtp_H264_t* pdu, Avtp_H264Field_t field, uint64_t value)
+uint32_t Avtp_H264_GetTimestamp(Avtp_H264_t* pdu)
 {
-    return Avtp_SetField(fieldDescriptors, AVTP_H264_FIELD_MAX, (uint8_t*)pdu, field, value);
+    return GET_FIELD(AVTP_H264_FIELD_TIMESTAMP);
+}
+
+void Avtp_H264_SetField(Avtp_H264_t* pdu, Avtp_H264Field_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_H264_SetTimestamp(Avtp_H264_t* pdu, uint32_t value)
+{
+    SET_FIELD(AVTP_H264_FIELD_TIMESTAMP, value);
 }

@@ -9,7 +9,7 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of COVESA nor the names of its contributors may be 
+ *    * Neither the name of COVESA nor the names of its contributors may be
  *      used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
@@ -30,9 +30,14 @@
 #include <errno.h>
 #include <string.h>
 
-#include "avtp/acf/Common.h"
-#include "avtp/Utils.h" 
+#include "avtp/acf/AcfCommon.h"
+#include "avtp/Utils.h"
 #include "avtp/Defines.h"
+
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_AcfCommonFieldDesc, AVTP_ACF_COMMON_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_AcfCommonFieldDesc, AVTP_ACF_COMMON_FIELD_MAX, (uint8_t*)pdu, field, value))
 
 /**
  * This table maps all IEEE 1722 ACF common header fields to a descriptor.
@@ -44,12 +49,32 @@ static const Avtp_FieldDescriptor_t Avtp_AcfCommonFieldDesc[AVTP_ACF_COMMON_FIEL
     [AVTP_ACF_FIELD_ACF_MSG_LENGTH]          = { .quadlet = 0, .offset = 7, .bits = 9 },
 };
 
-int Avtp_AcfCommon_GetField(Avtp_AcfCommon_t* acf_pdu, Avtp_AcfCommonFields_t field, uint64_t* value)
-{    
-    return Avtp_GetField(Avtp_AcfCommonFieldDesc, AVTP_ACF_COMMON_FIELD_MAX, (uint8_t*)acf_pdu, (uint8_t)field, value);        
+uint64_t Avtp_AcfCommon_GetField(Avtp_AcfCommon_t* pdu, Avtp_AcfCommonFields_t field)
+{
+    return GET_FIELD(field);
 }
 
-int Avtp_AcfCommon_SetField(Avtp_AcfCommon_t* acf_pdu, Avtp_AcfCommonFields_t field, uint64_t value)
+Avtp_AcfMsgType_t Avtp_AcfCommon_GetAcfMsgType(Avtp_AcfCommon_t* pdu)
 {
-    return Avtp_SetField(Avtp_AcfCommonFieldDesc, AVTP_ACF_COMMON_FIELD_MAX, (uint8_t*)acf_pdu, (uint8_t)field, value);        
+    return GET_FIELD(AVTP_ACF_FIELD_ACF_MSG_TYPE);
+}
+
+uint16_t Avtp_AcfCommon_GetAcfMsgLength(Avtp_AcfCommon_t* pdu)
+{
+    return GET_FIELD(AVTP_ACF_FIELD_ACF_MSG_LENGTH);
+}
+
+void Avtp_AcfCommon_SetField(Avtp_AcfCommon_t* pdu, Avtp_AcfCommonFields_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_AcfCommon_SetAcfMsgType(Avtp_AcfCommon_t* pdu, Avtp_AcfMsgType_t value)
+{
+    SET_FIELD(AVTP_ACF_FIELD_ACF_MSG_TYPE, value);
+}
+
+void Avtp_AcfCommon_SetAcfMsgLength(Avtp_AcfCommon_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_ACF_FIELD_ACF_MSG_LENGTH, value);
 }

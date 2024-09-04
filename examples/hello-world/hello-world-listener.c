@@ -41,7 +41,7 @@
 #include "avtp/Udp.h"
 #include "avtp/acf/Ntscf.h"
 #include "avtp/acf/Tscf.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 #include "avtp/acf/Gpc.h"
 #include "avtp/CommonHeader.h"
 
@@ -110,8 +110,11 @@ static struct argp argp = { options, parser, 0, 0};
 int main(int argc, char *argv[])
 {
     int sk_fd, res;
-    uint64_t msg_length, proc_bytes = 0, msg_proc_bytes = 0;
-    uint64_t udp_seq_num, subtype, flag, acf_type, pdu_length;
+    uint64_t proc_bytes = 0, msg_proc_bytes = 0;
+    uint32_t udp_seq_num;
+    uint16_t msg_length, acf_msg_length;
+    uint8_t subtype, acf_type;
+    uint64_t flag;
     uint8_t pdu[MAX_PDU_SIZE];
     uint8_t *cf_pdu, *acf_pdu, *udp_pdu;
     uint64_t gpc_code;
@@ -140,7 +143,7 @@ int main(int argc, char *argv[])
         // If UDP is used the packets starts with an encapsulation number
         if (use_udp) {
             udp_pdu = pdu;
-            Avtp_Udp_GetField((Avtp_Udp_t *)udp_pdu, AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO, &udp_seq_num);
+            udp_seq_num = Avtp_Udp_GetEncapsulationSeqNo((Avtp_Udp_t *)udp_pdu);
             cf_pdu = pdu + AVTP_UDP_HEADER_LEN;
             proc_bytes += AVTP_UDP_HEADER_LEN;
         } else {
@@ -148,33 +151,29 @@ int main(int argc, char *argv[])
         }
 
         // Check if the packet is a control format packet (i.e. NTSCF or TSCF)
-        res = Avtp_CommonHeader_GetField((Avtp_CommonHeader_t*)cf_pdu, AVTP_COMMON_HEADER_FIELD_SUBTYPE, &subtype);
-        if (res < 0) {
-            fprintf(stderr, "Failed to get subtype field: %d\n", res);
-            goto err;
-        }
-        if(subtype == AVTP_SUBTYPE_TSCF){
+        subtype = Avtp_CommonHeader_GetSubtype((Avtp_CommonHeader_t*)cf_pdu);
+        if (subtype == AVTP_SUBTYPE_TSCF){
             proc_bytes += AVTP_TSCF_HEADER_LEN;
-            Avtp_Tscf_GetField((Avtp_Tscf_t*)cf_pdu, AVTP_TSCF_FIELD_STREAM_DATA_LENGTH, (uint64_t *) &msg_length);
-        }else{
+            msg_length = Avtp_Tscf_GetStreamDataLength((Avtp_Tscf_t*)cf_pdu);
+        } else {
             proc_bytes += AVTP_NTSCF_HEADER_LEN;
-            Avtp_Ntscf_GetField((Avtp_Ntscf_t*)cf_pdu, AVTP_NTSCF_FIELD_NTSCF_DATA_LENGTH, (uint64_t *) &msg_length);
+            msg_length = Avtp_Ntscf_GetNtscfDataLength((Avtp_Ntscf_t*)cf_pdu);
         }
 
         // Check if the control packet payload is a ACF GPC.
         acf_pdu = &pdu[proc_bytes];
-        Avtp_AcfCommon_GetField((Avtp_AcfCommon_t*)acf_pdu, AVTP_ACF_FIELD_ACF_MSG_TYPE, &acf_type);
+        acf_type = Avtp_AcfCommon_GetAcfMsgType((Avtp_AcfCommon_t*)acf_pdu);
         if (acf_type != AVTP_ACF_TYPE_GPC) {
-            fprintf(stderr, "ACF type mismatch: expected %u, got %lu\n",
+            fprintf(stderr, "ACF type mismatch: expected %"PRIu8", got %"PRIu8"\n",
                     AVTP_ACF_TYPE_GPC, acf_type);
             continue;
         }
 
         // Parse the GPC Packet and print contents on the STDOUT
-        Avtp_Gpc_GetField((Avtp_Gpc_t*)acf_pdu, AVTP_GPC_FIELD_GPC_MSG_ID, &gpc_code);
-        Avtp_Gpc_GetField((Avtp_Gpc_t*)acf_pdu, AVTP_GPC_FIELD_ACF_MSG_LENGTH, &pdu_length);
-        if (pdu_length * 4 <= MAX_MSG_SIZE) {
-            recd_msg = acf_pdu + AVTP_GPC_HEADER_LEN;
+        gpc_code = Avtp_Gpc_GetGpcMsgId((Avtp_Gpc_t*)acf_pdu);
+        acf_msg_length = Avtp_Gpc_GetAcfMsgLength((Avtp_Gpc_t*)acf_pdu);
+        if (acf_msg_length * 4 <= MAX_MSG_SIZE) {
+            recd_msg = (char *) acf_pdu + AVTP_GPC_HEADER_LEN;
             printf("%s : GPC Code %ld\n", recd_msg, gpc_code);
         }
     }

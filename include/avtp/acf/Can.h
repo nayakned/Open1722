@@ -9,7 +9,7 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of COVESA nor the names of its contributors may be 
+ *    * Neither the name of COVESA nor the names of its contributors may be
  *      used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
@@ -38,7 +38,7 @@
 #include <stdint.h>
 
 #include "avtp/Defines.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 
 #define AVTP_CAN_HEADER_LEN         (4 * AVTP_QUADLET_SIZE)
 
@@ -68,7 +68,7 @@ typedef enum  {
     AVTP_CAN_FIELD_ESI,
     AVTP_CAN_FIELD_CAN_BUS_ID,
     AVTP_CAN_FIELD_MESSAGE_TIMESTAMP,
-    AVTP_CAN_FIELD_CAN_IDENTIFIER,    
+    AVTP_CAN_FIELD_CAN_IDENTIFIER,
 
     /* Count number of fields for bound checks */
     AVTP_CAN_FIELD_MAX
@@ -79,18 +79,29 @@ typedef enum  {
  *
  * @param can_pdu Pointer to the first bit of a 1722 ACF CAN PDU.
  */
-int Avtp_Can_Init(Avtp_Can_t* can_pdu);
+void Avtp_Can_Init(Avtp_Can_t* can_pdu);
 
 /**
  * Returns the value of an an ACF CAN PDU field as specified in the IEEE 1722 Specification.
  *
  * @param can_pdu Pointer to the first bit of an 1722 ACF CAN PDU.
  * @param field Specifies the position of the data field to be read
- * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 ACF CAN PDU.
+ * @returns Value of the ACF CAN PDU field.
  */
-int Avtp_Can_GetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field, uint64_t* value);
+uint64_t Avtp_Can_GetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field);
+
+uint8_t Avtp_Can_GetAcfMsgType(Avtp_Can_t* pdu);
+uint16_t Avtp_Can_GetAcfMsgLength(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetPad(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetMtv(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetRtr(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetEff(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetBrs(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetFdf(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetEsi(Avtp_Can_t* pdu);
+uint8_t Avtp_Can_GetCanBusId(Avtp_Can_t* pdu);
+uint64_t Avtp_Can_GetMessageTimestamp(Avtp_Can_t* pdu);
+uint32_t Avtp_Can_GetCanIdentifier(Avtp_Can_t* pdu);
 
 /**
  * Sets the value of an an ACF CAN PDU field as specified in the IEEE 1722 Specification.
@@ -98,42 +109,68 @@ int Avtp_Can_GetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field, uint64_t* val
  * @param can_pdu Pointer to the first bit of an 1722 ACF CAN PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 ACF CAN PDU.
  */
-int Avtp_Can_SetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field, uint64_t value);
+void Avtp_Can_SetField(Avtp_Can_t* can_pdu, Avtp_CanFields_t field, uint64_t value);
+
+void Avtp_Can_SetAcfMsgType(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetAcfMsgLength(Avtp_Can_t* pdu, uint16_t value);
+void Avtp_Can_SetPad(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetMtv(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetRtr(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetEff(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetBrs(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetFdf(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetEsi(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetCanBusId(Avtp_Can_t* pdu, uint8_t value);
+void Avtp_Can_SetMessageTimestamp(Avtp_Can_t* pdu, uint64_t value);
+void Avtp_Can_SetCanIdentifier(Avtp_Can_t* pdu, uint32_t value);
 
 /**
- * Copies the payload data into the ACF CAN frame. This function will also set the
- * length and pad fields while inserting the padded bytes. 
+ * Copies the payload data and CAN frame ID into the ACF CAN frame. This function will
+ * also set the length and pad fields while inserting the padded bytes.
  *
  * @param can_pdu Pointer to the first bit of an 1722 ACF CAN PDU.
  * @param frame_id ID of the CAN frame
  * @param payload Pointer to the payload byte array
  * @param payload_length Length of the payload.
  * @param can_variant Classic CAN or CAN-FD
- * @returns Returns number of processed bytes (header + payload + padding)
  */
-int Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint32_t frame_id , uint8_t* payload, 
+void Avtp_Can_CreateAcfMessage(Avtp_Can_t* can_pdu, uint32_t frame_id, uint8_t* payload,
                         uint16_t payload_length, Avtp_CanVariant_t can_variant);
 
 /**
  * Returns pointer to payload of an ACF CAN frame.
  *
  * @param can_pdu Pointer to the first bit of an 1722 ACF CAN PDU.
- * @param payload_length payload length set by the function (if not NULL)
- * @param pdu_length total pdu length set by the function (if not NULL)
  * @return Pointer to ACF CAN frame payload
  */
-uint8_t* Avtp_Can_GetPayload(Avtp_Can_t* can_pdu, uint16_t* payload_length, uint16_t *pdu_length);
+uint8_t* Avtp_Can_GetPayload(Avtp_Can_t* can_pdu);
 
 /**
- * Finalizes the ACF CAN frame. This function will set the
- * length and pad fields while inserting the padded bytes. 
+ * Sets the CAN payload in an ACF CAN frame.
  *
  * @param can_pdu Pointer to the first bit of an 1722 ACF CAN PDU.
  * @param payload Pointer to the payload byte array
- * @param payload_length Length of the payload.
- * @returns Returns number of processed bytes (header + payload + padding)
+ * @param payload_length Length of the payload
  */
-int Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length);
+void Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint8_t* payload,
+                                uint16_t payload_length);
+
+/**
+ * Finalizes the ACF CAN frame. This function will set the
+ * length and pad fields while inserting the padded bytes.
+ *
+ * @param can_pdu Pointer to the first bit of an 1722 ACF CAN PDU.
+ * @param payload Pointer to the payload byte array
+ * @param payload_length Length of the CAN frame payload.
+ */
+void Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length);
+
+/**
+ * Returns the length of the CAN payload without the padding bytes and the
+ * header length of the encapsulating ACF Frame.
+ *
+ * @param pdu Pointer to the first bit of an 1722 ACF CAN PDU.
+ * @return  Length of CAN payload in bytes
+ */
+uint8_t Avtp_Can_GetCanPayloadLength(Avtp_Can_t* pdu);

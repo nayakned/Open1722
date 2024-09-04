@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 #include "avtp/Defines.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 
 /** Length of ACF Lin header. */
 #define AVTP_LIN_HEADER_LEN (3 * AVTP_QUADLET_SIZE)
@@ -69,17 +69,24 @@ typedef enum  {
  *
  * @param pdu Pointer to the first bit of a 1722 ACF Lin PDU.
  */
-int Avtp_Lin_Init(Avtp_Lin_t* pdu);
+void Avtp_Lin_Init(Avtp_Lin_t* pdu);
 
 /**
  * Returns the value of an ACF Lin PDU field.
  *
  * @param pdu Pointer to the first bit of an 1722 ACF Lin PDU.
  * @param field Data field to be read
- * @param value Pointer to location to store the value.
- * @returns Returns 0 if the data field was successfully read.
+ * @returns Value of PDU field.
  */
-int Avtp_Lin_GetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t* value);
+uint64_t Avtp_Lin_GetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field);
+
+uint8_t Avtp_Lin_GetAcfMsgType(Avtp_Lin_t* pdu);
+uint16_t Avtp_Lin_GetAcfMsgLength(Avtp_Lin_t* pdu);
+uint8_t Avtp_Lin_GetPad(Avtp_Lin_t* pdu);
+uint8_t Avtp_Lin_GetMtv(Avtp_Lin_t* pdu);
+uint8_t Avtp_Lin_GetLinBusId(Avtp_Lin_t* pdu);
+uint8_t Avtp_Lin_GetLinIdentifier(Avtp_Lin_t* pdu);
+uint64_t Avtp_Lin_GetMessageTimestamp(Avtp_Lin_t* pdu);
 
 /**
  * Sets the value of an ACF Lin PDU field.
@@ -87,6 +94,13 @@ int Avtp_Lin_GetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t* value);
  * @param pdu Pointer to the first bit of an 1722 ACF Lin PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns Returns 0 if the data field was successfully set.
  */
-int Avtp_Lin_SetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t value);
+void Avtp_Lin_SetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t value);
+
+void Avtp_Lin_SetAcfMsgType(Avtp_Lin_t* pdu, uint8_t value);
+void Avtp_Lin_SetAcfMsgLength(Avtp_Lin_t* pdu, uint16_t value);
+void Avtp_Lin_SetPad(Avtp_Lin_t* pdu, uint8_t value);
+void Avtp_Lin_SetMtv(Avtp_Lin_t* pdu, uint8_t value);
+void Avtp_Lin_SetLinBusId(Avtp_Lin_t* pdu, uint8_t value);
+void Avtp_Lin_SetLinIdentifier(Avtp_Lin_t* pdu, uint8_t value);
+void Avtp_Lin_SetMessageTimestamp(Avtp_Lin_t* pdu, uint64_t value);

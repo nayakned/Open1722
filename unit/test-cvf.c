@@ -509,7 +509,6 @@ static void cvf_set_field_ptv(void **state)
 
 static void cvf_get_field_h264_timestamp(void **state)
 {
-    int res;
     uint64_t val;
     Avtp_H264_t pdu;
 
@@ -518,20 +517,14 @@ static void cvf_get_field_h264_timestamp(void **state)
     uint32_t value = htonl(0x80C0FFEE);
     memcpy(&pdu.header, &value, 4);
 
-    res = Avtp_H264_GetField(&pdu, AVTP_H264_FIELD_TIMESTAMP, &val);
-
-    assert_int_equal(res, 0);
+    val = Avtp_H264_GetField(&pdu, AVTP_H264_FIELD_TIMESTAMP);
     assert_true(val == 0x80C0FFEE);
 }
 
 static void cvf_set_field_h264_timestamp(void **state)
 {
-    int res;
     Avtp_H264_t pdu;
-
-    res = Avtp_H264_SetField(&pdu, AVTP_H264_FIELD_TIMESTAMP, 0x80C0FFEE);
-
-    assert_int_equal(res, 0);
+    Avtp_H264_SetField(&pdu, AVTP_H264_FIELD_TIMESTAMP, 0x80C0FFEE);
     assert_true(ntohl(*(uint32_t*)(&pdu.header)) == 0x80C0FFEE);
 }
 

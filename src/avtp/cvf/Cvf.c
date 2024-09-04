@@ -10,7 +10,7 @@
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
  *    * Neither the name of COVESA, Intel Corporation nor the names of its
- *      contributors  may be used to endorse or promote products derived from 
+ *      contributors  may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -33,6 +33,11 @@
 #include "avtp/cvf/Cvf.h"
 #include "avtp/Utils.h"
 #include "avtp/CommonHeader.h"
+
+#define GET_FIELD(field) \
+        (Avtp_GetField(fieldDescriptors, AVTP_CVF_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(fieldDescriptors, AVTP_CVF_FIELD_MAX, (uint8_t*)pdu, field, value))
 
 static const Avtp_FieldDescriptor_t fieldDescriptors[AVTP_CVF_FIELD_MAX] =
 {
@@ -58,29 +63,174 @@ static const Avtp_FieldDescriptor_t fieldDescriptors[AVTP_CVF_FIELD_MAX] =
     [AVTP_CVF_FIELD_RESERVED_5]         = { .quadlet = 5, .offset = 24, .bits = 8 },
 };
 
-int Avtp_Cvf_Init(Avtp_Cvf_t* pdu)
+void Avtp_Cvf_Init(Avtp_Cvf_t* pdu)
 {
-    if (pdu == NULL) return -EINVAL;
-
-    memset(pdu, 0, sizeof(Avtp_Cvf_t));
-    
-    int ret;
-    ret = Avtp_Cvf_SetField(pdu, AVTP_CVF_FIELD_SUBTYPE, AVTP_SUBTYPE_CVF);
-    if (ret != 0) return ret;
-    ret = Avtp_Cvf_SetField(pdu, AVTP_CVF_FIELD_SV, 1);
-    if (ret != 0) return ret;
-    
-    return 0;
+    if (pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Cvf_t));
+        Avtp_Cvf_SetField(pdu, AVTP_CVF_FIELD_SUBTYPE, AVTP_SUBTYPE_CVF);
+        Avtp_Cvf_SetField(pdu, AVTP_CVF_FIELD_FORMAT, AVTP_CVF_FORMAT_RFC);
+        Avtp_Cvf_SetSv(pdu, 1);
+    }
 }
 
-int Avtp_Cvf_GetField(Avtp_Cvf_t* pdu, Avtp_CvfField_t field, uint64_t* value)
+uint64_t Avtp_Cvf_GetField(Avtp_Cvf_t* pdu, Avtp_CvfField_t field)
 {
-    return Avtp_GetField(fieldDescriptors, AVTP_CVF_FIELD_MAX, (uint8_t*)pdu, field, value);
+    return GET_FIELD(field);
 }
 
-int Avtp_Cvf_SetField(Avtp_Cvf_t* pdu, Avtp_CvfField_t field, uint64_t value)
+uint8_t Avtp_Cvf_GetSubtype(Avtp_Cvf_t* pdu)
 {
-    return Avtp_SetField(fieldDescriptors, AVTP_CVF_FIELD_MAX, (uint8_t*)pdu, field, value);
+    return GET_FIELD(AVTP_CVF_FIELD_SUBTYPE);
+}
+
+uint8_t Avtp_Cvf_GetSv(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_SV);
+}
+
+uint8_t Avtp_Cvf_GetVersion(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_VERSION);
+}
+
+uint8_t Avtp_Cvf_GetMr(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_MR);
+}
+
+uint8_t Avtp_Cvf_GetTv(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_TV);
+}
+
+uint8_t Avtp_Cvf_GetSequenceNum(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_SEQUENCE_NUM);
+}
+
+uint8_t Avtp_Cvf_GetTu(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_TU);
+}
+
+uint64_t Avtp_Cvf_GetStreamId(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_STREAM_ID);
+}
+
+uint32_t Avtp_Cvf_GetAvtpTimestamp(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_AVTP_TIMESTAMP);
+}
+
+Avtp_CvfFormat_t Avtp_Cvf_GetFormat(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_FORMAT);
+}
+
+Avtp_CvfFormatSubtype_t Avtp_Cvf_GetFormatSubtype(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_FORMAT_SUBTYPE);
+}
+
+uint16_t Avtp_Cvf_GetStreamDataLength(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_STREAM_DATA_LENGTH);
+}
+
+uint8_t Avtp_Cvf_GetPtv(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_PTV);
+}
+
+uint8_t Avtp_Cvf_GetM(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_M);
+}
+
+uint8_t Avtp_Cvf_GetEvt(Avtp_Cvf_t* pdu)
+{
+    return GET_FIELD(AVTP_CVF_FIELD_EVT);
+}
+
+void Avtp_Cvf_SetField(Avtp_Cvf_t* pdu, Avtp_CvfField_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_Cvf_SetSubtype(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_SUBTYPE, value);
+}
+
+void Avtp_Cvf_SetSv(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_SV, value);
+}
+
+void Avtp_Cvf_SetVersion(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_VERSION, value);
+}
+
+void Avtp_Cvf_SetMr(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_MR, value);
+}
+
+void Avtp_Cvf_SetTv(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_TV, value);
+}
+
+void Avtp_Cvf_SetSequenceNum(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_SEQUENCE_NUM, value);
+}
+
+void Avtp_Cvf_SetTu(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_TU, value);
+}
+
+void Avtp_Cvf_SetStreamId(Avtp_Cvf_t* pdu, uint64_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_STREAM_ID, value);
+}
+
+void Avtp_Cvf_SetAvtpTimestamp(Avtp_Cvf_t* pdu, uint32_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_AVTP_TIMESTAMP, value);
+}
+
+void Avtp_Cvf_SetFormat(Avtp_Cvf_t* pdu, Avtp_CvfFormat_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_FORMAT, value);
+}
+
+void Avtp_Cvf_SetFormatSubtype(Avtp_Cvf_t* pdu, Avtp_CvfFormatSubtype_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_FORMAT_SUBTYPE, value);
+}
+
+void Avtp_Cvf_SetStreamDataLength(Avtp_Cvf_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_STREAM_DATA_LENGTH, value);
+}
+
+void Avtp_Cvf_SetPtv(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_PTV, value);
+}
+
+void Avtp_Cvf_SetM(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_M, value);
+}
+
+void Avtp_Cvf_SetEvt(Avtp_Cvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CVF_FIELD_EVT, value);
 }
 
 /******************************************************************************
@@ -89,23 +239,31 @@ int Avtp_Cvf_SetField(Avtp_Cvf_t* pdu, Avtp_CvfField_t field, uint64_t value)
 
 int avtp_cvf_pdu_get(void* pdu, Avtp_CvfField_t field, uint64_t *val)
 {
-    return Avtp_Cvf_GetField((Avtp_Cvf_t*)pdu, field, val);
+    if (pdu == NULL || val == NULL || field >= AVTP_CVF_FIELD_MAX) {
+        return -EINVAL;
+    } else {
+        *val = Avtp_Cvf_GetField((Avtp_Cvf_t*)pdu, field);
+        return 0;
+    }
 }
 
 int avtp_cvf_pdu_set(void* pdu, Avtp_CvfField_t field, uint64_t val)
 {
-    return Avtp_Cvf_SetField((Avtp_Cvf_t*)pdu, field, val);
+    if (pdu == NULL || field >= AVTP_CVF_FIELD_MAX) {
+        return -EINVAL;
+    } else {
+        Avtp_Cvf_SetField((Avtp_Cvf_t*)pdu, field, val);
+        return 0;
+    }
 }
 
 int avtp_cvf_pdu_init(void* pdu, uint8_t format_subtype)
 {
-    int ret;
-    ret = Avtp_Cvf_Init((Avtp_Cvf_t*)pdu);
-    if (ret != 0) return ret;
-    ret = Avtp_Cvf_SetField(pdu, AVTP_CVF_FIELD_FORMAT_SUBTYPE, format_subtype);
-    if (ret != 0) return ret;
-    ret = Avtp_Cvf_SetField(pdu, AVTP_CVF_FIELD_FORMAT, AVTP_CVF_FORMAT_RFC);
-    if (ret != 0) return ret;
-
-    return 0;
+    if (pdu == NULL) {
+        return -EINVAL;
+    } else {
+        Avtp_Cvf_Init(pdu);
+        Avtp_Cvf_SetFormatSubtype(pdu, format_subtype);
+        return 0;
+    }
 }

@@ -73,18 +73,27 @@ typedef enum {
  * @param pdu Pointer to the first bit of a 1722 PDU. This is typically an AVTP-
  * or an ACF header.
  */
-int Avtp_Tscf_Init(Avtp_Tscf_t* pdu);
+void Avtp_Tscf_Init(Avtp_Tscf_t* pdu);
 
 /**
  * Returns the value of an an AVTP TSCF field as specified in the IEEE 1722 Specification.
  *
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
- * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 AVTP PDU.
+ * @returns The value of the field.
  */
-int Avtp_Tscf_GetField(Avtp_Tscf_t* pdu, Avtp_TscfFields_t field, uint64_t* value);
+uint64_t Avtp_Tscf_GetField(Avtp_Tscf_t* pdu, Avtp_TscfFields_t field);
+
+uint8_t Avtp_Tscf_GetSubtype(Avtp_Tscf_t* pdu);
+uint8_t Avtp_Tscf_GetSv(Avtp_Tscf_t* pdu);
+uint8_t Avtp_Tscf_GetVersion(Avtp_Tscf_t* pdu);
+uint8_t Avtp_Tscf_GetMr(Avtp_Tscf_t* pdu);
+uint8_t Avtp_Tscf_GetTv(Avtp_Tscf_t* pdu);
+uint8_t Avtp_Tscf_GetSequenceNum(Avtp_Tscf_t* pdu);
+uint8_t Avtp_Tscf_GetTu(Avtp_Tscf_t* pdu);
+uint64_t Avtp_Tscf_GetStreamId(Avtp_Tscf_t* pdu);
+uint32_t Avtp_Tscf_GetAvtpTimestamp(Avtp_Tscf_t* pdu);
+uint16_t Avtp_Tscf_GetStreamDataLength(Avtp_Tscf_t* pdu);
 
 /**
  * Sets the value of an an AVTP TSCF field as specified in the IEEE 1722 Specification.
@@ -92,7 +101,16 @@ int Avtp_Tscf_GetField(Avtp_Tscf_t* pdu, Avtp_TscfFields_t field, uint64_t* valu
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 AVTP PDU.
  */
-int Avtp_Tscf_SetField(Avtp_Tscf_t* pdu, Avtp_TscfFields_t field, uint64_t value);
+void Avtp_Tscf_SetField(Avtp_Tscf_t* pdu, Avtp_TscfFields_t field, uint64_t value);
+
+void Avtp_Tscf_SetSubtype(Avtp_Tscf_t* pdu, uint8_t value);
+void Avtp_Tscf_SetSv(Avtp_Tscf_t* pdu, uint8_t value);
+void Avtp_Tscf_SetVersion(Avtp_Tscf_t* pdu, uint8_t value);
+void Avtp_Tscf_SetMr(Avtp_Tscf_t* pdu, uint8_t value);
+void Avtp_Tscf_SetTv(Avtp_Tscf_t* pdu, uint8_t value);
+void Avtp_Tscf_SetSequenceNum(Avtp_Tscf_t* pdu, uint8_t value);
+void Avtp_Tscf_SetTu(Avtp_Tscf_t* pdu, uint8_t value);
+void Avtp_Tscf_SetStreamId(Avtp_Tscf_t* pdu, uint64_t value);
+void Avtp_Tscf_SetAvtpTimestamp(Avtp_Tscf_t* pdu, uint32_t value);
+void Avtp_Tscf_SetStreamDataLength(Avtp_Tscf_t* pdu, uint16_t value);

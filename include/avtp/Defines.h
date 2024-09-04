@@ -41,7 +41,7 @@
 #define AVTP_FIELD_MAX_BITS 64
 
 // Sizes of 1722 PDU formats
-#define AVTP_QUADLET_SIZE                  4
+#define AVTP_QUADLET_SIZE 4
 
 /**
  * This type describes the position of a data field within an 1722 frame.

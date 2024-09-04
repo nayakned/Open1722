@@ -31,7 +31,12 @@
 #include <string.h>
 
 #include "avtp/acf/Lin.h"
-#include "avtp/Utils.h" 
+#include "avtp/Utils.h"
+
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_LinFieldDesc, AVTP_LIN_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_LinFieldDesc, AVTP_LIN_FIELD_MAX, (uint8_t*)pdu, field, value))
 
 /**
  * This table describes all the offsets of the ACF Lin header fields.
@@ -49,24 +54,90 @@ static const Avtp_FieldDescriptor_t Avtp_LinFieldDesc[AVTP_LIN_FIELD_MAX] =
     [AVTP_LIN_FIELD_MESSAGE_TIMESTAMP]  = { .quadlet = 1, .offset = 0, .bits = 64 },
 };
 
-int Avtp_Lin_Init(Avtp_Lin_t* pdu)
+void Avtp_Lin_Init(Avtp_Lin_t* pdu)
 {
-    if(!pdu) {
-        return -EINVAL;
+    if(pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Lin_t));  
+        Avtp_Lin_SetField(pdu, AVTP_LIN_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_LIN);
     }
-
-    memset(pdu, 0, sizeof(Avtp_Lin_t));  
-    Avtp_Lin_SetField(pdu, AVTP_LIN_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_LIN);
-    
-    return 0;
 }
 
-int Avtp_Lin_GetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t* value)
+uint64_t Avtp_Lin_GetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field)
 {
-    return Avtp_GetField(Avtp_LinFieldDesc, AVTP_LIN_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field, value);
+    return GET_FIELD(field);
 }
 
-int Avtp_Lin_SetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t value)
+uint8_t Avtp_Lin_GetAcfMsgType(Avtp_Lin_t* pdu)
 {
-    return Avtp_SetField(Avtp_LinFieldDesc, AVTP_LIN_FIELD_MAX, (uint8_t*)pdu, (uint8_t)field, value);
+    return GET_FIELD(AVTP_LIN_FIELD_ACF_MSG_TYPE);
+}
+
+uint16_t Avtp_Lin_GetAcfMsgLength(Avtp_Lin_t* pdu)
+{
+    return GET_FIELD(AVTP_LIN_FIELD_ACF_MSG_LENGTH);
+}
+
+uint8_t Avtp_Lin_GetPad(Avtp_Lin_t* pdu)
+{
+    return GET_FIELD(AVTP_LIN_FIELD_PAD);
+}
+
+uint8_t Avtp_Lin_GetMtv(Avtp_Lin_t* pdu)
+{
+    return GET_FIELD(AVTP_LIN_FIELD_MTV);
+}
+
+uint8_t Avtp_Lin_GetLinBusId(Avtp_Lin_t* pdu)
+{
+    return GET_FIELD(AVTP_LIN_FIELD_LIN_BUS_ID);
+}
+
+uint8_t Avtp_Lin_GetLinIdentifier(Avtp_Lin_t* pdu)
+{
+    return GET_FIELD(AVTP_LIN_FIELD_LIN_IDENTIFIER);
+}
+
+uint64_t Avtp_Lin_GetMessageTimestamp(Avtp_Lin_t* pdu)
+{
+    return GET_FIELD(AVTP_LIN_FIELD_MESSAGE_TIMESTAMP);
+}
+
+void Avtp_Lin_SetField(Avtp_Lin_t* pdu, Avtp_LinFields_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_Lin_SetAcfMsgType(Avtp_Lin_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_LIN_FIELD_ACF_MSG_TYPE, value);
+}
+
+void Avtp_Lin_SetAcfMsgLength(Avtp_Lin_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_LIN_FIELD_ACF_MSG_LENGTH, value);
+}
+
+void Avtp_Lin_SetPad(Avtp_Lin_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_LIN_FIELD_PAD, value);
+}
+
+void Avtp_Lin_SetMtv(Avtp_Lin_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_LIN_FIELD_MTV, value);
+}
+
+void Avtp_Lin_SetLinBusId(Avtp_Lin_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_LIN_FIELD_LIN_BUS_ID, value);
+}
+
+void Avtp_Lin_SetLinIdentifier(Avtp_Lin_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_LIN_FIELD_LIN_IDENTIFIER, value);
+}
+
+void Avtp_Lin_SetMessageTimestamp(Avtp_Lin_t* pdu, uint64_t value)
+{
+    SET_FIELD(AVTP_LIN_FIELD_MESSAGE_TIMESTAMP, value);
 }

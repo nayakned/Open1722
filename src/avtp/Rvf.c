@@ -12,7 +12,7 @@
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
  *    * Neither the name of Fastree3D, COVESA nor the names of their
- *      contributors  may be used to endorse or promote products derived from 
+ *      contributors  may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -36,11 +36,16 @@
 #include "avtp/Utils.h"
 #include "avtp/CommonHeader.h"
 
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_RvfFieldDesc, AVTP_RVF_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_RvfFieldDesc, AVTP_RVF_FIELD_MAX, (uint8_t*)pdu, field, value))
+
 /**
  * This table maps all IEEE 1722 Raw Video Format (RVF) specific header fields
  * to a descriptor.
  */
-static const Avtp_FieldDescriptor_t Avtp_RvfFieldDescriptors[AVTP_RVF_FIELD_MAX] =
+static const Avtp_FieldDescriptor_t Avtp_RvfFieldDesc[AVTP_RVF_FIELD_MAX] =
 {
     [AVTP_RVF_FIELD_SUBTYPE]               = { .quadlet = 0, .offset = 0, .bits = 8 },
     [AVTP_RVF_FIELD_SV]                    = { .quadlet = 0, .offset = 8, .bits = 1 },
@@ -75,27 +80,273 @@ static const Avtp_FieldDescriptor_t Avtp_RvfFieldDescriptors[AVTP_RVF_FIELD_MAX]
     [AVTP_RVF_FIELD_LINE_NUMBER]           = { .quadlet = 7, .offset = 16, .bits = 16 },
 };
 
-int Avtp_Rvf_Init(Avtp_Rvf_t* pdu)
+void Avtp_Rvf_Init(Avtp_Rvf_t* pdu)
 {
-    if (pdu == NULL) {
-        return -EINVAL;
+    if (pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Rvf_t));
+        Avtp_Rvf_SetField(pdu, AVTP_RVF_FIELD_SUBTYPE, AVTP_SUBTYPE_RVF);
+        Avtp_Rvf_SetField(pdu, AVTP_RVF_FIELD_SV, 1);
     }
-
-    memset(pdu, 0, sizeof(Avtp_Rvf_t));
-    Avtp_Rvf_SetField(pdu, AVTP_RVF_FIELD_SUBTYPE, AVTP_SUBTYPE_RVF);
-    Avtp_Rvf_SetField(pdu, AVTP_RVF_FIELD_SV, 1);
-
-    return 0;
 }
 
-int Avtp_Rvf_GetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t* value)
+uint64_t Avtp_Rvf_GetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field)
 {
-    return Avtp_GetField(Avtp_RvfFieldDescriptors, AVTP_RVF_FIELD_MAX, (uint8_t*)pdu, field, value);
+    return GET_FIELD(field);
 }
 
-int Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value)
+uint8_t Avtp_Rvf_GetSubtype(Avtp_Rvf_t* pdu)
 {
-    return Avtp_SetField(Avtp_RvfFieldDescriptors, AVTP_RVF_FIELD_MAX, (uint8_t*)pdu, field, value);
+    return GET_FIELD(AVTP_RVF_FIELD_SUBTYPE);
+}
+
+uint8_t Avtp_Rvf_GetSv(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_SV);
+}
+
+uint8_t Avtp_Rvf_GetVersion(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_VERSION);
+}
+
+uint8_t Avtp_Rvf_GetMr(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_MR);
+}
+
+uint8_t Avtp_Rvf_GetTv(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_TV);
+}
+
+uint8_t Avtp_Rvf_GetSequenceNum(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_SEQUENCE_NUM);
+}
+
+uint8_t Avtp_Rvf_GetTu(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_TU);
+}
+
+uint64_t Avtp_Rvf_GetStreamId(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_STREAM_ID);
+}
+
+uint32_t Avtp_Rvf_GetAvtpTimestamp(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_AVTP_TIMESTAMP);
+}
+
+uint16_t Avtp_Rvf_GetActivePixels(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_ACTIVE_PIXELS);
+}
+
+uint16_t Avtp_Rvf_GetTotalLines(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_TOTAL_LINES);
+}
+
+uint16_t Avtp_Rvf_GetStreamDataLength(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_STREAM_DATA_LEN);
+}
+
+uint8_t Avtp_Rvf_GetAp(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_AP);
+}
+
+uint8_t Avtp_Rvf_GetF(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_F);
+}
+
+uint8_t Avtp_Rvf_GetEf(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_EF);
+}
+
+uint8_t Avtp_Rvf_GetEvt(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_EVT);
+}
+
+uint8_t Avtp_Rvf_GetPd(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_PD);
+}
+
+uint8_t Avtp_Rvf_GetI(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_I);
+}
+
+Avtp_RvfPixelDepth_t Avtp_Rvf_GetPixelDepth(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_PIXEL_DEPTH);
+}
+
+Avtp_RvfPixelFormat_t Avtp_Rvf_GetPixelFormat(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_PIXEL_FORMAT);
+}
+
+Avtp_RvfFrameRate_t Avtp_Rvf_GetFrameRate(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_FRAME_RATE);
+}
+
+Avtp_RvfColorspace_t Avtp_Rvf_GetColorspace(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_COLORSPACE);
+}
+
+uint8_t Avtp_Rvf_GetNumLines(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_NUM_LINES);
+}
+
+uint8_t Avtp_Rvf_GetISeqNum(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_I_SEQ_NUM);
+}
+
+uint16_t Avtp_Rvf_GetLineNumber(Avtp_Rvf_t* pdu)
+{
+    return GET_FIELD(AVTP_RVF_FIELD_LINE_NUMBER);
+}
+
+void Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_Rvf_SetSubtype(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_SUBTYPE, value);
+}
+
+void Avtp_Rvf_SetSv(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_SV, value);
+}
+
+void Avtp_Rvf_SetVersion(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_VERSION, value);
+}
+
+void Avtp_Rvf_SetMr(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_MR, value);
+}
+
+void Avtp_Rvf_SetTv(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_TV, value);
+}
+
+void Avtp_Rvf_SetSequenceNum(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_SEQ_NUM, value);
+}
+
+void Avtp_Rvf_SetTu(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_TU, value);
+}
+
+void Avtp_Rvf_SetStreamId(Avtp_Rvf_t* pdu, uint64_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_STREAM_ID, value);
+}
+
+void Avtp_Rvf_SetAvtpTimestamp(Avtp_Rvf_t* pdu, uint32_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_AVTP_TIMESTAMP, value);
+}
+
+void Avtp_Rvf_SetActivePixels(Avtp_Rvf_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_ACTIVE_PIXELS, value);
+}
+
+void Avtp_Rvf_SetTotalLines(Avtp_Rvf_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_TOTAL_LINES, value);
+}
+
+void Avtp_Rvf_SetStreamDataLength(Avtp_Rvf_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_STREAM_DATA_LEN, value);
+}
+
+void Avtp_Rvf_SetAp(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_AP, value);
+}
+
+void Avtp_Rvf_setF(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_F, value);
+}
+
+void Avtp_Rvf_SetEf(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_EF, value);
+}
+
+void Avtp_Rvf_SetEvt(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_EVT, value);
+}
+
+void Avtp_Rvf_SetPd(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_PD, value);
+}
+
+void Avtp_Rvf_SetI(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_I, value);
+}
+
+void Avtp_Rvf_SetPixelDepth(Avtp_Rvf_t* pdu, Avtp_RvfPixelDepth_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_PIXEL_DEPTH, value);
+}
+
+void Avtp_Rvf_SetPixelFormat(Avtp_Rvf_t* pdu, Avtp_RvfPixelFormat_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_PIXEL_FORMAT, value);
+}
+
+void Avtp_Rvf_SetFrameRate(Avtp_Rvf_t* pdu, Avtp_RvfFrameRate_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_FRAME_RATE, value);
+}
+
+void Avtp_Rvf_SetColorspace(Avtp_Rvf_t* pdu, Avtp_RvfColorspace_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_COLORSPACE, value);
+}
+
+void Avtp_Rvf_SetNumLines(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_NUM_LINES, value);
+}
+
+void Avtp_Rvf_SetISeqNum(Avtp_Rvf_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_I_SEQ_NUM, value);
+}
+
+void Avtp_Rvf_SetLineNumber(Avtp_Rvf_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_RVF_FIELD_LINE_NUMBER, value);
 }
 
 /******************************************************************************
@@ -104,15 +355,30 @@ int Avtp_Rvf_SetField(Avtp_Rvf_t* pdu, Avtp_RvfField_t field, uint64_t value)
 
 int avtp_rvf_pdu_get(const void* pdu, Avtp_RvfField_t field, uint64_t* val)
 {
-    return Avtp_Rvf_GetField((Avtp_Rvf_t*)pdu, field, val);
+    if (pdu == NULL || val == NULL || field >= AVTP_RVF_FIELD_MAX) {
+        return -EINVAL;
+    } else {
+        *val = Avtp_Rvf_GetField((Avtp_Rvf_t*)pdu, field);
+        return 0;
+    }
 }
 
 int avtp_rvf_pdu_set(void* pdu, Avtp_RvfField_t field, uint64_t val)
 {
-    return Avtp_Rvf_SetField((Avtp_Rvf_t*)pdu, field, val);
+    if (pdu == NULL || field >= AVTP_RVF_FIELD_MAX) {
+        return -EINVAL;
+    } else {
+        Avtp_Rvf_SetField((Avtp_Rvf_t*)pdu, field, val);
+        return 0;
+    }
 }
 
 int avtp_rvf_pdu_init(void* pdu)
 {
-    return Avtp_Rvf_Init((Avtp_Rvf_t*)pdu);
+    if (pdu == NULL) {
+        return -EINVAL;
+    } else {
+        Avtp_Rvf_Init((Avtp_Rvf_t*)pdu);
+        return 0;
+    }
 }

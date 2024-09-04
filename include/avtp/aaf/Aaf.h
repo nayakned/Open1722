@@ -39,32 +39,32 @@
 
 #include "avtp/Defines.h"
 
-#define AVTP_AAF_COMMON_STREAM_HEADER_LEN              (6 * AVTP_QUADLET_SIZE)
+#define AVTP_AAF_HEADER_LEN              (6 * AVTP_QUADLET_SIZE)
 
 typedef struct {
-    uint8_t header[AVTP_AAF_COMMON_STREAM_HEADER_LEN];
+    uint8_t header[AVTP_AAF_HEADER_LEN];
     uint8_t payload[0];
-} Avtp_AafCommonStream_t;
+} Avtp_Aaf_t;
 
 typedef enum {
-    AVTP_AAF_COMMON_STREAM_FIELD_SUBTYPE,
-    AVTP_AAF_COMMON_STREAM_FIELD_SV,
-    AVTP_AAF_COMMON_STREAM_FIELD_VERSION,
-    AVTP_AAF_COMMON_STREAM_FIELD_MR,
-    AVTP_AAF_COMMON_STREAM_FIELD_TV,
-    AVTP_AAF_COMMON_STREAM_FIELD_SEQUENCE_NUM,
-    AVTP_AAF_COMMON_STREAM_FIELD_TU,
-    AVTP_AAF_COMMON_STREAM_FIELD_STREAM_ID,
-    AVTP_AAF_COMMON_STREAM_FIELD_AVTP_TIMESTAMP,
-    AVTP_AAF_COMMON_STREAM_FIELD_FORMAT,
-    AVTP_AAF_COMMON_STREAM_FIELD_AAF_FORMAT_SPECIFIC_DATA_1,
-    AVTP_AAF_COMMON_STREAM_FIELD_STREAM_DATA_LENGTH,
-    AVTP_AAF_COMMON_STREAM_FIELD_AFSD,
-    AVTP_AAF_COMMON_STREAM_FIELD_SP,
-    AVTP_AAF_COMMON_STREAM_FIELD_EVT,
-    AVTP_AAF_COMMON_STREAM_FIELD_AAF_FORMAT_SPECIFIC_DATA_2,
-    AVTP_AAF_COMMON_STREAM_FIELD_MAX
-} Avtp_AafCommonStreamFields_t;
+    AVTP_AAF_FIELD_SUBTYPE,
+    AVTP_AAF_FIELD_SV,
+    AVTP_AAF_FIELD_VERSION,
+    AVTP_AAF_FIELD_MR,
+    AVTP_AAF_FIELD_TV,
+    AVTP_AAF_FIELD_SEQUENCE_NUM,
+    AVTP_AAF_FIELD_TU,
+    AVTP_AAF_FIELD_STREAM_ID,
+    AVTP_AAF_FIELD_AVTP_TIMESTAMP,
+    AVTP_AAF_FIELD_FORMAT,
+    AVTP_AAF_FIELD_AAF_FORMAT_SPECIFIC_DATA_1,
+    AVTP_AAF_FIELD_STREAM_DATA_LENGTH,
+    AVTP_AAF_FIELD_AFSD,
+    AVTP_AAF_FIELD_SP,
+    AVTP_AAF_FIELD_EVT,
+    AVTP_AAF_FIELD_AAF_FORMAT_SPECIFIC_DATA_2,
+    AVTP_AAF_FIELD_MAX
+} Avtp_AafFields_t;
 
 /**
  * Returns the value of an an AVTP AAF common stream field as specified in the IEEE 1722 Specification.
@@ -72,10 +72,24 @@ typedef enum {
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully read from
- * the 1722 AVTP PDU.
+ * @returns The PDU fieldvalue
  */
-int Avtp_AafCommonStream_GetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field, uint64_t* value);
+uint64_t Avtp_Aaf_GetField(Avtp_Aaf_t* pdu, Avtp_AafFields_t field);
+
+uint8_t Avtp_Aaf_GetSubtype(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetSv(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetVersion(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetMr(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetTv(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetSequenceNum(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetTu(Avtp_Aaf_t* pdu);
+uint64_t Avtp_Aaf_GetStreamId(Avtp_Aaf_t* pdu);
+uint32_t Avtp_Aaf_GetAvtpTimestamp(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetFormat(Avtp_Aaf_t* pdu);
+uint16_t Avtp_Aaf_GetStreamDataLength(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetAfsd(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetSp(Avtp_Aaf_t* pdu);
+uint8_t Avtp_Aaf_GetEvt(Avtp_Aaf_t* pdu);
 
 /**
  * Sets the value of an an AVTP AAF common stream field as specified in the IEEE 1722 Specification.
@@ -83,7 +97,20 @@ int Avtp_AafCommonStream_GetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStr
  * @param pdu Pointer to the first bit of an 1722 AVTP PDU.
  * @param field Specifies the position of the data field to be read
  * @param value Pointer to location to store the value.
- * @returns This function returns 0 if the data field was successfully set in
- * the 1722 AVTP PDU.
  */
-int Avtp_AafCommonStream_SetField(Avtp_AafCommonStream_t* pdu, Avtp_AafCommonStreamFields_t field, uint64_t value);
+void Avtp_Aaf_SetField(Avtp_Aaf_t* pdu, Avtp_AafFields_t field, uint64_t value);
+
+void Avtp_Aaf_SetSubtype(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetSv(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetVersion(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetMr(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetTv(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetSequenceNum(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetTu(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetStreamId(Avtp_Aaf_t* pdu, uint64_t value);
+void Avtp_Aaf_SetAvtpTimestamp(Avtp_Aaf_t* pdu, uint32_t value);
+void Avtp_Aaf_SetFormat(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetStreamDataLength(Avtp_Aaf_t* pdu, uint16_t value);
+void Avtp_Aaf_SetAfsd(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetSp(Avtp_Aaf_t* pdu, uint8_t value);
+void Avtp_Aaf_SetEvt(Avtp_Aaf_t* pdu, uint8_t value);

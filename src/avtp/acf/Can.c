@@ -9,7 +9,7 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of COVESA nor the names of its contributors may be 
+ *    * Neither the name of COVESA nor the names of its contributors may be
  *      used to endorse or promote products derived from this software without
  *      specific prior written permission.
  *
@@ -30,10 +30,14 @@
 #include <errno.h>
 #include <string.h>
 
-#include "avtp/acf/Common.h"
 #include "avtp/acf/Can.h"
-#include "avtp/Utils.h" 
+#include "avtp/Utils.h"
 #include "avtp/Defines.h"
+
+#define GET_FIELD(field) \
+        (Avtp_GetField(Avtp_CanFieldDesc, AVTP_CAN_FIELD_MAX, (uint8_t*)pdu, field))
+#define SET_FIELD(field, value) \
+        (Avtp_SetField(Avtp_CanFieldDesc, AVTP_CAN_FIELD_MAX, (uint8_t*)pdu, field, value))
 
 /**
  * This table maps all IEEE 1722 ACF CAN header fields to a descriptor.
@@ -42,7 +46,7 @@ static const Avtp_FieldDescriptor_t Avtp_CanFieldDesc[AVTP_CAN_FIELD_MAX] =
 {
     /* ACF common header fields */
     [AVTP_CAN_FIELD_ACF_MSG_TYPE]       = { .quadlet = 0, .offset =  0, .bits = 7 },
-    [AVTP_CAN_FIELD_ACF_MSG_LENGTH]     = { .quadlet = 0, .offset =  7, .bits = 9 },  
+    [AVTP_CAN_FIELD_ACF_MSG_LENGTH]     = { .quadlet = 0, .offset =  7, .bits = 9 },
     /* ACF CAN header fields */
     [AVTP_CAN_FIELD_PAD]                = { .quadlet = 0, .offset = 16, .bits =  2 },
     [AVTP_CAN_FIELD_MTV]                = { .quadlet = 0, .offset = 18, .bits =  1 },
@@ -53,103 +57,194 @@ static const Avtp_FieldDescriptor_t Avtp_CanFieldDesc[AVTP_CAN_FIELD_MAX] =
     [AVTP_CAN_FIELD_ESI]                = { .quadlet = 0, .offset = 23, .bits =  1 },
     [AVTP_CAN_FIELD_CAN_BUS_ID]         = { .quadlet = 0, .offset = 27, .bits =  5 },
     [AVTP_CAN_FIELD_MESSAGE_TIMESTAMP]  = { .quadlet = 1, .offset =  0, .bits = 64 },
-    [AVTP_CAN_FIELD_CAN_IDENTIFIER]     = { .quadlet = 3, .offset =  3, .bits = 29 },    
+    [AVTP_CAN_FIELD_CAN_IDENTIFIER]     = { .quadlet = 3, .offset =  3, .bits = 29 },
 };
 
-int Avtp_Can_Init(Avtp_Can_t* can_pdu)
+void Avtp_Can_Init(Avtp_Can_t* pdu)
 {
-    if(!can_pdu) {
-        return -EINVAL;
+    if(pdu != NULL) {
+        memset(pdu, 0, sizeof(Avtp_Can_t));
+        Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_CAN);
     }
-
-    memset(can_pdu, 0, sizeof(Avtp_Can_t));  
-    Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_ACF_MSG_TYPE, AVTP_ACF_TYPE_CAN);
-
-    return 0;
 }
 
-int Avtp_Can_GetField(Avtp_Can_t* can_pdu, 
-                            Avtp_CanFields_t field, uint64_t* value)
-{    
-    return Avtp_GetField(Avtp_CanFieldDesc, AVTP_CAN_FIELD_MAX, (uint8_t *) can_pdu, (uint8_t) field, value);
+uint64_t Avtp_Can_GetField(Avtp_Can_t* pdu, Avtp_CanFields_t field)
+{
+    return GET_FIELD(field);
 }
 
-int Avtp_Can_SetField(Avtp_Can_t* can_pdu, 
-                            Avtp_CanFields_t field, uint64_t value)
-{    
-    return Avtp_SetField(Avtp_CanFieldDesc, AVTP_CAN_FIELD_MAX, (uint8_t *) can_pdu, (uint8_t) field, value);
+uint8_t Avtp_Can_GetAcfMsgType(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_ACF_MSG_TYPE);
 }
 
-int Avtp_Can_SetPayload(Avtp_Can_t* can_pdu, uint32_t frame_id , uint8_t* payload, 
-                        uint16_t payload_length, Avtp_CanVariant_t can_variant) {
+uint16_t Avtp_Can_GetAcfMsgLength(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_ACF_MSG_LENGTH);
+}
 
-    int ret = 0;
-    int eff;
+uint8_t Avtp_Can_GetPad(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_PAD);
+}
 
+uint8_t Avtp_Can_GetMtv(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_MTV);
+}
+
+uint8_t Avtp_Can_GetRtr(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_RTR);
+}
+
+uint8_t Avtp_Can_GetEff(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_EFF);
+}
+
+uint8_t Avtp_Can_GetBrs(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_BRS);
+}
+
+uint8_t Avtp_Can_GetFdf(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_FDF);
+}
+
+uint8_t Avtp_Can_GetEsi(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_ESI);
+}
+
+uint8_t Avtp_Can_GetCanBusId(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_CAN_BUS_ID);
+}
+
+uint64_t Avtp_Can_GetMessageTimestamp(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_MESSAGE_TIMESTAMP);
+}
+
+uint32_t Avtp_Can_GetCanIdentifier(Avtp_Can_t* pdu)
+{
+    return GET_FIELD(AVTP_CAN_FIELD_CAN_IDENTIFIER);
+}
+
+void Avtp_Can_SetField(Avtp_Can_t* pdu, Avtp_CanFields_t field, uint64_t value)
+{
+    SET_FIELD(field, value);
+}
+
+void Avtp_Can_SetAcfMsgType(Avtp_Can_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_ACF_MSG_TYPE, value);
+}
+
+void Avtp_Can_SetAcfMsgLength(Avtp_Can_t* pdu, uint16_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_ACF_MSG_LENGTH, value);
+}
+
+void Avtp_Can_SetPad(Avtp_Can_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_PAD, value);
+}
+
+void Avtp_Can_SetMtv(Avtp_Can_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_MTV, value);
+}
+
+void Avtp_Can_SetRtr(Avtp_Can_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_RTR, value);
+}
+
+void Avtp_Can_SetEff(Avtp_Can_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_EFF, value);
+}
+
+void Avtp_Can_SetBrs(Avtp_Can_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_BRS, value);
+}
+
+void Avtp_Can_SetFdf(Avtp_Can_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_FDF, value);
+}
+
+void Avtp_Can_SetEsi(Avtp_Can_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_ESI, value);
+}
+
+void Avtp_Can_SetCanBusId(Avtp_Can_t* pdu, uint8_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_CAN_BUS_ID, value);
+}
+
+void Avtp_Can_SetMessageTimestamp(Avtp_Can_t* pdu, uint64_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_MESSAGE_TIMESTAMP, value);
+}
+
+void Avtp_Can_SetCanIdentifier(Avtp_Can_t* pdu, uint32_t value)
+{
+    SET_FIELD(AVTP_CAN_FIELD_CAN_IDENTIFIER, value);
+}
+
+void Avtp_Can_CreateAcfMessage(Avtp_Can_t* pdu, uint32_t frame_id, uint8_t* payload,
+                        uint16_t payload_length, Avtp_CanVariant_t can_variant)
+{
     // Copy the payload into the CAN PDU
-    memcpy(can_pdu->payload, payload, payload_length);
+    Avtp_Can_SetPayload(pdu, payload, payload_length);
 
     // Set the Frame ID and CAN variant
-    eff = frame_id > 0x7ff? 1 : 0;
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_EFF, eff);
-    if (ret) return ret;
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_CAN_IDENTIFIER, frame_id);
-    if (ret) return ret;
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_FDF, (uint8_t) can_variant);
-    if (ret) return ret;
+    int eff = frame_id > 0x7ff? 1 : 0;
+    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_EFF, eff);
+    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_CAN_IDENTIFIER, frame_id);
+    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_FDF, (uint8_t) can_variant);
 
     // Finalize the AVTP CAN Frame
-    ret = Avtp_Can_Finalize(can_pdu, payload_length);
-
-    return ret;
-
+    Avtp_Can_Finalize(pdu, payload_length);
 }
 
-int Avtp_Can_Finalize(Avtp_Can_t* can_pdu, uint16_t payload_length) {
-
-    int ret = 0;
+void Avtp_Can_Finalize(Avtp_Can_t* pdu, uint16_t payload_length)
+{
     uint8_t padSize;
     uint32_t avtpCanLength = AVTP_CAN_HEADER_LEN + payload_length;
 
     // Check if padding is required
     padSize = AVTP_QUADLET_SIZE - (payload_length % AVTP_QUADLET_SIZE);
     if (payload_length % AVTP_QUADLET_SIZE) {
-        memset(can_pdu->payload + payload_length, 0, padSize);
+        memset(pdu->payload + payload_length, 0, padSize);
         avtpCanLength += padSize;
     }
 
     // Set the length and padding fields
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_ACF_MSG_LENGTH, 
-                        (uint64_t) avtpCanLength/AVTP_QUADLET_SIZE);
-    if (ret) return ret;
-    ret = Avtp_Can_SetField(can_pdu, AVTP_CAN_FIELD_PAD, padSize);
-    if (ret) return ret;
-
-    return avtpCanLength;
+    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_ACF_MSG_LENGTH, (uint64_t) avtpCanLength/AVTP_QUADLET_SIZE);
+    Avtp_Can_SetField(pdu, AVTP_CAN_FIELD_PAD, padSize);
 }
 
-uint8_t* Avtp_Can_GetPayload(Avtp_Can_t* can_pdu, uint16_t* payload_length, uint16_t *pdu_length)
+void Avtp_Can_SetPayload(Avtp_Can_t* pdu, uint8_t* payload,
+                            uint16_t payload_length)
 {
-    uint64_t pad_len, pdu_len;
-    int res = Avtp_Can_GetField((Avtp_Can_t*)can_pdu, AVTP_CAN_FIELD_ACF_MSG_LENGTH,
-                                    &pdu_len);
-    if (res < 0) {    
-        return 0;
-    }
+    memcpy(pdu->payload, payload, payload_length);
+}
 
-    res = Avtp_Can_GetField((Avtp_Can_t*)can_pdu, AVTP_CAN_FIELD_PAD, 
-                                &pad_len);
-    if (res < 0) {        
-        return 0;
-    }
-    
-    if(payload_length != NULL){
-        *payload_length = pdu_len*4-AVTP_CAN_HEADER_LEN-pad_len;
-    }
+uint8_t* Avtp_Can_GetPayload(Avtp_Can_t* pdu)
+{
+    return pdu->payload;
+}
 
-    if(pdu_length != NULL){
-        *pdu_length = pdu_len;
-    }
-
-    return can_pdu->payload;
+uint8_t Avtp_Can_GetCanPayloadLength(Avtp_Can_t* pdu)
+{
+    uint8_t acf_msg_length = Avtp_Can_GetAcfMsgLength(pdu) * 4;
+    uint8_t acf_pad_length = Avtp_Can_GetPad(pdu);
+    return acf_msg_length - AVTP_CAN_HEADER_LEN - acf_pad_length;
 }

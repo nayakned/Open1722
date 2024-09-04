@@ -33,7 +33,7 @@
 #include <errno.h>
 
 #include "avtp/CommonHeader.h"
-#include "avtp/aaf/PcmStream.h"
+#include "avtp/aaf/Pcm.h"
 
 static void aaf_get_field_null_pdu(void **state)
 {

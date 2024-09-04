@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 #include "avtp/Defines.h"
-#include "avtp/acf/Common.h"
+#include "avtp/acf/AcfCommon.h"
 
 /** Length of ACF FlexRay header. */
 #define AVTP_FLEXRAY_HEADER_LEN (4 * AVTP_QUADLET_SIZE)
@@ -76,7 +76,7 @@ typedef enum  {
  *
  * @param pdu Pointer to the first bit of a 1722 ACF FlexRay PDU.
  */
-int Avtp_FlexRay_Init(Avtp_FlexRay_t* pdu);
+void Avtp_FlexRay_Init(Avtp_FlexRay_t* pdu);
 
 /**
  * Returns the value of an ACF FlexRay PDU field.
@@ -84,9 +84,23 @@ int Avtp_FlexRay_Init(Avtp_FlexRay_t* pdu);
  * @param pdu Pointer to the first bit of an 1722 ACF FlexRay PDU.
  * @param field Data field to be read
  * @param value Pointer to location to store the value.
- * @returns Returns 0 if the data field was successfully read.
+ * @returns Value of the specified PDU field
  */
-int Avtp_FlexRay_GetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint64_t* value);
+uint64_t Avtp_FlexRay_GetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field);
+
+uint8_t Avtp_FlexRay_GetAcfMsgType(Avtp_FlexRay_t* pdu);
+uint16_t Avtp_FlexRay_GetAcfMsgLength(Avtp_FlexRay_t* pdu);
+uint8_t Avtp_FlexRay_GetPad(Avtp_FlexRay_t* pdu);
+uint8_t Avtp_FlexRay_GetMtv(Avtp_FlexRay_t* pdu);
+uint8_t Avtp_FlexRay_GetFrBusId(Avtp_FlexRay_t* pdu);
+uint8_t Avtp_FlexRay_GetChan(Avtp_FlexRay_t* pdu);
+uint8_t Avtp_FlexRay_GetStr(Avtp_FlexRay_t* pdu);
+uint8_t Avtp_FlexRay_GetSyn(Avtp_FlexRay_t* pdu);
+uint8_t Avtp_FlexRay_GetPre(Avtp_FlexRay_t* pdu);
+uint8_t Avtp_FlexRay_GetNfi(Avtp_FlexRay_t* pdu);
+uint64_t Avtp_FlexRay_GetMessageTimestamp(Avtp_FlexRay_t* pdu);
+uint16_t Avtp_FlexRay_GetFrFrameId(Avtp_FlexRay_t* pdu);
+uint8_t Avtp_FlexRay_GetCycle(Avtp_FlexRay_t* pdu);
 
 /**
  * Sets the value of an ACF FlexRay PDU field.
@@ -96,4 +110,18 @@ int Avtp_FlexRay_GetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint6
  * @param value Pointer to location to store the value.
  * @returns Returns 0 if the data field was successfully set.
  */
-int Avtp_FlexRay_SetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint64_t value);
+void Avtp_FlexRay_SetField(Avtp_FlexRay_t* pdu, Avtp_FlexRayFields_t field, uint64_t value);
+
+void Avtp_FlexRay_SetAcfMsgType(Avtp_FlexRay_t* pdu, uint8_t value);
+void Avtp_FlexRay_SetAcfMsgLength(Avtp_FlexRay_t* pdu, uint16_t value);
+void Avtp_FlexRay_SetPad(Avtp_FlexRay_t* pdu, uint8_t value);
+void Avtp_FlexRay_SetMtv(Avtp_FlexRay_t* pdu, uint8_t value);
+void Avtp_FlexRay_SetFrBusId(Avtp_FlexRay_t* pdu, uint8_t value);
+void Avtp_FlexRay_SetChan(Avtp_FlexRay_t* pdu, uint8_t value);
+void Avtp_FlexRay_SetStr(Avtp_FlexRay_t* pdu, uint8_t value);
+void Avtp_FlexRay_SetSyn(Avtp_FlexRay_t* pdu, uint8_t value);
+void Avtp_FlexRay_SetPre(Avtp_FlexRay_t* pdu, uint8_t value);
+void Avtp_FlexRay_SetNfi(Avtp_FlexRay_t* pdu, uint8_t value);
+void Avtp_FlexRay_SetMessageTimestamp(Avtp_FlexRay_t* pdu, uint64_t value);
+void Avtp_FlexRay_SetFrFrameId(Avtp_FlexRay_t* pdu, uint16_t value);
+void Avtp_FlexRay_SetCycle(Avtp_FlexRay_t* pdu, uint8_t value);
