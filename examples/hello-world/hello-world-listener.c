@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
         gpc_code = Avtp_Gpc_GetGpcMsgId((Avtp_Gpc_t*)acf_pdu);
         acf_msg_length = Avtp_Gpc_GetAcfMsgLength((Avtp_Gpc_t*)acf_pdu);
         if (acf_msg_length * 4 <= MAX_MSG_SIZE) {
-            recd_msg = acf_pdu + AVTP_GPC_HEADER_LEN;
+            recd_msg = (char *) acf_pdu + AVTP_GPC_HEADER_LEN;
             printf("%s : GPC Code %ld\n", recd_msg, gpc_code);
         }
     }

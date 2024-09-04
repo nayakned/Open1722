@@ -176,7 +176,7 @@ static int prepare_acf_packet(uint8_t* acf_pdu, uint64_t gpc_code,
 
     // Clear bits
     memset(pdu, 0, AVTP_GPC_HEADER_LEN);
-    uint8_t acf_length = (AVTP_GPC_HEADER_LEN + length)/4;
+    uint8_t acf_length = (AVTP_GPC_HEADER_LEN + ++length)/4;
     if (length % 4) acf_length++;
 
     // Prepare ACF PDU for CAN
