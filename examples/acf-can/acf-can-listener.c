@@ -144,29 +144,10 @@ static int is_valid_acf_packet(uint8_t* acf_pdu)
     Avtp_AcfCommon_t *pdu = (Avtp_AcfCommon_t*) acf_pdu;
     uint8_t acf_msg_type = Avtp_AcfCommon_GetAcfMsgType(pdu);
     if (acf_msg_type != AVTP_ACF_TYPE_CAN) {
-        fprintf(stderr, "ACF type mismatch: expected %"PRIu8", got %"PRIu8"\n",
-                AVTP_ACF_TYPE_CAN, acf_msg_type);
         return 0;
     }
 
     return 1;
-}
-
-void print_can_acf(uint8_t* acf_pdu)
-{
-    Avtp_Can_t *pdu = (Avtp_Can_t*) acf_pdu;
-    uint16_t acf_msg_len = Avtp_Can_GetAcfMsgLength(pdu);
-    uint8_t can_bus_id = Avtp_Can_GetCanBusId(pdu);
-    uint64_t timestamp = Avtp_Can_GetMessageTimestamp(pdu);
-    uint32_t can_identifier = Avtp_Can_GetCanIdentifier(pdu);
-    uint8_t pad = Avtp_Can_GetPad(pdu);
-
-    fprintf(stderr, "------------------------------------\n");
-    fprintf(stderr, "Msg Length: %"PRIu16"\n", acf_msg_len);
-    fprintf(stderr, "Can Bus ID: %"PRIu8"\n", can_bus_id);
-    fprintf(stderr, "Timestamp: %"PRIu64"", timestamp);
-    fprintf(stderr, "Can Identifier: %"PRIu32"\n", can_identifier);
-    fprintf(stderr, "Pad: %"PRIu8"\n", pad);
 }
 
 static int new_packet(int sk_fd, int can_socket) {
@@ -200,8 +181,6 @@ static int new_packet(int sk_fd, int can_socket) {
     subtype = Avtp_CommonHeader_GetSubtype((Avtp_CommonHeader_t*)cf_pdu);
     if (!((subtype == AVTP_SUBTYPE_NTSCF) ||
         (subtype == AVTP_SUBTYPE_TSCF))) {
-        fprintf(stderr, "Subtype mismatch: expected %u or %u, got %"PRIu8". Dropping packet\n",
-                AVTP_SUBTYPE_NTSCF, AVTP_SUBTYPE_TSCF, subtype);
         return 0;
     }
 
@@ -218,7 +197,6 @@ static int new_packet(int sk_fd, int can_socket) {
         acf_pdu = &pdu[proc_bytes + msg_proc_bytes];
 
         if (!is_valid_acf_packet(acf_pdu)) {
-            fprintf(stderr, "Error: Invalid ACF packet.\n");
             return 0;
         }
 
