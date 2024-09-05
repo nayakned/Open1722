@@ -1,4 +1,4 @@
-![Status - Incubating](https://img.shields.io/static/v1?label=Status&message=Incubating&color=FEFF3A&style=for-the-badge) 
+![Status - Incubating](https://img.shields.io/static/v1?label=Status&message=Incubating&color=FEFF3A&style=for-the-badge)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/COVESA/Open1722/build-all.yml?branch=main&style=for-the-badge)
 
 
@@ -8,14 +8,14 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/eclipse-kuksa/kuksa-databroker">
-    <img src="./logo/open1722logo.png" alt="Opnen1722 logo" width="400px">
+  <a href="https://github.com/COVESA/Open1722">
+    <img src="./logo/open1722logo.png" alt="Open1722 logo" width="400px">
   </a>
 
 <h2 align="center">Covesa Open1722</h2>
 
   <p align="center">
-    Open1722  is an implementation of the IEEE 1722 protocol, for streaming audio/video, tunneling CAN/LIN messages and enabling remote access to peripheral bus systems. 
+    Open1722  is an implementation of the IEEE 1722 protocol, for streaming audio/video, tunneling CAN/LIN messages and enabling remote access to peripheral bus systems.
     <br />
     <br />
     <a href="https://github.com/COVESA/Open1722/issues">Report Bug</a>
