@@ -1,7 +1,9 @@
-#!/bin/bash 
-set -ev 
+#!/bin/bash
+set -ev
 
-./build_all.sh
+rm -rf build
+mkdir build
 cd build
+cmake .. -DUNIT_TESTING=on
+make -j`nproc`
 make test
-# ninja coverage-html

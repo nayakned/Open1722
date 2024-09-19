@@ -96,22 +96,27 @@ target_link_libraries(hello-world-listener open1722 open1722examples)
 
 enable_testing()
 
-# find_package(cmocka 1.1.0 REQUIRED)
+if (UNIT_TESTING)
 
-list(APPEND TEST_TARGETS test-aaf)
-list(APPEND TEST_TARGETS test-avtp)
-list(APPEND TEST_TARGETS test-can)
-list(APPEND TEST_TARGETS test-crf)
-list(APPEND TEST_TARGETS test-cvf)
-list(APPEND TEST_TARGETS test-rvf)
-# list(APPEND TEST_TARGETS test-stream)
+    find_package(cmocka 1.1.0 REQUIRED)
 
-foreach(TEST_TARGET IN LISTS TEST_TARGETS)
-    add_executable(${TEST_TARGET} "unit/${TEST_TARGET}.c")
-    target_include_directories(${TEST_TARGET} PRIVATE "include")
-    target_link_libraries(${TEST_TARGET} open1722 cmocka m)
-    add_test(NAME ${TEST_TARGET} COMMAND "${PROJECT_BINARY_DIR}/${TEST_TARGET}")
-endforeach()
+    if (cmocka_FOUND)
+        list(APPEND TEST_TARGETS test-aaf)
+        list(APPEND TEST_TARGETS test-avtp)
+        list(APPEND TEST_TARGETS test-can)
+        list(APPEND TEST_TARGETS test-crf)
+        list(APPEND TEST_TARGETS test-cvf)
+        list(APPEND TEST_TARGETS test-rvf)
+
+        foreach(TEST_TARGET IN LISTS TEST_TARGETS)
+            add_executable(${TEST_TARGET} "unit/${TEST_TARGET}.c")
+            target_include_directories(${TEST_TARGET} PRIVATE "include")
+            target_link_libraries(${TEST_TARGET} open1722 cmocka m)
+            add_test(NAME ${TEST_TARGET} COMMAND "${PROJECT_BINARY_DIR}/${TEST_TARGET}")
+        endforeach()
+    endif(cmocka_FOUND)
+endif(UNIT_TESTING)
+
 
 #### Install ##################################################################
 
