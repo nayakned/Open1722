@@ -49,7 +49,7 @@ This repository is organized as follows:
 
 Before building Open1722 make sure you have installed the following software :
 * CMake >= 3.20
-* CMocka >= 1.1.0
+* CMocka >= 1.1.0 (For running unit tests. This can be installed on Debian/Ubuntu using ```sudo apt install libcmocka-dev```)
 
 Alternatively, you can use VS Code to run the provided dev container which takes care of the dependencies.
 
@@ -58,6 +58,12 @@ The first step to build Open1722 is to generate the Makefile and build the proje
 $ mkdir build
 $ cd buid
 $ cmake ..
+$ make
+```
+
+To execute available unit tests, set the Cmake variable UNIT_TESTING.
+```
+$ cmake .. -DUNIT_TESTING=on
 $ make
 ```
 
