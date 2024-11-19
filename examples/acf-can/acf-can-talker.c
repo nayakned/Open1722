@@ -72,7 +72,7 @@ static char doc[] =
          \vEXAMPLES\n\
          acf-can-talker -i eth0 -d aa:bb:cc:ee:dd:ff --canif vcan0\n\
          \t(tunnel transactions from CAN vcan0 over Ethernet eth0)\n\n\
-         acf-can-talker -u --dst-nw-address 10.0.0.2:17220 --canif vcan1\n\
+         acf-can-talker -u --dst-nw-addr 10.0.0.2:17220 --canif vcan1\n\
          \t(tunnel transactions from vcan1 interface using UDP)";
 
 static struct argp_option options[] = {
@@ -80,10 +80,10 @@ static struct argp_option options[] = {
     {"udp", 'u', 0, 0, "Use UDP" },
     {"fd", ARGPARSE_CAN_FD_OPTION, 0, 0, "Use CAN-FD"},
     {"count", 'c', "COUNT", 0, "Set count of CAN messages per Ethernet frame"},
-    {"canif", ARGPARSE_CAN_IF_OPTION, 0, 0, "CAN interface"},
-    {"ifname", 'i', 0, 0, "Network interface (If Ethernet)"},
+    {"canif", ARGPARSE_CAN_IF_OPTION, "CAN_IF", 0, "CAN interface"},
+    {"ifname", 'i', "IFNAME", 0, "Network interface (If Ethernet)"},
     {"dst-addr", 'd', "MACADDR", 0, "Stream destination MAC address (If Ethernet)"},
-    {"dst-nw-addr", 'n', 0, 0, "Stream destination network address and port (If UDP)"},
+    {"dst-nw-addr", 'n', "NW_ADDR", 0, "Stream destination network address and port (If UDP)"},
     { 0 }
 };
 
@@ -137,7 +137,7 @@ static error_t parser(int key, char *arg, struct argp_state *state)
     return 0;
 }
 
-static struct argp argp = { options, parser, 0, doc };
+static struct argp argp = { options, parser};
 
 static int init_cf_pdu(uint8_t* pdu)
 {

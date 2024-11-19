@@ -72,10 +72,10 @@ static char doc[] =
 static struct argp_option options[] = {
     {"udp", 'u', 0, 0, "Use UDP" },
     {"fd", ARGPARSE_CAN_FD_OPTION, 0, 0, "Use CAN-FD"},
-    {"canif", ARGPARSE_CAN_IF_OPTION, 0, 0, "CAN interface"},
-    {"ifname", 'i', 0, 0, "Network interface (If Ethernet)"},
+    {"canif", ARGPARSE_CAN_IF_OPTION, "CAN_IF", 0, "CAN interface"},
+    {"ifname", 'i', "IFNAME", 0, "Network interface (If Ethernet)"},
     {"dst-addr", 'd', "MACADDR", 0, "Stream destination MAC address (If Ethernet)"},
-    {"udp-port", 'p', 0, 0, "UDP Port to listen on (if UDP)"},
+    {"udp-port", 'p', "UDP_PORT", 0, "UDP Port to listen on (if UDP)"},
     { 0 }
 };
 
@@ -112,7 +112,7 @@ static error_t parser(int key, char *arg, struct argp_state *state)
     return 0;
 }
 
-static struct argp argp = { options, parser, 0, doc };
+static struct argp argp = { options, parser };
 
 static int is_valid_acf_packet(uint8_t* acf_pdu)
 {
