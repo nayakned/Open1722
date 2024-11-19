@@ -137,7 +137,7 @@ static error_t parser(int key, char *arg, struct argp_state *state)
     return 0;
 }
 
-static struct argp argp = { options, parser};
+static struct argp argp = { options, parser, NULL, doc};
 
 static int init_cf_pdu(uint8_t* pdu)
 {
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
     uint16_t pdu_length, cf_length;
     frame_t can_frame;
 
-    argp_parse(&argp, argc, argv, 0, NULL, NULL);
+    argp_parse(&argp, argc, argv, doc, NULL, NULL);
 
     // Create an appropriate talker socket: UDP or Ethernet raw
     // Setup the socket for sending to the destination

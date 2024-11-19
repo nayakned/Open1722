@@ -66,8 +66,8 @@ static char doc[] =
         \vEXAMPLES\n\
         acf-can-listener -i eth0 -d aa:bb:cc:dd:ee:ff --canif can1\n\
         \t(tunnel Open1722 CAN messages received from eth0 to can1)\n\
-        acf-can-listener --canif can1 -u -p 1722\n\
-        \t(tunnel Open1722 CAN messages received over UDP from port 1722 to can1)";
+        acf-can-listener --canif can1 -u -p 17220\n\
+        \t(tunnel Open1722 CAN messages received over UDP from port 17220 to can1)";
 
 static struct argp_option options[] = {
     {"udp", 'u', 0, 0, "Use UDP" },
@@ -112,7 +112,7 @@ static error_t parser(int key, char *arg, struct argp_state *state)
     return 0;
 }
 
-static struct argp argp = { options, parser };
+static struct argp argp = { options, parser, NULL, doc};
 
 static int is_valid_acf_packet(uint8_t* acf_pdu)
 {

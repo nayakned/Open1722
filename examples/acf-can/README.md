@@ -3,7 +3,7 @@
 The two applications available in this folder are acf-can-listener and acf-can-talker. These applications can be used along with Linux CAN utilities. On Ubuntu/Debian Linux distributions, these utilities can be installed using the package manager `apt install can-utils`
 
 ## acf-can-talker
-_acf-can-talker_ receives frames on a (virtual) CAN interface and send out the corresponding IEEE 1722 ACF messages. This application also supports a UDP encapsulation for the IEEE 1722 messages. The parameters for its usage are as follows:
+_acf-can-talker_ receives frames on a (virtual) CAN interface and sends out the corresponding IEEE 1722 ACF messages. This application also supports UDP encapsulation for the IEEE 1722 messages. The parameters for its usage are as follows:
 
 ```
 Usage: acf-can-talker [OPTION...]
@@ -46,8 +46,9 @@ CAN bus over Ethernet using Open1722.
 
 ## Quickstart Tutorial: Tunneling CAN over IEEE 1722 using Linux CAN utilities
 Here is an example of how CAN frames can be tunneled over an Ethernet link using _acf-can-talker_ and _acf-can-listener_.
-We use two virtual CAN interfaces, _vcan0_ and _vcan1_, here which can be setup using following commands:
+We use two virtual CAN interfaces, _vcan0_ and _vcan1_, which can be setup using following commands:
 ```
+$ modprobe vcan
 $ ip link add dev vcan0 type vcan   # Execute these commands also for vcan1
 $ ip link set dev vcan0 up
 ```
@@ -71,11 +72,11 @@ $ ./acf-can-talker --dst-addr aa:bb:cc:dd:ee:ff -i eth0 --canif vcan0
 ```
 
 ### Use Listener Application for receiving
-On Terminal 3, receive the IEEE 1722 traffic using _acf-can-listener_ for putting the CAN frame out on vcan1.
+On Terminal 3, receive the IEEE 1722 traffic using _acf-can-listener_ and put the CAN frame out on vcan1.
 
-If the talke uses UDP encapsulation:
+If the talker uses UDP encapsulation:
 ```
-$ acf-can-listener -u -p 17220 --canif vcan1
+$ ./acf-can-listener -u -p 17220 --canif vcan1
 ```
 
 Alternatively, if Ethernet is directly used:
@@ -83,7 +84,5 @@ Alternatively, if Ethernet is directly used:
 $ ./acf-can-listener --dst-addr aa:bb:cc:dd:ee:ff -i eth0 --canif vcan0
 ```
 
-You can now compare CAN traffic seen on _vcan0 and vcan1_, if the tunneling has worked.
+You can now compare CAN traffic seen on _vcan0 and vcan1_ to check if the tunneling works.
 Note that the tunneling works in these examples only in one direction (_vcan0_ -> _vcan1_).
-
-
