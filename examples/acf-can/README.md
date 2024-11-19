@@ -7,73 +7,83 @@ _acf-can-talker_ receives frames on a (virtual) CAN interface and send out the c
 
 ```
 Usage: acf-can-talker [OPTION...]
-            [ifname] dst-mac-address/dst-nw-address:port [can ifname]
 
-acf-can-talker -- a program designed to send CAN messages to
- a remote CAN bus over Ethernet using Open1722                     
+acf-can-talker -- a program designed to send CAN messages to a remote CAN bus
+over Ethernet using Open1722.
 
+      --canif                CAN interface
+  -c, --count=COUNT          Set count of CAN messages per Ethernet frame
+  -d, --dst-addr=MACADDR     Stream destination MAC address (If Ethernet)
+      --fd                   Use CAN-FD
+  -i, --ifname               Network interface (If Ethernet)
+  -n, --dst-nw-addr          Stream destination network address and port (If
+                             UDP)
   -t, --tscf                 Use TSCF
   -u, --udp                  Use UDP
-  can ifname                 CAN interface (set to STDIN by default)
-  dst-mac-address            Stream destination MAC address (If Ethernet)
-  dst-nw-address:port        Stream destination network address and port (If
-                             UDP)
-  ifname                     Network interface (If Ethernet)
-```
-
-Output of _candump_ can be piped into this application for an easy and quick use. E.g.,  
-```
-$  candump can1 | acf-can-talker -u 127.0.0.1:17220
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
 ```
 
 ## acf-can-talker
 _acf-can-listener_ receives IEEE 1722 ACF messages and puts out the corresponding CAN frames on a (virtual) CAN interface. Analogous to the _acf_can_talker_, UDP encapsulation is also available for this application.  The parameters for its usage are as follows:
 
 ```
-Usage: acf-can-listener [OPTION...] [ifname] dst-mac-address [can ifname]
+Usage: acf-can-listener [OPTION...]
 
-acf-can-listener -- a program designed to receive CAN messages from
-        a remote CAN bus over Ethernet using Open1722                     
+acf-can-listener -- a program designed to receive CAN messages from a remote
+CAN bus over Ethernet using Open1722.
 
-  -p, --port=UDP_PORT        UDP Port to listen on if UDP enabled
+      --canif                CAN interface
+  -d, --dst-addr=MACADDR     Stream destination MAC address (If Ethernet)
+      --fd                   Use CAN-FD
+  -i, --ifname               Network interface (If Ethernet)
+  -p, --udp-port             UDP Port to listen on (if UDP)
   -u, --udp                  Use UDP
-  can ifname                 CAN interface (set to STDOUT by default)
-  dst-mac-address            Stream destination MAC address (If Ethernet)
-  ifname                     Network interface (If Ethernet)
   -?, --help                 Give this help list
       --usage                Give a short usage message
 
 ```
 
-Output of this application can also be piped to _canplayer_ if so desired. E.g.,
-```
-acf-can-listener -up 17220 | canplayer can1=elmcan can1
-```
-
 ## Quickstart Tutorial: Tunneling CAN over IEEE 1722 using Linux CAN utilities
 Here is an example of how CAN frames can be tunneled over an Ethernet link using _acf-can-talker_ and _acf-can-listener_.
-We use two virtual CAN interfaces, vcan0 and vcan1, here which can be setup using following commands:
+We use two virtual CAN interfaces, _vcan0_ and _vcan1_, here which can be setup using following commands:
 ```
-$ ip link add dev vcan0 type vcan   # Execute these commands also for vcan1 
+$ ip link add dev vcan0 type vcan   # Execute these commands also for vcan1
 $ ip link set dev vcan0 up
 ```
 
+### Generate CAN traffic
 On Terminal 1, generate CAN traffic for vcan0:
 ```
 $ cangen vcan0
 ```
 
-On Terminal 2, pipe generated CAN traffic to _acf-can-talker_. Here, we use UDP encapsulation:
+In the following, we tunnel this generated CAN traffic over Ethernet to _vcan1_
+
+### Use Talker Application for tunneling
+On Terminal 2, pipe generated CAN traffic from vcan0 to _acf-can-talker_. Here, we use UDP encapsulation.
 ```
-$ candump vcan0 | acf-can-talker -u 127.0.0.1:17220
+$ ./acf-can-talker -u --dst-nw-addr 127.0.0.1:17220 --canif vcan0
+```
+Alternatively, we can directly use Ethernet for transport.
+```
+$ ./acf-can-talker --dst-addr aa:bb:cc:dd:ee:ff -i eth0 --canif vcan0
 ```
 
-On Terminal 3, receive the IEEE 1722 traffic using _acf-can-listener_ and pipe the output to _canplayer_ for putting the CAN frame out on vcan1.
+### Use Listener Application for receiving
+On Terminal 3, receive the IEEE 1722 traffic using _acf-can-listener_ for putting the CAN frame out on vcan1.
+
+If the talke uses UDP encapsulation:
 ```
-$ acf-can-listener -up 17220 | canplayer vcan1=elmcan
+$ acf-can-listener -u -p 17220 --canif vcan1
 ```
 
-You can now compare CAN traffic seen on vcan0 and vcan1, if the tunneling has worked.
-Note that the tunneling works only in one direction (vcan0 -> vcan1).
+Alternatively, if Ethernet is directly used:
+```
+$ ./acf-can-listener --dst-addr aa:bb:cc:dd:ee:ff -i eth0 --canif vcan0
+```
+
+You can now compare CAN traffic seen on _vcan0 and vcan1_, if the tunneling has worked.
+Note that the tunneling works in these examples only in one direction (_vcan0_ -> _vcan1_).
 
 
