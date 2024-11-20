@@ -52,6 +52,7 @@
 
 #define MAX_PDU_SIZE                1500
 #define ARGPARSE_CAN_FD_OPTION      500
+#define ARGPARSE_CAN_IF_OPTION      501
 
 static char ifname[IFNAMSIZ];
 static uint8_t macaddr[ETH_ALEN];
@@ -60,25 +61,21 @@ static uint32_t udp_port = 17220;
 static Avtp_CanVariant_t can_variant = AVTP_CAN_CLASSIC;
 static char can_ifname[IFNAMSIZ];
 
-static char doc[] = "\nacf-can-listener -- a program designed to receive CAN messages from \
-                    a remote CAN bus over Ethernet using Open1722 \
-                    \vEXAMPLES\
-                    \n\n  acf-can-listener eth0 aa:bb:cc:dd:ee:ff can1\
-                    \n\n    (tunnel Open1722 CAN messages received from eth0 to STDOUT)\
-                    \n\n  acf-can-listener can1 -up 1722\
-                    \n\n    (tunnel Open1722 CAN messages received over UDP from port 1722 to can1)\
-                    \n\n  acf-can-listener -up 1722 | canplayer can1=elmcan\
-                    \n\n    (another method to tunnel Open1722 CAN messages to can1)";
-
-static char args_doc[] = "[ifname] dst-mac-address [can ifname]";
+static char doc[] =
+        "\nacf-can-listener -- a program designed to receive CAN messages from a remote CAN bus over Ethernet using Open1722.\
+        \vEXAMPLES\n\
+        acf-can-listener -i eth0 -d aa:bb:cc:dd:ee:ff --canif can1\n\
+        \t(tunnel Open1722 CAN messages received from eth0 to can1)\n\
+        acf-can-listener --canif can1 -u -p 17220\n\
+        \t(tunnel Open1722 CAN messages received over UDP from port 17220 to can1)";
 
 static struct argp_option options[] = {
-    {"port", 'p', "UDP_PORT", 0, "UDP Port to listen on if UDP enabled"},
-    {"udp", 'u', 0, 0, "Use UDP"},
+    {"udp", 'u', 0, 0, "Use UDP" },
     {"fd", ARGPARSE_CAN_FD_OPTION, 0, 0, "Use CAN-FD"},
-    {"can ifname", 0, 0, OPTION_DOC, "CAN interface (set to STDOUT by default)"},
-    {"dst-mac-address", 0, 0, OPTION_DOC, "Stream destination MAC address (If Ethernet)"},
-    {"ifname", 0, 0, OPTION_DOC, "Network interface (If Ethernet)" },
+    {"canif", ARGPARSE_CAN_IF_OPTION, "CAN_IF", 0, "CAN interface"},
+    {"ifname", 'i', "IFNAME", 0, "Network interface (If Ethernet)"},
+    {"dst-addr", 'd', "MACADDR", 0, "Stream destination MAC address (If Ethernet)"},
+    {"udp-port", 'p', "UDP_PORT", 0, "UDP Port to listen on (if UDP)"},
     { 0 }
 };
 
@@ -95,49 +92,27 @@ static error_t parser(int key, char *arg, struct argp_state *state)
         break;
     case ARGPARSE_CAN_FD_OPTION:
         can_variant = AVTP_CAN_FD;
-
-    case ARGP_KEY_NO_ARGS:
+    case ARGPARSE_CAN_IF_OPTION:
+        strncpy(can_ifname, arg, sizeof(can_ifname) - 1);
         break;
-
-    case ARGP_KEY_ARG:
-
-        if(state->argc < 2){
-            argp_usage(state);
+    case 'i':
+        strncpy(ifname, arg, sizeof(ifname) - 1);
+        break;
+    case 'd':
+        res = sscanf(arg, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+                &macaddr[0], &macaddr[1], &macaddr[2],
+                &macaddr[3], &macaddr[4], &macaddr[5]);
+        if (res != 6) {
+            fprintf(stderr, "Invalid MAC address\n");
+            exit(EXIT_FAILURE);
         }
-
-        if(!use_udp){
-            strncpy(ifname, arg, sizeof(ifname) - 1);
-
-            if(state->next < state->argc)
-            {
-                res = sscanf(state->argv[state->next], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
-                        &macaddr[0], &macaddr[1], &macaddr[2],
-                        &macaddr[3], &macaddr[4], &macaddr[5]);
-                if (res != 6) {
-                    fprintf(stderr, "Invalid MAC address\n\n");
-                    argp_usage(state);
-                }
-                state->next += 1;
-            }
-
-            if(state->next < state->argc)
-            {
-                strncpy(can_ifname, state->argv[state->next], sizeof(can_ifname) - 1);
-                state->next = state->argc;
-            }
-
-        }else{
-            strncpy(can_ifname, arg, sizeof(can_ifname) - 1);
-            state->next = state->argc;
-        }
-
         break;
     }
 
     return 0;
 }
 
-static struct argp argp = { options, parser, args_doc, doc };
+static struct argp argp = { options, parser, NULL, doc};
 
 static int is_valid_acf_packet(uint8_t* acf_pdu)
 {

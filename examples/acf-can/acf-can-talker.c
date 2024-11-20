@@ -52,6 +52,7 @@
 #define STREAM_ID                   0xAABBCCDDEEFF0001
 #define CAN_PAYLOAD_MAX_SIZE        16*4
 #define ARGPARSE_CAN_FD_OPTION      500
+#define ARGPARSE_CAN_IF_OPTION      501
 
 static char ifname[IFNAMSIZ];
 static uint8_t macaddr[ETH_ALEN];
@@ -66,29 +67,23 @@ static Avtp_CanVariant_t can_variant = AVTP_CAN_CLASSIC;
 static uint8_t num_acf_msgs = 1;
 static char can_ifname[IFNAMSIZ];
 
-static char doc[] = "\nacf-can-talker -- a program designed to send CAN messages to \
-                    a remote CAN bus over Ethernet using Open1722 \
-                    \vEXAMPLES\
-                    \n\n  acf-can-talker eth0 aa:bb:cc:ee:dd:ff\
-                    \n\n    (tunnel transactions from STDIN to a remote CAN bus over Ethernet)\
-                    \n\n  acf-can-talker --count 10 eth0 aa:bb:cc:ee:dd:ff\
-                    \n\n    (as above, but pack 10 CAN frames in one Ethernet frame)\
-                    \n\n  acf-can-talker -u 10.0.0.2:17220 vcan1\
-                    \n\n    (tunnel transactions from can1 interface to a remote CAN bus over IP)\
-                    \n\n  candump can1 | acf-can-talker -u 10.0.0.2:17220\
-                    \n\n    (another method to tunnel transactions from vcan1 to a remote CAN bus)";
-
-static char args_doc[] = "[ifname] dst-mac-address/dst-nw-address:port [can ifname]";
+static char doc[] =
+        "\nacf-can-talker -- a program designed to send CAN messages to a remote CAN bus over Ethernet using Open1722.\
+         \vEXAMPLES\n\
+         acf-can-talker -i eth0 -d aa:bb:cc:ee:dd:ff --canif vcan0\n\
+         \t(tunnel transactions from CAN vcan0 over Ethernet eth0)\n\n\
+         acf-can-talker -u --dst-nw-addr 10.0.0.2:17220 --canif vcan1\n\
+         \t(tunnel transactions from vcan1 interface using UDP)";
 
 static struct argp_option options[] = {
     {"tscf", 't', 0, 0, "Use TSCF"},
     {"udp", 'u', 0, 0, "Use UDP" },
     {"fd", ARGPARSE_CAN_FD_OPTION, 0, 0, "Use CAN-FD"},
     {"count", 'c', "COUNT", 0, "Set count of CAN messages per Ethernet frame"},
-    {"can ifname", 0, 0, OPTION_DOC, "CAN interface (set to STDIN by default)"},
-    {"ifname", 0, 0, OPTION_DOC, "Network interface (If Ethernet)"},
-    {"dst-mac-address", 0, 0, OPTION_DOC, "Stream destination MAC address (If Ethernet)"},
-    {"dst-nw-address:port", 0, 0, OPTION_DOC, "Stream destination network address and port (If UDP)"},
+    {"canif", ARGPARSE_CAN_IF_OPTION, "CAN_IF", 0, "CAN interface"},
+    {"ifname", 'i', "IFNAME", 0, "Network interface (If Ethernet)"},
+    {"dst-addr", 'd', "MACADDR", 0, "Stream destination MAC address (If Ethernet)"},
+    {"dst-nw-addr", 'n', "NW_ADDR", 0, "Stream destination network address and port (If UDP)"},
     { 0 }
 };
 
@@ -110,58 +105,39 @@ static error_t parser(int key, char *arg, struct argp_state *state)
     case ARGPARSE_CAN_FD_OPTION:
         can_variant = AVTP_CAN_FD;
         break;
-
-    case ARGP_KEY_NO_ARGS:
-        argp_usage(state);
-
-    case ARGP_KEY_ARG:
-
-        if(state->argc < 2){
-            argp_usage(state);
+    case ARGPARSE_CAN_IF_OPTION:
+        strncpy(can_ifname, arg, sizeof(can_ifname) - 1);
+        break;
+    case 'i':
+        strncpy(ifname, arg, sizeof(ifname) - 1);
+        break;
+    case 'd':
+        res = sscanf(arg, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+                &macaddr[0], &macaddr[1], &macaddr[2],
+                &macaddr[3], &macaddr[4], &macaddr[5]);
+        if (res != 6) {
+            fprintf(stderr, "Invalid MAC address\n");
+            exit(EXIT_FAILURE);
         }
-
-        if(!use_udp){
-
-            strncpy(ifname, arg, sizeof(ifname) - 1);
-
-            if(state->next < state->argc)
-            {
-                res = sscanf(state->argv[state->next], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
-                        &macaddr[0], &macaddr[1], &macaddr[2],
-                        &macaddr[3], &macaddr[4], &macaddr[5]);
-                if (res != 6) {
-                    fprintf(stderr, "Invalid MAC address\n\n");
-                    argp_usage(state);
-                }
-                state->next += 1;
-            }
-
-        } else {
-            res = sscanf(arg, "%[^:]:%d", ip_addr_str, &udp_port);
-            if (!res) {
-                fprintf(stderr, "Invalid IP address or port\n\n");
-                argp_usage(state);
-            }
-            res = inet_pton(AF_INET, ip_addr_str, ip_addr);
-            if (!res) {
-                fprintf(stderr, "Invalid IP address\n\n");
-                argp_usage(state);
-            }
+        break;
+    case 'n':
+        res = sscanf(arg, "%[^:]:%d", ip_addr_str, &udp_port);
+        if (!res) {
+            fprintf(stderr, "Invalid IP address or port\n");
+            exit(EXIT_FAILURE);
         }
-
-        if(state->next < state->argc)
-        {
-            strncpy(can_ifname, state->argv[state->next], sizeof(can_ifname) - 1);
-            state->next = state->argc;
+        res = inet_pton(AF_INET, ip_addr_str, ip_addr);
+        if (!res) {
+            fprintf(stderr, "Invalid IP address\n");
+            exit(EXIT_FAILURE);
         }
-
         break;
     }
 
     return 0;
 }
 
-static struct argp argp = { options, parser, args_doc, doc };
+static struct argp argp = { options, parser, NULL, doc};
 
 static int init_cf_pdu(uint8_t* pdu)
 {
@@ -247,7 +223,7 @@ int main(int argc, char *argv[])
     uint16_t pdu_length, cf_length;
     frame_t can_frame;
 
-    argp_parse(&argp, argc, argv, 0, NULL, NULL);
+    argp_parse(&argp, argc, argv, doc, NULL, NULL);
 
     // Create an appropriate talker socket: UDP or Ethernet raw
     // Setup the socket for sending to the destination
