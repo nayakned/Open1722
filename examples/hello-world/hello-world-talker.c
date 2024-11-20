@@ -63,8 +63,8 @@ static uint32_t udp_port=17220;
 static int priority = -1;
 static uint8_t seq_num = 0;
 static uint32_t udp_seq_num = 0;
-static uint8_t use_tscf;
-static uint8_t use_udp;
+static uint8_t use_tscf = 0;
+static uint8_t use_udp = 0;
 
 static error_t parser(int key, char *arg, struct argp_state *state)
 {
@@ -78,45 +78,32 @@ static error_t parser(int key, char *arg, struct argp_state *state)
     case 'u':
         use_udp = 1;
         break;
+    case 'i':
+        strncpy(ifname, arg, sizeof(ifname) - 1);
+        break;
+    case 'd':
+        res = sscanf(arg, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+                &macaddr[0], &macaddr[1], &macaddr[2],
+                &macaddr[3], &macaddr[4], &macaddr[5]);
+        if (res != 6) {
+            fprintf(stderr, "Invalid MAC address\n");
+            exit(EXIT_FAILURE);
+        }
+        break;
+    case 'n':
+        res = sscanf(arg, "%[^:]:%d", ip_addr_str, &udp_port);
+        if (!res) {
+            fprintf(stderr, "Invalid IP address or port\n");
+            exit(EXIT_FAILURE);
+        }
+        res = inet_pton(AF_INET, ip_addr_str, ip_addr);
+        if (!res) {
+            fprintf(stderr, "Invalid IP address\n");
+            exit(EXIT_FAILURE);
+        }
+        break;
     case ARGPARSE_OPTION_MSG:
         strncpy(message_string, arg, MAX_MSG_SIZE);
-        break;
-    case ARGP_KEY_NO_ARGS:
-        argp_usage(state);
-
-    case ARGP_KEY_ARG:
-        if(state->argc < 2){
-            argp_usage(state);
-        }
-        if(!use_udp){
-
-            strncpy(ifname, arg, sizeof(ifname) - 1);
-
-            if(state->next < state->argc)
-            {
-                res = sscanf(state->argv[state->next], "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
-                        &macaddr[0], &macaddr[1], &macaddr[2],
-                        &macaddr[3], &macaddr[4], &macaddr[5]);
-                if (res != 6) {
-                    fprintf(stderr, "Invalid MAC address\n\n");
-                    argp_usage(state);
-                }
-                state->next += 1;
-            }
-
-        } else {
-            res = sscanf(arg, "%[^:]:%d", ip_addr_str, &udp_port);
-            if (!res) {
-                fprintf(stderr, "Invalid IP address or port\n\n");
-                argp_usage(state);
-            }
-            res = inet_pton(AF_INET, ip_addr_str, ip_addr);
-            if (!res) {
-                fprintf(stderr, "Invalid IP address\n\n");
-                argp_usage(state);
-            }
-        }
-
         break;
     }
 
@@ -125,11 +112,11 @@ static error_t parser(int key, char *arg, struct argp_state *state)
 
 static struct argp_option options[] = {
     {"tscf", 't', 0, 0, "Use TSCF"},
-    {"udp",  'u', 0, 0, "Use UDP" },
+    {"udp", 'u', 0, 0, "Use UDP" },
     {"message", ARGPARSE_OPTION_MSG, "MSG_STR", 0, "String message to send over IEEE 1722"},
-    {"ifname", 0, 0, OPTION_DOC, "Network interface (If Ethernet)"},
-    {"dst-mac-address", 0, 0, OPTION_DOC, "Stream destination MAC address (If Ethernet)"},
-    {"dst-nw-address:port", 0, 0, OPTION_DOC, "Stream destination network address and port (If UDP)"},
+    {"ifname", 'i', "IFNAME", 0, "Network interface (If Ethernet)"},
+    {"dst-addr", 'd', "MACADDR", 0, "Stream destination MAC address (If Ethernet)"},
+    {"dst-nw-addr", 'n', "NW_ADDR", 0, "Stream destination network address and port (If UDP)"},
     { 0 }
 };
 
@@ -142,16 +129,16 @@ static int init_cf_pdu(uint8_t* pdu)
         Avtp_Tscf_t* tscf_pdu = (Avtp_Tscf_t*) pdu;
         memset(tscf_pdu, 0, AVTP_TSCF_HEADER_LEN);
         Avtp_Tscf_Init(tscf_pdu);
-        Avtp_Tscf_SetField(tscf_pdu, AVTP_TSCF_FIELD_TU, 0U);
-        Avtp_Tscf_SetField(tscf_pdu, AVTP_TSCF_FIELD_SEQUENCE_NUM, seq_num++);
-        Avtp_Tscf_SetField(tscf_pdu, AVTP_TSCF_FIELD_STREAM_ID, STREAM_ID);
+        Avtp_Tscf_SetTu(tscf_pdu, 0U);
+        Avtp_Tscf_SetSequenceNum(tscf_pdu, seq_num++);
+        Avtp_Tscf_SetStreamId(tscf_pdu, STREAM_ID);
         res = AVTP_TSCF_HEADER_LEN;
     } else {
         Avtp_Ntscf_t* ntscf_pdu = (Avtp_Ntscf_t*) pdu;
         memset(ntscf_pdu, 0, AVTP_NTSCF_HEADER_LEN);
         Avtp_Ntscf_Init(ntscf_pdu);
-        Avtp_Ntscf_SetField(ntscf_pdu, AVTP_NTSCF_FIELD_SEQUENCE_NUM, seq_num++);
-        Avtp_Ntscf_SetField(ntscf_pdu, AVTP_NTSCF_FIELD_STREAM_ID, STREAM_ID);
+        Avtp_Ntscf_SetSequenceNum(ntscf_pdu, seq_num++);
+        Avtp_Ntscf_SetStreamId(ntscf_pdu, STREAM_ID);
         res = AVTP_NTSCF_HEADER_LEN;
     }
     return res;
@@ -161,10 +148,11 @@ static int update_pdu_length(uint8_t* pdu, uint64_t length)
 {
     if (use_tscf) {
         uint64_t payloadLen = length - AVTP_TSCF_HEADER_LEN;
-        Avtp_Tscf_SetField((Avtp_Tscf_t*)pdu, AVTP_TSCF_FIELD_STREAM_DATA_LENGTH, payloadLen);
+        Avtp_Tscf_SetStreamDataLength((Avtp_Tscf_t*)pdu, payloadLen);
     } else {
         uint64_t payloadLen = length - AVTP_NTSCF_HEADER_LEN;
-        Avtp_Ntscf_SetField((Avtp_Ntscf_t*)pdu, AVTP_NTSCF_FIELD_NTSCF_DATA_LENGTH, payloadLen);
+        Avtp_Ntscf_SetNtscfDataLength((Avtp_Ntscf_t*)pdu, payloadLen);
+
     }
     return 0;
 }
@@ -181,8 +169,8 @@ static int prepare_acf_packet(uint8_t* acf_pdu, uint64_t gpc_code,
 
     // Prepare ACF PDU for CAN
     Avtp_Gpc_Init(pdu);
-    Avtp_Gpc_SetField(pdu, AVTP_GPC_FIELD_GPC_MSG_ID, gpc_code);
-    Avtp_Gpc_SetField(pdu, AVTP_GPC_FIELD_ACF_MSG_LENGTH, acf_length);
+    Avtp_Gpc_SetGpcMsgId(pdu, gpc_code);
+    Avtp_Gpc_SetAcfMsgLength(pdu, acf_length);
     memcpy(acf_pdu+AVTP_GPC_HEADER_LEN, payload, length);
     memset(acf_pdu+AVTP_GPC_HEADER_LEN+length, 0, acf_length*4 - length);
 
@@ -193,10 +181,11 @@ static int update_cf_length(uint8_t* cf_pdu, uint64_t length)
 {
     if (use_tscf) {
         uint64_t payloadLen = length - AVTP_TSCF_HEADER_LEN;
-        Avtp_Tscf_SetField((Avtp_Tscf_t*)cf_pdu, AVTP_TSCF_FIELD_STREAM_DATA_LENGTH, payloadLen);
+        Avtp_Tscf_SetStreamDataLength((Avtp_Tscf_t*)cf_pdu, payloadLen);
     } else {
         uint64_t payloadLen = length - AVTP_NTSCF_HEADER_LEN;
-        Avtp_Ntscf_SetField((Avtp_Ntscf_t*)cf_pdu, AVTP_NTSCF_FIELD_NTSCF_DATA_LENGTH, payloadLen);
+        Avtp_Ntscf_SetNtscfDataLength((Avtp_Ntscf_t*)cf_pdu, payloadLen);
+
     }
     return 0;
 }
@@ -240,8 +229,7 @@ int main(int argc, char *argv[])
         // Usage of UDP means the PDU needs an encapsulation number
         if (use_udp) {
             Avtp_Udp_t *udp_pdu = (Avtp_Udp_t *) pdu;
-            Avtp_Udp_SetField(udp_pdu, AVTP_UDP_FIELD_ENCAPSULATION_SEQ_NO,
-                              udp_seq_num++);
+            Avtp_Udp_SetEncapsulationSeqNo(udp_pdu, udp_seq_num++);
             pdu_length +=  sizeof(Avtp_Udp_t);
         }
 
