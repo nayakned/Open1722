@@ -84,6 +84,13 @@ To install Open1722 on your system run:
 $ sudo make install
 ```
 
+To cross-compile for aarch64 (e.g. Raspberry Pi), you can use the [toolchain file](./aarch64.toolchain) we provided. Note that this requires a fresh build process with a new ```build``` folder.
+```
+$ sudo apt install gcc-aarch64-linux-gnu libc6-dev-arm64-cross binutils-aarch64-linux-gnu
+$ cmake .. -DCMAKE_TOOLCHAIN_FILE=../aarch64.toolchain
+$ make
+```
+
 ## AVTP Formats Support
 
 AVTP protocol defines several AVTPDU type formats (see Table 6 from IEEE 1722-2016 spec).
