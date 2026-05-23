@@ -37,7 +37,9 @@ elseif(DEFINED ENV{ZEPHYR_BASE})
     add_library(${LIB_NAME} STATIC ${LIB_SOURCES})
     target_link_libraries(${LIB_NAME} PRIVATE zephyr_interface)
 endif()
-target_compile_options(${LIB_NAME} PRIVATE -Wall -Wextra -Wconversion -Wsign-conversion)
+target_compile_options(${LIB_NAME} PRIVATE
+    $<$<C_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wconversion -Wsign-conversion>
+)
 target_include_directories(${LIB_NAME} PRIVATE
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
@@ -49,6 +51,9 @@ elseif(DEFINED ENV{ZEPHYR_BASE})
     add_library(${LIB_NAME}custom STATIC ${LIB_SOURCES})
     target_link_libraries(${LIB_NAME}custom PRIVATE zephyr_interface)
 endif()
+target_compile_options(${LIB_NAME}custom PRIVATE
+    $<$<C_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wconversion -Wsign-conversion>
+)
 target_compile_options(${LIB_NAME}custom PRIVATE -Wall -Wextra -Wconversion -Wsign-conversion)
 target_include_directories(${LIB_NAME}custom PRIVATE
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>

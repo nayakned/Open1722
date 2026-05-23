@@ -70,7 +70,7 @@ uint64_t Avtp_GetField(const Avtp_FieldDescriptor_t* fieldDescriptors,
             const uint32_t* quadletPtr = (const uint32_t*)(pdu + quadletId * 4);
             uint32_t quadletHostOrder = Avtp_BeToCpu32(*quadletPtr);
             uint32_t partialValue = (quadletHostOrder & quadletMask) >> quadletShift;
-            result |= (uint64_t)(partialValue) << ((uint32_t)(fieldDescriptor->bits - processedBits - quadletBits));
+            result |= (uint64_t)(partialValue) << (fieldDescriptor->bits - processedBits - quadletBits);
 
             quadletOffset += 1;
             processedBits += quadletBits;
