@@ -32,7 +32,7 @@
 
 ## Introduction
 
-Open1722 is a fork of [AVNU/libavtp](https://github.com/Avnu/libavtp) which is an open source reference implementation of the Audio Video Transport Protocol (AVTP) specified in IEEE 1722-2016 spec. _libavtp_ primarily focuses on audio video data formats of the IEEE 1722-2016 spec.
+Open1722 is a fork of [AVNU/libavtp](https://github.com/Avnu/libavtp) which is an open source reference implementation of the Audio Video Transport Protocol (AVTP) specified in IEEE 1722-2025 spec. _libavtp_ primarily focuses on audio video data formats of the IEEE 1722-2016 spec.
 
 IEEE 1722 is also gaining a lot of traction in the automotive community, mainly, to bridge fieldbus technologies over automotive Ethernet. In particular the AVTP Control Formats (ACF) specify serialization for a set of data formats relevant for automotive applications (e.g., CAN, LIN, etc.). Open1722 extends/modifies _libavtp_ to also include these ACF formats.
 
@@ -57,7 +57,7 @@ $ cd build
 $ cmake ..
 $ make
 ```
-This builds the libraries _libopen1722_ containing all the data formats specified in the IEEE 1722-2016 specification along with _libopen1722custom_ which contains customized serialization formats which can be sent over IEEE 1722.
+This builds the libraries _libopen1722_ containing all the data formats specified in the IEEE 1722-2025 specification along with _libopen1722custom_ which contains customized serialization formats which can be sent over IEEE 1722.
 
 To execute available unit tests:
 ```
@@ -90,22 +90,27 @@ $ make
 
 ## AVTP Formats Support
 
-AVTP protocol defines several AVTPDU type formats (see Table 6 from IEEE 1722-2016 spec).
+AVTP protocol defines several AVTPDU type formats (see Table 7 from IEEE 1722-2025 spec).
 
 The following is the list of the formats currently supported by Open1722:
  - AAF (PCM encapsulation only)
  - CRF
  - CVF (H.264, MJPEG, JPEG2000)
  - RVF
- - AVTP Control Formats (ACF) with Non-Time-Synchronous as well as Time-Synchronous formats (see Table 22 from IEEE 1722-2016 spec)
-    - CAN
-    - CAN Brief
+ - AVTP Control Formats (ACF) with Non-Time-Synchronous as well as Time-Synchronous formats (see Table 23 from IEEE 1722-2025 spec)
+    - CAN (v1 & v2)
+    - CAN Brief (v1 & v2)
+    - CAN-XL
+    - CAN-XL Brief
     - Flexray
     - LIN
     - MOST
     - GPC
     - Sensor
     - Sensor Brief
+    - Generic Byte Bus
+    - Abbreviated Byte Bus
+    - Generic Image Sensor Format (GISF)
   - Custom formats not included in the standard but can be transported on top of IEEE 1722
     - COVESA Vehicle Signal Specification (VSS) [(Protocol description)](./examples/acf-vss/protocol_description/acf-vss.md)
 
@@ -120,7 +125,9 @@ $ ./build/examples/acf-can/linux/acf-can-talker
 
 ### Programming Tutorial
 
-Here's a small example how the Open1722 library can be used to build and parse IEEE 1722 Protocol Data Units (aka PDUs). First define a C struct for a custom IEEE 1722 packet that can be used to transport a CAN and a LIN message. The frame begins with a Time-synchronous Control Format (TSCF) header. Alternatively a Non-Timesynchronous Control Format (NTSCF) header could be used. After the TSCF header a list of AVTP Control Format (ACF) messages follows. The first ACF message is a ACF CAN message which consists of ACF CAN header as well as a payload section to carry a 2Byte CAN frame. Similar than with the CAN message another ACF messages for LIN is added.
+Here's a small example how the Open1722 library can be used to build and parse IEEE 1722 Protocol Data Units (aka PDUs). First define a C struct for a custom IEEE 1722 packet that can be used to transport a CAN and a LIN message. The frame begins with a Time-synchronous Control Format (TSCF) header. Alternatively a Non-Timesynchronous Control Format (NTSCF) header could be used. After the TSCF header a list of AVTP Control Format (ACF) messages follows. The first ACF message is a ACF CAN message which consists of ACF CAN header as well as a payload section to carry an 8-byte CAN frame. Similarly to the CAN message, another ACF message for LIN is added.
+
+When combining IEEE 1722 header/message structs directly in memory to form a packet, the resulting layout must not contain compiler-inserted padding bytes. Use a compiler hint to enforce packed layout (for example `__attribute__((packed))` with GCC/Clang).
 
 ``` C
 // my_1722_pdu.h
@@ -130,10 +137,10 @@ Here's a small example how the Open1722 library can be used to build and parse I
 #include "avtp/acf/Can.h"
 #include "avtp/acf/Lin.h"
 
-#define CAN_PAYLOAD_LEN 2
-#define LIN_PAYLOAD_LEN 3
+#define CAN_PAYLOAD_LEN 8
+#define LIN_PAYLOAD_LEN 4
 
-typedef struct {
+typedef struct __attribute__((packed)) {
     // IEEE 1722 UDP encapsulation header (optional)
     Avtp_Udp_t udp;
     // IEEE 1722 TSCF header
@@ -172,12 +179,12 @@ int main()
     // Init CAN ACF message
     Avtp_Can_Init(&pdu.can);
     Avtp_Can_SetCanBusId(&pdu.can, 4);
-    uint8_t canFrame[CAN_PAYLOAD_LEN] = {0x11, 0x22};
+    uint8_t canFrame[CAN_PAYLOAD_LEN] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
     memcpy(pdu.can.payload, canFrame, CAN_PAYLOAD_LEN);
 
     // Init LIN ACF message
     Avtp_Lin_Init(&pdu.lin);
-    uint8_t linFrame[LIN_PAYLOAD_LEN] = {0x11, 0x22, 0x33};
+    uint8_t linFrame[LIN_PAYLOAD_LEN] = {0x11, 0x22, 0x33, 0x44};
     memcpy(pdu.lin.payload, linFrame, LIN_PAYLOAD_LEN);
 
     // Send packet to network using socket API ...

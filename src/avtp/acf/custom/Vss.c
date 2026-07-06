@@ -79,16 +79,18 @@ void Avtp_Vss_SetField(Avtp_Vss_t* pdu,
 void Avtp_Vss_Pad(Avtp_Vss_t* vss_pdu, uint16_t vss_length) {
 
     uint8_t padSize;
+    uint16_t padded_length;
 
     // Check if padding is required
-    padSize = (AVTP_QUADLET_SIZE - (vss_length % AVTP_QUADLET_SIZE)) % AVTP_QUADLET_SIZE;
+    padSize = (uint8_t)((AVTP_QUADLET_SIZE - (vss_length % AVTP_QUADLET_SIZE)) % AVTP_QUADLET_SIZE);
     if (vss_length % AVTP_QUADLET_SIZE) {
-        memset(vss_pdu + vss_length, 0, padSize);
+        memset((uint8_t*)vss_pdu + vss_length, 0, padSize);
     }
 
     // Set the length and padding fields
+    padded_length = vss_length + padSize;
     Avtp_Vss_SetField(vss_pdu, AVTP_VSS_FIELD_ACF_MSG_LENGTH,
-                        (uint64_t) (vss_length+padSize)/AVTP_QUADLET_SIZE);
+                        (uint64_t)(padded_length / AVTP_QUADLET_SIZE));
     Avtp_Vss_SetField(vss_pdu, AVTP_VSS_FIELD_PAD, padSize);
 }
 
@@ -97,15 +99,15 @@ Avtp_AcfMsgType_t Avtp_Vss_GetAcfMsgType(const Avtp_Vss_t* const pdu) {
 }
 
 uint8_t Avtp_Vss_GetAcfMsgLength(const Avtp_Vss_t* const pdu) {
-    return GET_FIELD(AVTP_VSS_FIELD_ACF_MSG_LENGTH);
+    return (uint8_t)GET_FIELD(AVTP_VSS_FIELD_ACF_MSG_LENGTH);
 }
 
 uint8_t Avtp_Vss_GetPad(const Avtp_Vss_t* const pdu) {
-    return GET_FIELD(AVTP_VSS_FIELD_PAD);
+    return (uint8_t)GET_FIELD(AVTP_VSS_FIELD_PAD);
 }
 
 uint8_t Avtp_Vss_GetMtv(const Avtp_Vss_t* const pdu) {
-    return GET_FIELD(AVTP_VSS_FIELD_MTV);
+    return (uint8_t)GET_FIELD(AVTP_VSS_FIELD_MTV);
 }
 
 Vss_AddrMode_t Avtp_Vss_GetAddrMode(const Avtp_Vss_t* const pdu) {
@@ -162,15 +164,12 @@ uint16_t Avtp_Vss_GetVSSDataStringArrayLength(const VssDataStringArray_t* const 
      *
      * Bounds checks:
      *   1. ptr_idx + 2 <= total_length, before reading the length prefix
-     *      (the previous loop condition `ptr_idx < total_length` was off
-     *      by one and would OOB-read the length field on the last byte).
      *   2. ptr_idx + 2 + str_length <= total_length, before accepting the
      *      string. This is computed in uint32_t so the addition cannot
      *      itself overflow when str_length approaches UINT16_MAX.
      *
-     * Return type widened from uint8_t to uint16_t so counts up to 65535
-     * (a real upper bound given total_length is uint16_t) are not
-     * silently truncated mod 256. */
+     * Return type uint16_t should be enough as any 1722 frame (raw or UDP) is
+     * fundamentally limited by Ethernet frame size. */
     uint16_t total_length = str_array->data_length;
     const uint8_t * vss_data_string_array_raw = str_array->data;
     uint16_t idx = 0, ptr_idx = 0;
@@ -182,7 +181,7 @@ uint16_t Avtp_Vss_GetVSSDataStringArrayLength(const VssDataStringArray_t* const 
              * fully-contained string. */
             break;
         }
-        ptr_idx += 2 + str_length;
+        ptr_idx += (uint16_t)(2 + str_length);
         idx++;
     }
 
@@ -194,15 +193,7 @@ void Avtp_Vss_DeserializeStringArray(const VssDataStringArray_t* const vss_data_
                                      uint16_t num_strings) {
     /* Same on-wire layout as in GetVSSDataStringArrayLength above, but here
      * we copy each string's body into the caller-supplied output structs.
-     *
-     * The previous implementation declared `uint16_t idx = 0;` and only
-     * checked `if (idx >= array_length) break;` — but `idx` was never
-     * incremented, so the break was dead code (it only fired when
-     * array_length == 0). Combined with attacker-controlled str_length
-     * values up to UINT16_MAX, this allowed memcpy() to read up to ~64 KiB
-     * past the end of vss_data_string_array->data on every iteration after
-     * the first malicious string.
-     *
+     *     
      * Track bytes consumed and validate (a) that 2 length-prefix bytes are
      * available before reading them, and (b) that str_length more bytes
      * are available before memcpy'ing them. The additions are computed in
@@ -211,7 +202,7 @@ void Avtp_Vss_DeserializeStringArray(const VssDataStringArray_t* const vss_data_
     const uint8_t* array_data = vss_data_string_array->data;
     uint16_t consumed = 0;
 
-    for (int i = 0; i < num_strings; i++) {
+    for (uint16_t i = 0; i < num_strings; i++) {
         if ((uint32_t)consumed + 2 > array_length) break;
 
         uint16_t str_length = Avtp_BeToCpu16(*(const uint16_t*)array_data);
@@ -223,7 +214,7 @@ void Avtp_Vss_DeserializeStringArray(const VssDataStringArray_t* const vss_data_
             memcpy(strings[i]->data, array_data + 2, str_length);
         }
         array_data += 2 + str_length;
-        consumed   += 2 + str_length;
+        consumed   += (uint16_t)(2 + str_length);
     }
 }
 
@@ -310,7 +301,7 @@ void Avtp_Vss_GetVssData(const Avtp_Vss_t* const pdu, VssData_t* val) {
             val->data_uint16_array->data_length = Avtp_BeToCpu16(*(const uint16_t*)vss_data_ptr);
             vss_data_ptr += 2;
             if (val->data_uint16_array->data != NULL) {
-                for (int i = 0; i < val->data_uint16_array->data_length/2; i++) {
+                for (uint16_t i = 0; i < (uint16_t)(val->data_uint16_array->data_length/2); i++) {
                     *(val->data_uint16_array->data + i) = Avtp_BeToCpu16(*((const uint16_t*)vss_data_ptr+i));
                 }
             }
@@ -320,7 +311,7 @@ void Avtp_Vss_GetVssData(const Avtp_Vss_t* const pdu, VssData_t* val) {
             val->data_int16_array->data_length = Avtp_BeToCpu16(*(const uint16_t*)vss_data_ptr);
             vss_data_ptr += 2;
             if (val->data_int16_array->data != NULL) {
-                for (int i = 0; i < val->data_int16_array->data_length/2; i++) {
+                for (uint16_t i = 0; i < (uint16_t)(val->data_int16_array->data_length/2); i++) {
                     *(val->data_int16_array->data + i) = (int16_t) Avtp_BeToCpu16(*((const uint16_t*)vss_data_ptr+i));
                 }
             }
@@ -330,7 +321,7 @@ void Avtp_Vss_GetVssData(const Avtp_Vss_t* const pdu, VssData_t* val) {
             val->data_uint32_array->data_length = Avtp_BeToCpu16(*(const uint16_t*)vss_data_ptr);
             vss_data_ptr += 2;
             if (val->data_uint32_array->data != NULL) {
-                for (int i = 0; i < val->data_uint32_array->data_length/4; i++) {
+                for (uint16_t i = 0; i < (uint16_t)(val->data_uint32_array->data_length/4); i++) {
                     *(val->data_uint32_array->data + i) = Avtp_BeToCpu32(*((const uint32_t*)vss_data_ptr+i));
                 }
             }
@@ -340,7 +331,7 @@ void Avtp_Vss_GetVssData(const Avtp_Vss_t* const pdu, VssData_t* val) {
             val->data_int32_array->data_length = Avtp_BeToCpu16(*(const uint16_t*)vss_data_ptr);
             vss_data_ptr += 2;
             if (val->data_int32_array->data != NULL) {
-                for (int i = 0; i < val->data_int32_array->data_length/4; i++) {
+                for (uint16_t i = 0; i < (uint16_t)(val->data_int32_array->data_length/4); i++) {
                     *(val->data_int32_array->data + i) = (int32_t) Avtp_BeToCpu32(*((const uint32_t*)vss_data_ptr+i));
                 }
             }
@@ -349,8 +340,8 @@ void Avtp_Vss_GetVssData(const Avtp_Vss_t* const pdu, VssData_t* val) {
         case VSS_UINT64_ARRAY:
             val->data_uint64_array->data_length = Avtp_BeToCpu16(*(const uint16_t*)vss_data_ptr);
             vss_data_ptr += 2;
-            if (val->data_uint64_array->data != NULL) {
-                for (int i = 0; i < val->data_uint64_array->data_length/8; i++) {
+            if (val->data_int64_array->data != NULL) {
+                for (uint16_t i = 0; i < (uint16_t)(val->data_uint64_array->data_length/8); i++) {
                     *(val->data_uint64_array->data + i) = Avtp_BeToCpu64(*((const uint64_t*)vss_data_ptr+i));
                 }
             }
@@ -377,7 +368,7 @@ void Avtp_Vss_GetVssData(const Avtp_Vss_t* const pdu, VssData_t* val) {
             val->data_float_array->data_length = Avtp_BeToCpu16(*(const uint16_t*)vss_data_ptr);
             vss_data_ptr += 2;
             if (val->data_float_array->data != NULL) {
-                for (int i = 0; i < val->data_float_array->data_length/4; i++) {
+                for (uint16_t i = 0; i < (uint16_t)(val->data_float_array->data_length/4); i++) {
                     uint32_t temp_float = Avtp_BeToCpu32(*((const uint32_t*)vss_data_ptr+i));
                     memcpy(val->data_float_array->data + i, &temp_float, sizeof(float));
                 }
@@ -388,7 +379,7 @@ void Avtp_Vss_GetVssData(const Avtp_Vss_t* const pdu, VssData_t* val) {
             val->data_double_array->data_length = Avtp_BeToCpu16(*(const uint16_t*)vss_data_ptr);
             vss_data_ptr += 2;
             if (val->data_double_array->data != NULL) {
-                for (int i = 0; i < val->data_double_array->data_length/8; i++) {
+                for (uint16_t i = 0; i < (uint16_t)(val->data_double_array->data_length/8); i++) {
                     uint64_t temp_double = Avtp_BeToCpu64(*((const uint64_t*)vss_data_ptr+i));
                     memcpy(val->data_double_array->data + i, &temp_double, sizeof(double));
                 }
@@ -542,43 +533,43 @@ void Avtp_Vss_SetVssData(Avtp_Vss_t* pdu, VssData_t* val) {
 
         case VSS_UINT16_ARRAY:
             *(uint16_t*)vss_data_ptr = Avtp_CpuToBe16(val->data_uint16_array->data_length);
-            for (int i = 0; i < val->data_uint16_array->data_length/2; i++) {
+            for (uint16_t i = 0; i < (uint16_t)(val->data_uint16_array->data_length/2); i++) {
                 *((uint16_t*)(vss_data_ptr+2) + i) = Avtp_CpuToBe16(*(val->data_uint16_array->data+i));
             }
             break;
 
         case VSS_INT16_ARRAY:
             *(uint16_t*)vss_data_ptr = Avtp_CpuToBe16(val->data_int16_array->data_length);
-            for (int i = 0; i < val->data_int16_array->data_length/2; i++) {
-                *((int16_t*)(vss_data_ptr+2) + i) = Avtp_CpuToBe16(*(val->data_int16_array->data+i));
+            for (uint16_t i = 0; i < val->data_int16_array->data_length/2; i++) {
+                *((int16_t*)(vss_data_ptr+2) + i) = (int16_t)Avtp_CpuToBe16(*(uint16_t*)(val->data_int16_array->data+i));
             }
             break;
 
         case VSS_UINT32_ARRAY:
             *(uint16_t*)vss_data_ptr = Avtp_CpuToBe16(val->data_uint32_array->data_length);
-            for (int i = 0; i < val->data_uint32_array->data_length/4; i++) {
+            for (uint16_t i = 0; i < (uint16_t)(val->data_uint32_array->data_length/4); i++) {
                 *((uint32_t*)(vss_data_ptr+2) + i) = Avtp_CpuToBe32(*(val->data_uint32_array->data+i));
             }
             break;
 
         case VSS_INT32_ARRAY:
             *(uint16_t*)vss_data_ptr = Avtp_CpuToBe16(val->data_int32_array->data_length);
-            for (int i = 0; i < val->data_int32_array->data_length/4; i++) {
-                *((int32_t*)(vss_data_ptr+2) + i) = Avtp_CpuToBe32(*(val->data_int32_array->data+i));
+            for (uint16_t i = 0; i < val->data_int32_array->data_length/4; i++) {
+                *((int32_t*)(vss_data_ptr+2) + i) = (int32_t)Avtp_CpuToBe32(*(uint32_t*)(val->data_int32_array->data+i));
             }
             break;
 
         case VSS_UINT64_ARRAY:
             *(uint16_t*)vss_data_ptr = Avtp_CpuToBe16(val->data_uint64_array->data_length);
-            for (int i = 0; i < val->data_uint64_array->data_length/8; i++) {
+            for (uint16_t i = 0; i < (uint16_t)(val->data_uint64_array->data_length/8); i++) {
                 *((uint64_t*)(vss_data_ptr+2) + i) = Avtp_CpuToBe64(*(val->data_uint64_array->data+i));
             }
             break;
 
         case VSS_INT64_ARRAY:
             *(uint16_t*)vss_data_ptr = Avtp_CpuToBe16(val->data_int64_array->data_length);
-            for (int i = 0; i < val->data_int64_array->data_length/8; i++) {
-                *((int64_t*)(vss_data_ptr+2) + i) = Avtp_CpuToBe64(*(val->data_int64_array->data+i));
+            for (uint16_t i = 0; i < val->data_int64_array->data_length/8; i++) {
+                *((int64_t*)(vss_data_ptr+2) + i) = (int64_t)Avtp_CpuToBe64(*(uint64_t*)(val->data_int64_array->data+i));
             }
             break;
 
@@ -590,7 +581,7 @@ void Avtp_Vss_SetVssData(Avtp_Vss_t* pdu, VssData_t* val) {
 
         case VSS_FLOAT_ARRAY:
             *(uint16_t*)vss_data_ptr = Avtp_CpuToBe16(val->data_float_array->data_length);
-            for (int i = 0; i < val->data_float_array->data_length/4; i++) {
+            for (uint16_t i = 0; i < (uint16_t)(val->data_float_array->data_length/4); i++) {
                 uint32_t temp_float = Avtp_CpuToBe32(*(uint32_t*)(val->data_float_array->data+i));
                 memcpy((uint32_t*)(vss_data_ptr+2) + i, &temp_float, sizeof(float));
             }
@@ -598,7 +589,7 @@ void Avtp_Vss_SetVssData(Avtp_Vss_t* pdu, VssData_t* val) {
 
         case VSS_DOUBLE_ARRAY:
             *(uint16_t*)vss_data_ptr = Avtp_CpuToBe16(val->data_double_array->data_length);
-            for (int i = 0; i < val->data_double_array->data_length/8; i++) {
+            for (uint16_t i = 0; i < (uint16_t)(val->data_double_array->data_length/8); i++) {
                 uint64_t temp_double = Avtp_CpuToBe64(*(uint64_t*)(val->data_double_array->data+i));
                 memcpy((uint64_t*)(vss_data_ptr+2) + i, &temp_double, sizeof(double));
             }
@@ -622,8 +613,8 @@ void Avtp_Vss_SerializeStringArray(VssDataStringArray_t* vss_data_string_array,
 
     uint32_t total_length = 0;
     uint8_t* data = vss_data_string_array->data;
-    for (int i = 0; i < num_strings; i++) {
-        total_length += (uint32_t)strings[i]->data_length + 2;
+    for (uint16_t i = 0; i < num_strings; i++) {
+        total_length += (uint16_t)(strings[i]->data_length+2);
 
         *(uint16_t*)data = Avtp_CpuToBe16(strings[i]->data_length);
         memcpy(data+2, strings[i]->data, strings[i]->data_length);
