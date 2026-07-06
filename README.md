@@ -27,8 +27,9 @@
 
 ### Maintainers
 
-* [Naresh Nayak - Robert Bosch GmbH/Hochschule Furtwangen (HFU)](https://github.com/nayakned)
+* [Naresh Nayak - University of Applied Sciences Furtwangen (HFU)](https://github.com/nayakned)
 * [Adriaan Niess - Robert Bosch GmbH](https://github.com/adriaan-niess)
+* [Sebastian Schildt - University of Applied Sciences Heilbronn (HHN)](https://github.com/SebastianSchildt)
 
 ## Introduction
 
