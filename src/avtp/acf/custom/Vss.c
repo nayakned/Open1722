@@ -614,12 +614,16 @@ void Avtp_Vss_SerializeStringArray(VssDataStringArray_t* vss_data_string_array,
     uint32_t total_length = 0;
     uint8_t* data = vss_data_string_array->data;
     for (uint16_t i = 0; i < num_strings; i++) {
-        total_length += (uint16_t)(strings[i]->data_length+2);
+        uint32_t entry_size = (uint32_t)strings[i]->data_length + 2;
+        if (total_length + entry_size > UINT16_MAX) {
+            break;
+        }
+        total_length += entry_size;
 
         *(uint16_t*)data = Avtp_CpuToBe16(strings[i]->data_length);
         memcpy(data+2, strings[i]->data, strings[i]->data_length);
-        data += strings[i]->data_length+2;
+        data += entry_size;
     }
-    vss_data_string_array->data_length = (total_length > UINT16_MAX) ? UINT16_MAX : (uint16_t)total_length;
+    vss_data_string_array->data_length = (uint16_t)total_length;
 
 }
