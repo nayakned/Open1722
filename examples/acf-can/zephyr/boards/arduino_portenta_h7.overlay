@@ -54,7 +54,7 @@
                &eth_txd1_pg12>;
 };
 &mdio {
-    compatible = "st,stm32-mdio";
+    compatible = "snps,dwmac-mdio";
     #address-cells = < 0x1 >;
     #size-cells = < 0x0 >;
     status = "okay";

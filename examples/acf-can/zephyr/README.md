@@ -34,7 +34,6 @@ west build -b native_sim -d build_native_sim . -- -DCONF_FILE=examples/acf-can/z
 
 west build -b arduino_portenta_h7/stm32h747xx/m7 -d build_arduino . -- -DCONF_FILE=examples/acf-can/zephyr/prj.conf -DOPEN1722_ZEPHYR_APP=acf-can-bridge -DDTC_OVERLAY_FILE=examples/acf-can/zephyr/boards/arduino_portenta_h7.overlay # For arduino_portenta_h7
 ```
-- arduino_portenta_h7 (Use overlay file: [arduino_portenta_h7.overlay](./boards/arduino_portenta_h7.overlay))
 
 ## Testing on native_sim
 To test on native sim, we first create an Ethernet interface and a CAN interface for the simulator.
