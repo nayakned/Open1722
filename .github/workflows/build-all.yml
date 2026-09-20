@@ -9,6 +9,8 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
+  issues: write
 
 jobs:
   build:
@@ -23,3 +25,9 @@ jobs:
       run: ./build_all.sh
     - name: Run test_all.sh
       run: ./test_all.sh
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        files: ./build/main_coverage.info
+        fail_ci_if_error: true
+        verbose: true
