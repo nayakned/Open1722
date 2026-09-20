@@ -9,6 +9,5 @@ make -j`nproc`
 make unittests
 make test
 
-lcov -c -d . -o main_coverage.info
-lcov -r main_coverage.info '*/unit/test-*.c' -o main_coverage.info
+lcov --capture --directory . --output-file main_coverage.info --include '*/include/*/*.h' --exclude '*/unit/test-*.c'
 genhtml main_coverage.info -o ./coverage/
