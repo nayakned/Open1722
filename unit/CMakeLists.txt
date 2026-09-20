@@ -50,6 +50,8 @@ function(add_dual_test TEST_NAME SOURCE_FILE)
     add_executable(${TEST_NAME} ${SOURCE_FILE})
     target_link_libraries(${TEST_NAME} ${BASE_LIBS})
     target_include_directories(${TEST_NAME} PUBLIC ../include)
+    target_compile_options(${TEST_NAME} PRIVATE -coverage)
+    target_link_options(${TEST_NAME} PRIVATE -coverage)
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 
     # C++ version (compile same source file as C++)
@@ -57,6 +59,8 @@ function(add_dual_test TEST_NAME SOURCE_FILE)
     add_executable(${TEST_NAME}-cpp ${SOURCE_FILE})
     target_link_libraries(${TEST_NAME}-cpp ${BASE_LIBS})
     target_include_directories(${TEST_NAME}-cpp PUBLIC ../include)
+    target_compile_options(${TEST_NAME}-cpp PRIVATE -coverage)
+    target_link_options(${TEST_NAME}-cpp PRIVATE -coverage)
     add_test(NAME ${TEST_NAME}-cpp COMMAND ${TEST_NAME}-cpp)
 
     # Automatically add both targets to unittests dependencies
