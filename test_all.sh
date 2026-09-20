@@ -10,4 +10,5 @@ make unittests
 make test
 
 lcov -c -d . -o main_coverage.info
+lcov -r main_coverage.info '*/unit/test-*.c' -o main_coverage.info
 genhtml main_coverage.info -o ./coverage/
