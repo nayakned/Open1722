@@ -108,7 +108,7 @@ The following is the list of the formats currently supported by Open1722:
     - CRC
     - Checksum
     - Flexray
-    - LIN
+    - LIN (v1 & v2)
     - MOST
     - GPC
     - Sensor

@@ -83,6 +83,7 @@
 #include "avtp/acf/I2C.h"
 #include "avtp/acf/I2CBrief.h"
 #include "avtp/acf/Lin.h"
+#include "avtp/acf/LinV2.h"
 #include "avtp/acf/Most.h"
 #include "avtp/acf/Ntscf.h"
 #include "avtp/acf/Sensor.h"
